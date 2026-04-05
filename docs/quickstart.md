@@ -10,7 +10,7 @@ Copy the agent system and start improving your project immediately.
 
 ```bash
 # Clone this repo
-git clone https://github.com/mememade/claude-meta-autoagent.git
+git clone https://github.com/mememade-github/claude-meta-autoagent.git
 
 # Copy .claude/ to your project
 cp -r claude-meta-autoagent/.claude/ /path/to/your/project/.claude/

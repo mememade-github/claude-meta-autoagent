@@ -26,7 +26,7 @@ Three levels — pick the one that fits. Full details in [docs/quickstart.md](do
 ### Level 1: Add /refine to your project (simplest)
 
 ```bash
-git clone https://github.com/mememade/claude-meta-autoagent.git
+git clone https://github.com/mememade-github/claude-meta-autoagent.git
 cp -r claude-meta-autoagent/.claude/ /path/to/your/project/.claude/
 ```
 

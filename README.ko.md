@@ -26,7 +26,7 @@
 ### Level 1: 기존 프로젝트에 /refine 추가 (가장 간단)
 
 ```bash
-git clone https://github.com/mememade/claude-meta-autoagent.git
+git clone https://github.com/mememade-github/claude-meta-autoagent.git
 cp -r claude-meta-autoagent/.claude/ /path/to/your/project/.claude/
 ```
 
