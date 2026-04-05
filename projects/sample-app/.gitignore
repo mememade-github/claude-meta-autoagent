@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[oc]
+.venv/
+
+# Agent runtime artifacts
+.claude/agent-memory/
+.claude/.refinement-active
+.claude/.refine-output
+.claude/.last-*
+.claude/.update-check-cache
+.claude/worktrees/
+
+# Refinement
+.refine-output
+
+# WIP
+wip/
+
+# Credentials
+.env/

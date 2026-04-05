@@ -1,0 +1,58 @@
+# =============================================================================
+# claude-meta-autoagent — Docker Compose
+# =============================================================================
+# Usage:
+#   docker compose up -d
+#
+# Multiple instances:
+#   cp .env .env.project-b
+#   docker compose --env-file .env.project-b up -d
+# =============================================================================
+
+services:
+  claude-devcontainer:
+    container_name: ${CONTAINER_NAME:-claude-meta-autoagent}
+    image: ${IMAGE_NAME:-claude-devcontainer}:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PROJECT_NODE_VERSION=${PROJECT_NODE_VERSION:-}
+
+    volumes:
+      - ${HOST_WORKSPACE_PATH:-..}:/workspaces:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    # =========================================================================
+    # Ports — HOST:CONTAINER separated mapping
+    # HOST ports: .env PORT_* variables (collision-free)
+    # CONTAINER ports: standard fixed (ports the service listens on)
+    # =========================================================================
+    ports:
+      - "${PORT_APP:-3000}:3000"
+      - "${PORT_API:-8080}:8080"
+      - "${PORT_DB:-5432}:5432"
+      - "${PORT_EXTRA:-6379}:6379"
+
+    # =========================================================================
+    # DNS — Do not rely on Docker Desktop internal DNS
+    # Prevents DNS resolution failure on Windows/WSL2
+    # =========================================================================
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
+
+    environment:
+      - TZ=${TZ:-UTC}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+
+    stdin_open: true
+    tty: true
+
+    healthcheck:
+      test: ["CMD-SHELL", "claude --version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

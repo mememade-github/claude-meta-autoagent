@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[oc]
+.venv/
+
+# Node
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials — never commit
+.env/
+*.env
+!.devcontainer/.env
+!projects/sample-app/.devcontainer/.env
+
+# Agent runtime artifacts (generated per-session)
+.claude/agent-memory/
+.claude/.refinement-active
+.claude/.refine-output
+.claude/.last-*
+.claude/.update-check-cache
+.claude/worktrees/
+
+# Refinement attempts (session-specific)
+.refine-output
+
+# WIP tasks (session-specific)
+wip/
+
+# Sub-projects (users create their own, gitignored)
+# sample-app is included as a working example
+projects/*/
+!projects/sample-app/
