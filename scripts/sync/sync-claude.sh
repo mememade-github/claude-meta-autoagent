@@ -1,13 +1,17 @@
 #!/bin/bash
 # =============================================================================
-# sync-claude.sh — Sync portable .claude/ artifacts from ROOT to a sub-project
+# sync-claude.sh — Sync ROOT's .claude/ system to an internal sub-project
 # =============================================================================
+# Sub-projects live INSIDE the ROOT repository (projects/*/) and receive
+# ROOT's agent system via this script. After sync, the sub-project operates
+# under ROOT's governance and can be observed via docker exec.
+#
 # Usage:
 #   ./scripts/sync/sync-claude.sh projects/sample-app
-#   ./scripts/sync/sync-claude.sh /path/to/any/project
+#   ./scripts/sync/sync-claude.sh projects/my-new-project
 #
 # What syncs:    agents/, hooks/, skills/, settings.json, rules/*.md (root level)
-# What doesn't:  rules/project/, agent-memory/ (project-local)
+# What doesn't:  rules/project/, agent-memory/ (project-local state preserved)
 # =============================================================================
 
 set -euo pipefail

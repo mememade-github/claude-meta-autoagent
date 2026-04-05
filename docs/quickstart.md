@@ -4,9 +4,9 @@ Three usage levels, from simplest to full Meta-Evolution.
 
 ---
 
-## Level 1: Add /refine to your existing project
+## Level 1: Add /refine to an external project (no meta-evolution)
 
-Copy the agent system and start improving your project immediately.
+Copy the agent system for standalone /refine only. This does **not** create a sub-project — for the full 2-layer ROOT→Sub-project architecture, see Level 3.
 
 ```bash
 # Clone this repo
@@ -171,23 +171,25 @@ docker exec -d sample-app bash -c \
 
 ## Adding your own sub-project
 
+Sub-projects are **internal to the ROOT system** — they live inside `projects/*/`, receive `.claude/` via sync, and are observed by ROOT for meta-evolution.
+
 ```bash
-# Create project directory
+# 1. Create project directory structure
 mkdir -p projects/my-project/.claude/{agents,hooks,skills,rules/project}
 mkdir -p projects/my-project/.devcontainer
 mkdir -p projects/my-project/.refine
 
-# Sync agent system from ROOT
+# 2. Sync agent system from ROOT (makes this a sub-project)
 ./scripts/sync/sync-claude.sh projects/my-project
 
-# Copy DevContainer template
+# 3. Copy DevContainer template
 cp .devcontainer/Dockerfile projects/my-project/.devcontainer/
 cp .devcontainer/entrypoint.sh projects/my-project/.devcontainer/
 cp .devcontainer/setup-env.sh projects/my-project/.devcontainer/
 cp projects/sample-app/.devcontainer/docker-compose.yml projects/my-project/.devcontainer/
 cp projects/sample-app/.devcontainer/devcontainer.json projects/my-project/.devcontainer/
 
-# Edit .env with unique container name and ports
+# 4. Set UNIQUE container name and ports (REQUIRED — avoids collision)
 cat > projects/my-project/.devcontainer/.env << 'EOF'
 CONTAINER_NAME=my-project
 PORT_APP=5000
@@ -195,6 +197,26 @@ PORT_API=5080
 HOST_WORKSPACE_PATH=
 EOF
 
-# Create your scorer and CLAUDE.md
-# Then: docker compose up, run headless agent, observe
+# 5. Create CLAUDE.md (sections 1-5 from ROOT, NO section 6 Meta-Evolution)
+#    Sub-projects are the target of meta-evolution, not the subject.
+cp projects/sample-app/CLAUDE.md projects/my-project/CLAUDE.md
+#    Edit Identity section to match your project.
+
+# 6. Create your scorer (.refine/score.sh)
+#    Must output: SCORE: 0.XX and GAPS: [ID1, ID2, ...]
+#    See projects/sample-app/.refine/score.sh for a working example.
+
+# 7. Create .gitignore for runtime artifacts
+cp projects/sample-app/.gitignore projects/my-project/.gitignore
+
+# 8. Track in ROOT repo (optional — or add to .gitignore exceptions)
+#    To include in public repo: add !projects/my-project/ to ROOT .gitignore
+#    To keep private: projects/*/ pattern already gitignores it
+
+# 9. Start container, run headless agent, observe from ROOT
+cd projects/my-project/.devcontainer && docker compose up -d
+docker exec -d my-project bash -c \
+  'cd /workspaces && claude --dangerously-skip-permissions \
+   -p "Run /refine to improve production quality" \
+   > /tmp/agent.log 2>&1'
 ```

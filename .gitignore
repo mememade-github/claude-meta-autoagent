@@ -34,7 +34,9 @@ Thumbs.db
 # WIP tasks (session-specific)
 wip/
 
-# Sub-projects (users create their own, gitignored)
-# sample-app is included as a working example
+# Sub-projects — part of ROOT system, but only sample-app is public.
+# New sub-projects (e.g. projects/my-project/) are gitignored from the
+# public repo but remain internal to the ROOT system architecture.
+# To track a new sub-project: add !projects/my-project/ below.
 projects/*/
 !projects/sample-app/

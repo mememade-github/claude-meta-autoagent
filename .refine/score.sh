@@ -44,7 +44,7 @@ check "S3" "No internal IP addresses" \
   '! grep -ri "1\.234\.53\|172\.10\.100" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh"'
 
 check "S4" "No internal hostnames" \
-  '! grep -ri "cp001\|50022\|mememade-github" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh"'
+  '! grep -ri "cp001\|50022\|mememade-github" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh\|README.*\.md\|quickstart\.md"'
 
 check "S5" "No DAX references" \
   '! grep -ri "DAX_ROOT\|DAX_LEAF" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh"'

@@ -23,7 +23,9 @@
 
 Three levels — pick the one that fits. Full details in [docs/quickstart.md](docs/quickstart.md).
 
-### Level 1: Add /refine to your project (simplest)
+### Level 1: Add /refine to an external project (simplest, no meta-evolution)
+
+> Note: This is standalone /refine only. For the full 2-layer ROOT→Sub-project system, see Level 3.
 
 ```bash
 git clone https://github.com/mememade-github/claude-meta-autoagent.git
@@ -70,35 +72,41 @@ docker exec sample-app cat /workspaces/.refine-output
 
 ### Architecture
 
+ROOT and sub-projects are a **single integrated system** — sub-projects live inside the ROOT repository (`projects/*/`) and operate under ROOT's governance.
+
 ```
-┌────────────────────────────────────────────────┐
-│  ROOT — Meta-Evolution                         │
-│  Evolves: .claude/ system (hooks, skills, ...) │
-│                                                │
-│  .claude/ (ORIGIN)     You operate here        │
-│  ├── skills/refine/    ── /refine loop         │
-│  ├── hooks/            ── gates                │
-│  ├── agents/           ── evaluator            │
-│  └── rules/            ── standards            │
-│                                                │
-│  Observe sub-project ◄── docker exec ──────┐   │
-│  Diagnose system issues                    │   │
-│  Fix .claude/, sync ──────────────────────┐│   │
-└───────────────────────────────────────────┼┼───┘
-                                            ││
-                    sync .claude/ ──────────┘│
-                                             │
-┌────────────────────────────────────────────┼───┐
-│  Sub-project — Implementation Evolution    │   │
-│  Evolves: project code and scorer          │   │
-│                                            │   │
-│  .claude/ (SYNCED COPY)                    │   │
-│  .refine/score.sh (project scorer)         ◄───┘
-│  [project code] ── agent improves this         │
-│                                                │
-│  Headless agent runs /refine autonomously      │
-│  Produces: commits, scores, strategies.jsonl   │
-└────────────────────────────────────────────────┘
+┌──────────────────── claude-meta-autoagent (single system) ────────────────┐
+│                                                                           │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │  Layer 1: ROOT — Meta-Evolution                                    │  │
+│  │  Evolves: .claude/ system (hooks, skills, agents, rules)           │  │
+│  │                                                                    │  │
+│  │  .claude/ (ORIGIN)     You operate here                            │  │
+│  │  ├── skills/refine/    ── /refine loop                             │  │
+│  │  ├── hooks/            ── gates                                    │  │
+│  │  ├── agents/           ── evaluator                                │  │
+│  │  └── rules/            ── standards                                │  │
+│  │                                                                    │  │
+│  │  Observe sub-project ◄── docker exec ────┐                        │  │
+│  │  Diagnose system issues                  │                        │  │
+│  │  Fix .claude/, sync ────────────────────┐│                        │  │
+│  └─────────────────────────────────────────┼┼────────────────────────┘  │
+│                                             ││                           │
+│                     sync .claude/ ─────────┘│                           │
+│                                              │                           │
+│  ┌───────────────────────────────────────────┼───────────────────────┐  │
+│  │  Layer 2: Sub-project (projects/*/)       │                      │  │
+│  │  Evolves: project code and scorer         │                      │  │
+│  │                                           │                      │  │
+│  │  .claude/ (SYNCED from ROOT)              │                      │  │
+│  │  .refine/score.sh (project scorer)        ◄──────────────────────┘  │
+│  │  [project code] ── agent improves this                            │  │
+│  │                                                                    │  │
+│  │  Headless agent runs /refine autonomously                         │  │
+│  │  Produces: commits, scores, strategies.jsonl                      │  │
+│  └────────────────────────────────────────────────────────────────────┘  │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### The /refine loop
@@ -139,8 +147,8 @@ The ROOT agent observes sub-project agents and improves the `.claude/` system:
 ## Project structure
 
 ```
-claude-meta-autoagent/                    # ROOT workspace
-├── .claude/                              # Agent system ORIGIN
+claude-meta-autoagent/                    # ROOT — single integrated system
+├── .claude/                              # Agent system ORIGIN (syncs to sub-projects)
 │   ├── agents/evaluator.md, wip-manager.md
 │   ├── hooks/pre-commit-gate, session-start, refinement-gate, pre-push-gate
 │   ├── skills/refine, status, verify
@@ -155,12 +163,12 @@ claude-meta-autoagent/                    # ROOT workspace
 │   ├── sync/sync-claude.sh               # ROOT → sub-project sync
 │   └── meta/completion-checker.sh        # Pre-commit verification
 │
-├── projects/                             # Sub-projects
-│   └── sample-app/                       # Working sample (included)
-│       ├── .claude/                      # Full copy from ROOT
-│       ├── .devcontainer/                # Independent container
-│       ├── .refine/score.sh              # Sample scorer
-│       ├── CLAUDE.md                     # Project governance
+├── projects/                             # Sub-projects (internal to ROOT)
+│   └── sample-app/                       # Layer 2 sub-project (public demo)
+│       ├── .claude/                      # SYNCED from ROOT (read-only governance)
+│       ├── .devcontainer/                # Isolated container (observed by ROOT)
+│       ├── .refine/score.sh              # Project-specific scorer
+│       ├── CLAUDE.md                     # Project governance (no §6 Meta-Evolution)
 │       ├── app.py                        # Sample CLI tool
 │       └── test_app.py                   # Tests
 │
@@ -170,6 +178,8 @@ claude-meta-autoagent/                    # ROOT workspace
 ├── CLAUDE.md                             # ROOT governance (Meta-Evolution §6)
 └── README.md
 ```
+
+> Sub-projects are part of the ROOT system. They receive `.claude/` via sync, run in isolated containers, and are observed by ROOT for meta-evolution.
 
 ## Writing a good scorer
 

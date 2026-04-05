@@ -62,11 +62,13 @@ Before ANY `git commit`:
 
 ### 6. Meta-Evolution (Agent System Self-Improvement)
 
-Two evolution loops operate simultaneously:
-- **ROOT (this layer)** evolves the `.claude/` system — hooks, skills, agents, rules
-- **Sub-project agents** evolve their project implementations — code, scorer, tests
+ROOT and sub-projects form a **single integrated system** with two evolution layers:
 
-ROOT observes sub-project agent behavior to diagnose system-level issues.
+- **ROOT (this layer)** evolves the `.claude/` system — hooks, skills, agents, rules
+- **Sub-projects (`projects/*/`)** are internal to ROOT and evolve their implementations — code, scorer, tests
+
+Sub-projects are **part of the ROOT system**, not independent repositories.
+ROOT owns the `.claude/` ORIGIN, syncs it to sub-projects, and observes their behavior.
 Sub-project agents produce the empirical evidence that drives meta-evolution.
 
 **Principles:**

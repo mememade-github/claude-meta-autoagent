@@ -6,29 +6,35 @@ A Claude Code agent can improve your project code via `/refine`. But who improve
 
 The agent can't restart itself to test changes to its own configuration. You need a second layer.
 
-## The Solution: ROOT ↔ Sub-project
+## The Solution: ROOT ↔ Sub-project (single integrated system)
+
+ROOT and sub-projects form **one system** — sub-projects live inside the ROOT repository (`projects/*/`) and operate under ROOT's governance. They are not independent repositories.
 
 ```
-┌─────────────────────────────────────────────────┐
-│  Layer 1: ROOT — Meta-Evolution                 │
-│  Evolves: the agent system itself (.claude/)    │
-│  - Observes sub-project Agent behavior          │
-│  - Diagnoses system-level issues                │
-│  - Modifies hooks, skills, agents, rules        │
-│  - Syncs improved .claude/ to sub-projects      │
-├─────────────────────────────────────────────────┤
-│  Layer 2: Sub-project — Implementation Evolution│
-│  Evolves: the project code and scorer           │
-│  - Runs /refine autonomously (headless)         │
-│  - Improves code, tests, configuration          │
-│  - Produces observable artifacts                │
-│  (commits, scores, attempts, strategies)        │
-└─────────────────────────────────────────────────┘
+┌──────────────── claude-meta-autoagent (single system) ──────────────┐
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────────┐  │
+│  │  Layer 1: ROOT — Meta-Evolution                               │  │
+│  │  Evolves: the agent system itself (.claude/)                  │  │
+│  │  - Observes sub-project Agent behavior                        │  │
+│  │  - Diagnoses system-level issues                              │  │
+│  │  - Modifies hooks, skills, agents, rules                      │  │
+│  │  - Syncs improved .claude/ to sub-projects                    │  │
+│  ├────────────────────────────────────────────────────────────────┤  │
+│  │  Layer 2: Sub-project (projects/*/) — Implementation Evolution│  │
+│  │  Evolves: the project code and scorer                         │  │
+│  │  - Runs /refine autonomously (headless)                       │  │
+│  │  - Improves code, tests, configuration                        │  │
+│  │  - Produces observable artifacts                              │  │
+│  │  (commits, scores, attempts, strategies)                      │  │
+│  └────────────────────────────────────────────────────────────────┘  │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
 **Layer 1 (ROOT)** is where you operate. Its evolution target is the `.claude/` system — hooks, skills, agents, rules. When you observe a sub-project agent struggling, you fix the system, not the project code.
 
-**Layer 2 (Sub-project)** is a headless agent in a separate container. Its evolution target is the project itself — code, scorer, tests. It uses the `.claude/` system as-is. Its behavior reveals whether the system works well.
+**Layer 2 (Sub-project)** is a headless agent in an isolated container, but it is part of the ROOT system. Its evolution target is the project itself — code, scorer, tests. It uses the `.claude/` system as-is. Its behavior reveals whether the system works well.
 
 These two evolution loops feed each other: sub-project agents stress-test the system, ROOT improves the system, improved system produces better sub-project results.
 
