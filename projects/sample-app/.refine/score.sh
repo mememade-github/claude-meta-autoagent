@@ -332,6 +332,140 @@ check K1 'OUT=$(python3 moltbook.py 2>&1 || true); echo "$OUT" | grep -q "commen
 # K2: CLI help text lists feed command
 check K2 'OUT=$(python3 moltbook.py 2>&1 || true); echo "$OUT" | grep -q "feed"'
 
+# ── N: New API function coverage ──────────────────────────────
+# N1: All new API functions exist as callables
+check N1 'python3 -c "
+import moltbook
+fns = [\"verify_challenge\", \"upvote_post\", \"downvote_post\", \"upvote_comment\",
+       \"follow_agent\", \"unfollow_agent\", \"update_profile\", \"search\",
+       \"get_dashboard\", \"get_comments\", \"get_post\", \"subscribe_submolt\",
+       \"unsubscribe_submolt\", \"list_submolts\", \"get_notifications\",
+       \"get_profile\", \"post_link\"]
+for fn in fns:
+    assert callable(getattr(moltbook, fn)), f\"{fn} not callable\"
+"'
+
+# N2: New API functions raise RuntimeError without API key (representative sample)
+check N2 'python3 -c "
+import os, moltbook
+from pathlib import Path
+os.environ.pop(\"MOLTBOOK_API_KEY\", None)
+moltbook.ENV_PATH = Path(\"/nonexistent\")
+fns = [
+    lambda: moltbook.verify_challenge(\"code\", 1.0),
+    lambda: moltbook.upvote_post(\"123\"),
+    lambda: moltbook.downvote_post(\"123\"),
+    lambda: moltbook.upvote_comment(\"123\"),
+    lambda: moltbook.follow_agent(\"x\"),
+    lambda: moltbook.unfollow_agent(\"x\"),
+    lambda: moltbook.update_profile(description=\"x\"),
+    lambda: moltbook.search(\"q\"),
+    lambda: moltbook.get_dashboard(),
+    lambda: moltbook.get_comments(\"123\"),
+    lambda: moltbook.get_post(\"123\"),
+    lambda: moltbook.subscribe_submolt(\"x\"),
+    lambda: moltbook.unsubscribe_submolt(\"x\"),
+    lambda: moltbook.list_submolts(),
+    lambda: moltbook.get_notifications(),
+    lambda: moltbook.get_profile(),
+    lambda: moltbook.post_link(\"t\", \"http://x\"),
+]
+for fn in fns:
+    try:
+        fn()
+        exit(1)
+    except RuntimeError:
+        pass
+"'
+
+# N3: search validates search_type parameter
+check N3 'python3 -c "
+import os, moltbook
+os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
+moltbook._api_request = lambda *a, **kw: []
+try:
+    moltbook.search(\"q\", search_type=\"invalid\")
+    exit(1)
+except ValueError:
+    pass
+finally:
+    del os.environ[\"MOLTBOOK_API_KEY\"]
+"'
+
+# N4: search validates limit parameter
+check N4 'python3 -c "
+import os, moltbook
+os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
+moltbook._api_request = lambda *a, **kw: []
+try:
+    moltbook.search(\"q\", limit=-5)
+    exit(1)
+except ValueError:
+    pass
+finally:
+    del os.environ[\"MOLTBOOK_API_KEY\"]
+"'
+
+# N5: get_comments validates sort parameter
+check N5 'python3 -c "
+import os, moltbook
+os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
+moltbook._api_request = lambda *a, **kw: []
+try:
+    moltbook.get_comments(\"123\", sort=\"evil&admin=1\")
+    exit(1)
+except ValueError:
+    pass
+finally:
+    del os.environ[\"MOLTBOOK_API_KEY\"]
+"'
+
+# N6: update_profile sanitizes description before sending
+check N6 'python3 -c "
+import os, moltbook
+os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
+sent_data = {}
+def mock_req(method, endpoint, data=None, api_key=None):
+    sent_data.update(data or {})
+    return {}
+moltbook._api_request = mock_req
+moltbook.update_profile(description=\"my ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef1234567 secret\")
+assert \"ghp_\" not in sent_data[\"description\"]
+assert \"[REDACTED]\" in sent_data[\"description\"]
+del os.environ[\"MOLTBOOK_API_KEY\"]
+"'
+
+# N7: post_link sanitizes title before sending
+check N7 'python3 -c "
+import os, moltbook
+os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
+sent_data = {}
+def mock_req(method, endpoint, data=None, api_key=None):
+    sent_data.update(data or {})
+    return {\"id\": \"1\"}
+moltbook._api_request = mock_req
+moltbook.post_link(\"check password=secret123 link\", \"http://example.com\")
+assert \"secret123\" not in sent_data[\"title\"]
+del os.environ[\"MOLTBOOK_API_KEY\"]
+"'
+
+# N8: verify_challenge formats answer to 2 decimal places
+check N8 'python3 -c "
+import os, moltbook
+os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
+sent_data = {}
+def mock_req(method, endpoint, data=None, api_key=None):
+    sent_data.update(data or {})
+    return {}
+moltbook._api_request = mock_req
+moltbook.verify_challenge(\"code1\", 3.14159)
+assert sent_data[\"answer\"] == \"3.14\", f\"got {sent_data['answer']}\"
+del os.environ[\"MOLTBOOK_API_KEY\"]
+"'
+
+# N9: CLI help lists new commands (verify, search, subscribe, notifications)
+check N9 'OUT=$(python3 moltbook.py 2>&1 || true); echo "$OUT" | grep -q "verify" && echo "$OUT" | grep -q "search" && echo "$OUT" | grep -q "subscribe" && echo "$OUT" | grep -q "notifications"'
+
 # ── T: Test suite ──────────────────────────────────────────────
 # T1: test_moltbook.py passes
 check T1 'python3 test_moltbook.py'

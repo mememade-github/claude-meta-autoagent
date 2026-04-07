@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import time
+import urllib.parse
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -222,6 +223,186 @@ def get_feed(sort="hot", limit=10):
     return _api_request("GET", f"/feed?sort={sort}&limit={limit}", api_key=api_key)
 
 
+def verify_challenge(verification_code, answer):
+    """Solve a verification challenge. Answer must be formatted to 2 decimal places."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    formatted = f"{float(answer):.2f}"
+    result = _api_request("POST", "/verify", {
+        "verification_code": verification_code,
+        "answer": formatted,
+    }, api_key=api_key)
+    log_activity("verify", {"code": verification_code, "answer": formatted})
+    return result
+
+
+def upvote_post(post_id):
+    """Upvote a Moltbook post."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    result = _api_request("POST", f"/posts/{post_id}/upvote", api_key=api_key)
+    log_activity("upvote_post", {"post_id": post_id})
+    return result
+
+
+def downvote_post(post_id):
+    """Downvote a Moltbook post."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    result = _api_request("POST", f"/posts/{post_id}/downvote", api_key=api_key)
+    log_activity("downvote_post", {"post_id": post_id})
+    return result
+
+
+def upvote_comment(comment_id):
+    """Upvote a Moltbook comment."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    result = _api_request("POST", f"/comments/{comment_id}/upvote", api_key=api_key)
+    log_activity("upvote_comment", {"comment_id": comment_id})
+    return result
+
+
+def follow_agent(molty_name):
+    """Follow another agent on Moltbook."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    result = _api_request("POST", f"/agents/{molty_name}/follow", api_key=api_key)
+    log_activity("follow", {"target": molty_name})
+    return result
+
+
+def unfollow_agent(molty_name):
+    """Unfollow an agent on Moltbook."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    result = _api_request("DELETE", f"/agents/{molty_name}/follow", api_key=api_key)
+    log_activity("unfollow", {"target": molty_name})
+    return result
+
+
+def update_profile(description=None, metadata=None):
+    """Update the agent's Moltbook profile (description and/or metadata)."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    data = {}
+    if description is not None:
+        data["description"] = sanitize(description)
+    if metadata is not None:
+        data["metadata"] = metadata
+    result = _api_request("PATCH", "/agents/me", data, api_key=api_key)
+    log_activity("update_profile", {"fields": list(data.keys())})
+    return result
+
+
+def search(query, search_type="all", limit=10):
+    """Search Moltbook for posts and/or comments."""
+    allowed_types = ("all", "posts", "comments")
+    if search_type not in allowed_types:
+        raise ValueError(f"Invalid search_type: {search_type!r}. Must be one of {allowed_types}")
+    if not isinstance(limit, int) or limit < 1 or limit > 100:
+        raise ValueError(f"Invalid limit: {limit!r}. Must be an integer between 1 and 100")
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    safe_q = urllib.parse.quote(query, safe="")
+    return _api_request("GET", f"/search?q={safe_q}&type={search_type}&limit={limit}", api_key=api_key)
+
+
+def get_dashboard():
+    """Fetch the agent's dashboard (activity, DMs, notifications)."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    return _api_request("GET", "/home", api_key=api_key)
+
+
+def get_comments(post_id, sort="best", limit=50):
+    """Fetch comments on a Moltbook post."""
+    allowed_sorts = ("best", "new", "old")
+    if sort not in allowed_sorts:
+        raise ValueError(f"Invalid sort: {sort!r}. Must be one of {allowed_sorts}")
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    return _api_request("GET", f"/posts/{post_id}/comments?sort={sort}&limit={limit}", api_key=api_key)
+
+
+def get_post(post_id):
+    """Fetch a single Moltbook post by ID."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    return _api_request("GET", f"/posts/{post_id}", api_key=api_key)
+
+
+def subscribe_submolt(submolt_name):
+    """Subscribe to a Moltbook submolt (community)."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    result = _api_request("POST", f"/submolts/{submolt_name}/subscribe", api_key=api_key)
+    log_activity("subscribe", {"submolt": submolt_name})
+    return result
+
+
+def unsubscribe_submolt(submolt_name):
+    """Unsubscribe from a Moltbook submolt."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    result = _api_request("DELETE", f"/submolts/{submolt_name}/subscribe", api_key=api_key)
+    log_activity("unsubscribe", {"submolt": submolt_name})
+    return result
+
+
+def list_submolts():
+    """List all available Moltbook submolts."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    return _api_request("GET", "/submolts", api_key=api_key)
+
+
+def get_notifications():
+    """Retrieve the agent's notification list."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    return _api_request("GET", "/notifications", api_key=api_key)
+
+
+def get_profile():
+    """Get the authenticated agent's own profile."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    return _api_request("GET", "/agents/me", api_key=api_key)
+
+
+def post_link(title, url, community="ai_agents"):
+    """Post a link to Moltbook (e.g. GitHub repo)."""
+    api_key = load_api_key()
+    if not api_key:
+        raise RuntimeError("No Moltbook API key configured.")
+    safe_title = sanitize(title)
+    result = _api_request("POST", "/posts", {
+        "title": safe_title,
+        "url": url,
+        "submolt_name": community,
+        "type": "link",
+    }, api_key=api_key)
+    log_activity("post_link", {"title": safe_title, "post_id": result.get("id", "")})
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Convenience: compose achievement post from refine results
 # ---------------------------------------------------------------------------
@@ -261,7 +442,10 @@ def main():
     """CLI entry point for moltbook integration."""
     if len(sys.argv) < 2:
         print("Usage: python moltbook.py <command> [args...]")
-        print("Commands: register, post, comment, feed, heartbeat, status")
+        print("Commands: register, post, post-link, comment, feed, heartbeat,")
+        print("  status, verify, upvote, follow, unfollow, profile, update-profile,")
+        print("  search, dashboard, comments, get-post, subscribe, submolts,")
+        print("  notifications")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -277,6 +461,14 @@ def main():
             sys.exit(1)
         result = post_achievement(sys.argv[2], sys.argv[3])
         print(f"Posted! ID: {result.get('id', 'N/A')}")
+
+    elif cmd == "post-link":
+        if len(sys.argv) < 4:
+            print("Usage: python moltbook.py post-link <title> <url> [community]")
+            sys.exit(1)
+        community = sys.argv[4] if len(sys.argv) > 4 else "ai_agents"
+        result = post_link(sys.argv[2], sys.argv[3], community)
+        print(f"Link posted! ID: {result.get('id', 'N/A')}")
 
     elif cmd == "comment":
         if len(sys.argv) < 4:
@@ -294,6 +486,96 @@ def main():
     elif cmd == "heartbeat":
         heartbeat()
         print("Heartbeat sent.")
+
+    elif cmd == "verify":
+        if len(sys.argv) < 4:
+            print("Usage: python moltbook.py verify <code> <answer>")
+            sys.exit(1)
+        result = verify_challenge(sys.argv[2], sys.argv[3])
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "upvote":
+        if len(sys.argv) < 4:
+            print("Usage: python moltbook.py upvote <post|comment> <id>")
+            sys.exit(1)
+        if sys.argv[2] == "post":
+            result = upvote_post(sys.argv[3])
+        elif sys.argv[2] == "comment":
+            result = upvote_comment(sys.argv[3])
+        else:
+            print("Usage: python moltbook.py upvote <post|comment> <id>")
+            sys.exit(1)
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "follow":
+        if len(sys.argv) < 3:
+            print("Usage: python moltbook.py follow <agent_name>")
+            sys.exit(1)
+        result = follow_agent(sys.argv[2])
+        print(f"Following {sys.argv[2]}")
+
+    elif cmd == "unfollow":
+        if len(sys.argv) < 3:
+            print("Usage: python moltbook.py unfollow <agent_name>")
+            sys.exit(1)
+        result = unfollow_agent(sys.argv[2])
+        print(f"Unfollowed {sys.argv[2]}")
+
+    elif cmd == "profile":
+        result = get_profile()
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "update-profile":
+        if len(sys.argv) < 3:
+            print("Usage: python moltbook.py update-profile <description> [metadata_json]")
+            sys.exit(1)
+        desc = sys.argv[2]
+        meta = json.loads(sys.argv[3]) if len(sys.argv) > 3 else None
+        result = update_profile(description=desc, metadata=meta)
+        print("Profile updated.")
+
+    elif cmd == "search":
+        if len(sys.argv) < 3:
+            print("Usage: python moltbook.py search <query> [type] [limit]")
+            sys.exit(1)
+        st = sys.argv[3] if len(sys.argv) > 3 else "all"
+        lim = int(sys.argv[4]) if len(sys.argv) > 4 else 10
+        result = search(sys.argv[2], search_type=st, limit=lim)
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "dashboard":
+        result = get_dashboard()
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "comments":
+        if len(sys.argv) < 3:
+            print("Usage: python moltbook.py comments <post_id> [sort]")
+            sys.exit(1)
+        s = sys.argv[3] if len(sys.argv) > 3 else "best"
+        result = get_comments(sys.argv[2], sort=s)
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "get-post":
+        if len(sys.argv) < 3:
+            print("Usage: python moltbook.py get-post <post_id>")
+            sys.exit(1)
+        result = get_post(sys.argv[2])
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "subscribe":
+        if len(sys.argv) < 3:
+            print("Usage: python moltbook.py subscribe <submolt_name>")
+            sys.exit(1)
+        result = subscribe_submolt(sys.argv[2])
+        print(f"Subscribed to {sys.argv[2]}")
+
+    elif cmd == "submolts":
+        result = list_submolts()
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "notifications":
+        result = get_notifications()
+        print(json.dumps(result, indent=2))
 
     elif cmd == "status":
         key = load_api_key()
