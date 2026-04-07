@@ -104,6 +104,23 @@ docker exec -d <container> bash -c 'cd /workspaces && claude --dangerously-skip-
 - `.refine-output` score changes
 - File mtime changes
 - Deployment target service status (varies by project)
+- **Outcome verification** (external interactions — see below)
+
+**Outcome verification principle:**
+
+API call success (HTTP 2xx) ≠ intended outcome achieved. When the agent interacts with
+external systems, the observer MUST verify outcomes independently, not just count actions.
+
+Checklist (generic, adapt per project):
+1. **Result validation**: After write operations (create/update), read back and confirm
+   the resource exists and is visible/accessible as intended.
+2. **Rate & pattern analysis**: Check action frequency and spacing. Bursts of identical
+   operations (e.g., N actions in <M seconds) indicate missing pacing or deduplication.
+3. **Effectiveness ratio**: Compare actions taken vs. measurable impact achieved.
+   A low ratio (many actions, negligible impact) signals wasted effort or silent rejection.
+4. **Error log review**: Scan activity logs not just for explicit errors, but for
+   patterns that suggest soft failures (repeated retries, missing expected fields,
+   resources created but not retrievable).
 
 **Learning mechanism (3-loop cross-run learning):**
 
@@ -129,6 +146,9 @@ Data location: `.claude/agent-memory/skills/`, `.claude/agent-memory/scorer-evol
    (infrastructure, configuration, deployment, code). Code changes that merely avoid
    triggering an infrastructure or configuration limitation are workarounds, not fixes.
 7. **Explicit failure** — Every operation must genuinely succeed or explicitly fail. No arbitrary success
+8. **Verify outcomes** — After external API writes, read back to confirm the intended effect.
+   HTTP success does not guarantee the operation achieved its goal (content may be filtered,
+   rate-limited, or silently rejected). Log and handle soft failures.
 
 ## Environment
 
