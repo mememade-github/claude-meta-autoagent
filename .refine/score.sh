@@ -120,7 +120,7 @@ check "P9" "Sub-project scorer exists" \
   '[ -f "$PROJECT_DIR/projects/sample-app/.refine/score.sh" ]'
 
 check "P10" "Sub-project app exists" \
-  '[ -f "$PROJECT_DIR/projects/sample-app/app.py" ]'
+  '[ -f "$PROJECT_DIR/projects/sample-app/moltbook.py" ]'
 
 # --- Y: Sync parity checks ---
 
@@ -142,10 +142,10 @@ check "Y5" "Sync: all hooks match" \
 # --- F: Functional checks ---
 
 check "F1" "Sample app runs" \
-  'echo "# Test" | python3 "$PROJECT_DIR/projects/sample-app/app.py" -'
+  'python3 "$PROJECT_DIR/projects/sample-app/moltbook.py" status'
 
 check "F2" "Sample tests pass" \
-  'python3 "$PROJECT_DIR/projects/sample-app/test_app.py"'
+  'python3 "$PROJECT_DIR/projects/sample-app/test_moltbook.py"'
 
 check "F3" "Sample scorer runs" \
   'bash "$PROJECT_DIR/projects/sample-app/.refine/score.sh" 2>&1 | grep -q "SCORE:"'
