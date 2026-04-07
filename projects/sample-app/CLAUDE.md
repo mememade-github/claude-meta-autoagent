@@ -63,9 +63,6 @@ Before ANY `git commit`:
 5. **Verify** — Build and test before claiming success
 6. **Fix root causes** — Diagnose and fix across all system layers
 7. **Explicit failure** — Every operation must genuinely succeed or explicitly fail
-8. **Verify outcomes** — After external API writes, read back to confirm the intended effect.
-   HTTP success does not guarantee the operation achieved its goal (content may be filtered,
-   rate-limited, or silently rejected). Log and handle soft failures.
 
 ## Project Info
 

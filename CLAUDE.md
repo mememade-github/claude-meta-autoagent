@@ -62,26 +62,19 @@ Before ANY `git commit`:
 
 ### 6. Meta-Evolution (Agent System Self-Improvement)
 
-ROOT and sub-projects form a **single integrated system** with two evolution layers:
-
-- **ROOT (this layer)** evolves the `.claude/` system — hooks, skills, agents, rules
-- **Sub-projects (`projects/*/`)** are internal to ROOT and evolve their implementations — code, scorer, tests
-
-Sub-projects are **part of the ROOT system**, not independent repositories.
-ROOT owns the `.claude/` ORIGIN, syncs it to sub-projects, and observes their behavior.
-Sub-project agents produce the empirical evidence that drives meta-evolution.
+When improving the agent system itself, verify through sub-project Agents.
 
 **Principles:**
 - All improvements must be **standard and generic** — no project-specific rules
-- Sub-project Agent observation → issue discovery → **immediate** improvement (don't wait for results)
+- Sub-project Agent observation → issue discovery → **immediate** improvement (do not wait for results)
 - Cannot restart yourself → sub-project Agent serves as verification
 
 **Execution sequence (all steps mandatory):**
 1. **Diagnose**: Identify which standard principle is insufficient
 2. **Modify**: Improve CLAUDE.md / SKILL.md or other portable files
 3. **Verify**: Run `completion-checker.sh`
-4. **Commit** the root workspace (push if remote configured)
-5. **Sync**: Copy `.claude/` portable artifacts to all sub-projects
+4. **Commit & push** the ROOT workspace
+5. **Sync**: Copy `.claude/` portable artifacts to all sub-projects + push
 6. **Container check**: Verify sync reflected in sub-project containers
 7. **Agent restart**: Launch headless Agent with improved system
 8. **Resume observation**: Full observation (process, logs, git, refinement, score, file mtime)
@@ -152,17 +145,6 @@ Data location: `.claude/agent-memory/skills/`, `.claude/agent-memory/scorer-evol
    (infrastructure, configuration, deployment, code). Code changes that merely avoid
    triggering an infrastructure or configuration limitation are workarounds, not fixes.
 7. **Explicit failure** — Every operation must genuinely succeed or explicitly fail. No arbitrary success
-8. **Verify outcomes** — After external API writes, read back to confirm the intended effect.
-   HTTP success does not guarantee the operation achieved its goal (content may be filtered,
-   rate-limited, or silently rejected). Log and handle soft failures.
-9. **Pace external interactions** — Space out calls to external APIs. Never burst identical
-   operations (e.g., multiple comments/follows in <5s). Use minimum 3s intervals between
-   same-type actions and validate each response before proceeding to the next. Burst patterns
-   waste rate limits, trigger spam detection, and mask silent failures.
-10. **Validate before logging success** — Activity logs must reflect actual outcomes, not
-    HTTP status. Before logging `success: true`, verify the response body contains expected
-    fields (e.g., a valid resource ID). Empty or placeholder IDs (like `""` or `"1"`) indicate
-    soft failures that must be logged as such and retried or reported.
 
 ## Environment
 
