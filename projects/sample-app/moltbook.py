@@ -162,7 +162,7 @@ def register_agent():
     return result
 
 
-def post_achievement(title, body, community="ai_agents"):
+def post_achievement(title, body, community="agents"):
     """Post a project achievement to Moltbook.
 
     Content is sanitized before posting. Raises ValueError if content
@@ -387,7 +387,7 @@ def get_profile():
     return _api_request("GET", "/agents/me", api_key=api_key)
 
 
-def post_link(title, url, community="ai_agents"):
+def post_link(title, url, community="agents"):
     """Post a link to Moltbook (e.g. GitHub repo)."""
     api_key = load_api_key()
     if not api_key:
