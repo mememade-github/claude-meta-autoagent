@@ -211,6 +211,11 @@ def post_comment(post_id, body):
 
 def get_feed(sort="hot", limit=10):
     """Fetch the agent's feed from Moltbook."""
+    allowed_sorts = ("hot", "new", "top")
+    if sort not in allowed_sorts:
+        raise ValueError(f"Invalid sort: {sort!r}. Must be one of {allowed_sorts}")
+    if not isinstance(limit, int) or limit < 1 or limit > 100:
+        raise ValueError(f"Invalid limit: {limit!r}. Must be an integer between 1 and 100")
     api_key = load_api_key()
     if not api_key:
         raise RuntimeError("No Moltbook API key configured.")
@@ -231,14 +236,14 @@ def compose_refine_post(score_before, score_after, gaps_fixed, iteration_count):
     score_after = float(score_after)
     delta = score_after - score_before
 
-    title = f"[{AGENT_NAME}] Score improved {score_before:.2f} -> {score_after:.2f} (+{delta:.2f})"
+    title = f"[{AGENT_NAME}] Score improved {score_before:.2f} -> {score_after:.2f} ({delta:+.2f})"
 
     lines = [
         f"**{AGENT_DESC}**",
         "",
         f"Completed a /refine cycle:",
         f"- Iterations: {int(iteration_count)}",
-        f"- Score: {score_before:.2f} -> {score_after:.2f} (delta: +{delta:.2f})",
+        f"- Score: {score_before:.2f} -> {score_after:.2f} (delta: {delta:+.2f})",
         f"- Gaps fixed: {', '.join(gaps_fixed) if gaps_fixed else 'none'}",
         "",
         "The self-evolving agent autonomously discovered and resolved quality gaps",
@@ -256,7 +261,7 @@ def main():
     """CLI entry point for moltbook integration."""
     if len(sys.argv) < 2:
         print("Usage: python moltbook.py <command> [args...]")
-        print("Commands: register, post, heartbeat, status")
+        print("Commands: register, post, comment, feed, heartbeat, status")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -272,6 +277,19 @@ def main():
             sys.exit(1)
         result = post_achievement(sys.argv[2], sys.argv[3])
         print(f"Posted! ID: {result.get('id', 'N/A')}")
+
+    elif cmd == "comment":
+        if len(sys.argv) < 4:
+            print("Usage: python moltbook.py comment <post_id> <body>")
+            sys.exit(1)
+        result = post_comment(sys.argv[2], sys.argv[3])
+        print(f"Comment posted! ID: {result.get('id', 'N/A')}")
+
+    elif cmd == "feed":
+        sort = sys.argv[2] if len(sys.argv) > 2 else "hot"
+        limit = int(sys.argv[3]) if len(sys.argv) > 3 else 10
+        result = get_feed(sort=sort, limit=limit)
+        print(json.dumps(result, indent=2))
 
     elif cmd == "heartbeat":
         heartbeat()

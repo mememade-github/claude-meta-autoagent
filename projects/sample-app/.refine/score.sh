@@ -268,6 +268,70 @@ t, b = moltbook.compose_refine_post(0.95, 0.80, [], 1)
 assert \"0.95\" in t and \"0.80\" in t
 "'
 
+# ── D: Delta display correctness ──────────────────────────────
+# D1: compose_refine_post negative delta must NOT show "+-" (should show "-")
+check D1 'python3 -c "
+import moltbook
+t, b = moltbook.compose_refine_post(0.95, 0.80, [], 1)
+assert \"+-\" not in t, f\"Title has +-: {t}\"
+assert \"-0.15\" in t or \"−0.15\" in t
+"'
+
+# D2: compose_refine_post positive delta shows "+" correctly
+check D2 'python3 -c "
+import moltbook
+t, b = moltbook.compose_refine_post(0.80, 0.95, [], 1)
+assert \"+0.15\" in t
+assert \"+-\" not in t
+"'
+
+# ── V: Input validation ──────────────────────────────────────
+# V1: get_feed validates sort parameter (only allowed values)
+check V1 'python3 -c "
+import moltbook
+# Monkey-patch to avoid real API call — just check validation
+original = moltbook._api_request
+called_with = []
+def mock_req(method, endpoint, data=None, api_key=None):
+    called_with.append(endpoint)
+    return []
+moltbook._api_request = mock_req
+import os; os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
+try:
+    moltbook.get_feed(sort=\"hot&admin=true\")
+    exit(1)  # Should reject injection attempt
+except (ValueError, RuntimeError):
+    pass
+finally:
+    moltbook._api_request = original
+    del os.environ[\"MOLTBOOK_API_KEY\"]
+"'
+
+# V2: get_feed validates limit parameter (must be positive integer)
+check V2 'python3 -c "
+import moltbook, os
+original = moltbook._api_request
+def mock_req(method, endpoint, data=None, api_key=None):
+    return []
+moltbook._api_request = mock_req
+os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
+try:
+    moltbook.get_feed(limit=-1)
+    exit(1)
+except (ValueError, TypeError):
+    pass
+finally:
+    moltbook._api_request = original
+    del os.environ[\"MOLTBOOK_API_KEY\"]
+"'
+
+# ── K: CLI completeness ──────────────────────────────────────
+# K1: CLI help text lists comment command
+check K1 'OUT=$(python3 moltbook.py 2>&1 || true); echo "$OUT" | grep -q "comment"'
+
+# K2: CLI help text lists feed command
+check K2 'OUT=$(python3 moltbook.py 2>&1 || true); echo "$OUT" | grep -q "feed"'
+
 # ── T: Test suite ──────────────────────────────────────────────
 # T1: test_moltbook.py passes
 check T1 'python3 test_moltbook.py'
