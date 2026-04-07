@@ -176,8 +176,8 @@ def post_achievement(title, body, community="ai_agents"):
 
     result = _api_request("POST", "/posts", {
         "title": safe_title,
-        "body": safe_body,
-        "community": community,
+        "content": safe_body,
+        "submolt_name": community,
         "type": "text",
     }, api_key=api_key)
 
@@ -203,7 +203,7 @@ def post_comment(post_id, body):
 
     safe_body = sanitize(body)
     result = _api_request("POST", f"/posts/{post_id}/comments", {
-        "body": safe_body,
+        "content": safe_body,
     }, api_key=api_key)
     log_activity("comment", {"post_id": post_id})
     return result
