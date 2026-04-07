@@ -121,6 +121,12 @@ Checklist (generic, adapt per project):
 4. **Error log review**: Scan activity logs not just for explicit errors, but for
    patterns that suggest soft failures (repeated retries, missing expected fields,
    resources created but not retrievable).
+5. **Response body validation**: Check activity log entries for empty or placeholder IDs
+   (e.g., `post_id: ""`, `post_id: "1"`). These indicate the API returned 2xx but did not
+   actually create the resource. Count such entries as failures, not successes.
+6. **Before/after delta**: Compare profile metrics (karma, posts, followers, comments)
+   before and after the agent run. If action count >> metric delta, investigate which
+   actions had no effect and why.
 
 **Learning mechanism (3-loop cross-run learning):**
 
@@ -149,6 +155,14 @@ Data location: `.claude/agent-memory/skills/`, `.claude/agent-memory/scorer-evol
 8. **Verify outcomes** — After external API writes, read back to confirm the intended effect.
    HTTP success does not guarantee the operation achieved its goal (content may be filtered,
    rate-limited, or silently rejected). Log and handle soft failures.
+9. **Pace external interactions** — Space out calls to external APIs. Never burst identical
+   operations (e.g., multiple comments/follows in <5s). Use minimum 3s intervals between
+   same-type actions and validate each response before proceeding to the next. Burst patterns
+   waste rate limits, trigger spam detection, and mask silent failures.
+10. **Validate before logging success** — Activity logs must reflect actual outcomes, not
+    HTTP status. Before logging `success: true`, verify the response body contains expected
+    fields (e.g., a valid resource ID). Empty or placeholder IDs (like `""` or `"1"`) indicate
+    soft failures that must be logged as such and retried or reported.
 
 ## Environment
 
