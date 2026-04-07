@@ -132,7 +132,7 @@ Data location: `.claude/agent-memory/skills/`, `.claude/agent-memory/scorer-evol
 
 ## Environment
 
-- **Ports**: Managed in `.devcontainer/.env` (PORT_APP, PORT_API, PORT_DB, PORT_EXTRA)
+- **Ports**: Managed in `.devcontainer/.env` (copy from `.env.example`; PORT_APP, PORT_API, PORT_DB, PORT_EXTRA)
 - **Claude Code**: Native binary (~/.local/bin/claude, auto-updated)
 - **Node.js**: Node 22 LTS always installed for MCP
 - **Persistent volumes**: `~/.claude` (auth tokens), `/commandhistory` (history)

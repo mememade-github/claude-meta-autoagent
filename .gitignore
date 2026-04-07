@@ -17,8 +17,7 @@ Thumbs.db
 # Credentials — never commit
 .env/
 *.env
-!.devcontainer/.env
-!projects/sample-app/.devcontainer/.env
+!.env.example
 
 # Agent runtime artifacts (generated per-session)
 .claude/agent-memory/

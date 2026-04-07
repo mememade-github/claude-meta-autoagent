@@ -17,5 +17,10 @@ __pycache__/
 # WIP
 wip/
 
-# Credentials
+# Credentials — never commit
 .env/
+*.env
+!.env.example
+
+# Moltbook activity logs
+.moltbook/
