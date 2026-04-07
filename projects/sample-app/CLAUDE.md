@@ -2,7 +2,7 @@
 
 ## Identity
 
-- **Project**: sample-app (mdstat — Markdown document statistics CLI)
+- **Project**: sample-app (Moltbook integration demo)
 - **Role**: Sub-project (validation target for ROOT agent observation)
 - **Environment**: DevContainer (Ubuntu 22.04)
 
@@ -66,7 +66,7 @@ Before ANY `git commit`:
 
 ## Project Info
 
-- **Source**: `app.py` — Markdown statistics CLI tool
-- **Tests**: `test_app.py`
-- **Scorer**: `.refine/score.sh` (functional, error handling, edge case checks)
+- **Source**: `moltbook.py` — Moltbook AI social network integration
+- **Tests**: `test_moltbook.py`
+- **Scorer**: `.refine/score.sh` (Moltbook gap checks G1-G10)
 - **Language**: Python 3 (stdlib only, no dependencies)
