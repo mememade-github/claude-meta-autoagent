@@ -107,14 +107,14 @@ check "P4" "Sub-project Dockerfile" \
 check "P5" "Sub-project docker-compose.yml" \
   '[ -f "$PROJECT_DIR/projects/sample-app/.devcontainer/docker-compose.yml" ]'
 
-check "P6" "Sub-project .env" \
-  '[ -f "$PROJECT_DIR/projects/sample-app/.devcontainer/.env" ]'
+check "P6" "Sub-project .env.example" \
+  '[ -f "$PROJECT_DIR/projects/sample-app/.devcontainer/.env.example" ]'
 
 check "P7" "Sub-project container name is sample-app" \
-  'grep -q "CONTAINER_NAME=sample-app" "$PROJECT_DIR/projects/sample-app/.devcontainer/.env"'
+  'grep -q "CONTAINER_NAME=sample-app" "$PROJECT_DIR/projects/sample-app/.devcontainer/.env.example"'
 
 check "P8" "Sub-project ports differ from ROOT" \
-  'grep -q "PORT_APP=4000" "$PROJECT_DIR/projects/sample-app/.devcontainer/.env"'
+  'grep -q "PORT_APP=4000" "$PROJECT_DIR/projects/sample-app/.devcontainer/.env.example"'
 
 check "P9" "Sub-project scorer exists" \
   '[ -f "$PROJECT_DIR/projects/sample-app/.refine/score.sh" ]'
