@@ -10,7 +10,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-PASS=0; TOTAL=0
+PASS=0; TOTAL=0; SKIP=0
 
 check() {
     TOTAL=$((TOTAL + 1))
@@ -21,6 +21,10 @@ check() {
     fi
 }
 GAPS=""
+
+skip() {
+    SKIP=$((SKIP + 1))
+}
 
 # ── F: Functional ──────────────────────────────────────────────
 # F1: Module imports without error
@@ -466,6 +470,152 @@ del os.environ[\"MOLTBOOK_API_KEY\"]
 # N9: CLI help lists new commands (verify, search, subscribe, notifications)
 check N9 'OUT=$(python3 moltbook.py 2>&1 || true); echo "$OUT" | grep -q "verify" && echo "$OUT" | grep -q "search" && echo "$OUT" | grep -q "subscribe" && echo "$OUT" | grep -q "notifications"'
 
+# ── P: Pacing quality (burst detection in activity.jsonl) ─────
+# Skipped when activity.jsonl is absent (file is gitignored runtime data)
+if [ -f ".moltbook/activity.jsonl" ]; then
+# P1: No burst of >=4 identical actions within a 5-second window
+check P1 'python3 -c "
+import json
+from datetime import datetime
+LOG = \".moltbook/activity.jsonl\"
+entries = [json.loads(l) for l in open(LOG)]
+def parse_ts(s): return datetime.strptime(s, \"%Y-%m-%dT%H:%M:%SZ\")
+# Sliding window: for each entry, count same-action entries within 5s forward
+for i, e in enumerate(entries):
+    t0 = parse_ts(e[\"ts\"])
+    count = 1
+    for j in range(i+1, len(entries)):
+        if entries[j][\"action\"] != e[\"action\"]:
+            continue
+        dt = (parse_ts(entries[j][\"ts\"]) - t0).total_seconds()
+        if dt > 5:
+            break
+        count += 1
+    assert count < 4, f\"Burst: {count}x {e['action']} in 5s at {e['ts']}\"
+"'
+
+# P2: Median inter-action gap >= 2 seconds (not machine-gunning)
+check P2 'python3 -c "
+import json, statistics
+from datetime import datetime
+LOG = \".moltbook/activity.jsonl\"
+entries = [json.loads(l) for l in open(LOG)]
+def parse_ts(s): return datetime.strptime(s, \"%Y-%m-%dT%H:%M:%SZ\")
+gaps = []
+for i in range(1, len(entries)):
+    dt = (parse_ts(entries[i][\"ts\"]) - parse_ts(entries[i-1][\"ts\"])).total_seconds()
+    gaps.append(dt)
+med = statistics.median(gaps)
+assert med >= 2, f\"Median gap {med:.1f}s < 2s\"
+"'
+
+# P3: No 60-second window contains more than 15 actions
+check P3 'python3 -c "
+import json
+from datetime import datetime
+LOG = \".moltbook/activity.jsonl\"
+entries = [json.loads(l) for l in open(LOG)]
+def parse_ts(s): return datetime.strptime(s, \"%Y-%m-%dT%H:%M:%SZ\")
+times = [parse_ts(e[\"ts\"]) for e in entries]
+for i in range(len(times)):
+    count = sum(1 for t in times[i:] if (t - times[i]).total_seconds() <= 60)
+    assert count <= 15, f\"{count} actions in 60s window starting {entries[i]['ts']}\"
+"'
+else
+    skip P1; skip P2; skip P3
+fi
+
+# ── A: API utilization coverage ──────────────────────────────
+# Skipped when activity.jsonl is absent
+if [ -f ".moltbook/activity.jsonl" ]; then
+# A1: At least 8 distinct action types in activity log
+check A1 'python3 -c "
+import json
+LOG = \".moltbook/activity.jsonl\"
+actions = {json.loads(l)[\"action\"] for l in open(LOG)}
+assert len(actions) >= 8, f\"Only {len(actions)} distinct actions, need >= 8\"
+"'
+
+# A2: At least 50% of logging API functions appear in activity log
+check A2 'python3 -c "
+import json
+LOG = \".moltbook/activity.jsonl\"
+# All action names that moltbook.py log_activity() can produce
+ALL_LOGGED = {\"register\", \"post\", \"comment\", \"heartbeat\", \"verify\",
+    \"upvote_post\", \"downvote_post\", \"upvote_comment\", \"follow\",
+    \"unfollow\", \"update_profile\", \"subscribe\", \"unsubscribe\",
+    \"post_link\", \"engagement_round\"}
+used = {json.loads(l)[\"action\"] for l in open(LOG)}
+coverage = len(used & ALL_LOGGED) / len(ALL_LOGGED)
+assert coverage >= 0.50, f\"API coverage {coverage:.0%} < 50%\"
+"'
+else
+    skip A1; skip A2
+fi
+
+# ── Q: Engagement diversity ──────────────────────────────────
+# Skipped when activity.jsonl is absent
+if [ -f ".moltbook/activity.jsonl" ]; then
+# Q1: No single action type exceeds 40% of all entries
+check Q1 'python3 -c "
+import json
+from collections import Counter
+LOG = \".moltbook/activity.jsonl\"
+actions = [json.loads(l)[\"action\"] for l in open(LOG)]
+counts = Counter(actions)
+total = len(actions)
+for action, n in counts.items():
+    pct = n / total
+    assert pct <= 0.40, f\"{action} is {pct:.0%} of entries (>{40}%)\"
+"'
+
+# Q2: Shannon entropy of action distribution >= 1.8 bits (natural log)
+check Q2 'python3 -c "
+import json, math
+from collections import Counter
+LOG = \".moltbook/activity.jsonl\"
+actions = [json.loads(l)[\"action\"] for l in open(LOG)]
+counts = Counter(actions)
+total = len(actions)
+entropy = -sum((n/total) * math.log(n/total) for n in counts.values())
+assert entropy >= 1.8, f\"Entropy {entropy:.2f} < 1.8\"
+"'
+
+# Q3: At least 3 action categories used (content, social, admin)
+check Q3 'python3 -c "
+import json
+LOG = \".moltbook/activity.jsonl\"
+actions = {json.loads(l)[\"action\"] for l in open(LOG)}
+CONTENT = {\"post\", \"post_link\", \"comment\"}
+SOCIAL = {\"upvote_post\", \"downvote_post\", \"upvote_comment\", \"follow\", \"unfollow\"}
+ADMIN = {\"register\", \"update_profile\", \"subscribe\", \"unsubscribe\", \"heartbeat\", \"verify\"}
+cats = sum([bool(actions & CONTENT), bool(actions & SOCIAL), bool(actions & ADMIN)])
+assert cats >= 3, f\"Only {cats} action categories used, need >= 3\"
+"'
+else
+    skip Q1; skip Q2; skip Q3
+fi
+
+# ── M: Moltbook API external metrics ─────────────────────────
+# Skipped when MOLTBOOK_API_KEY is not set
+if [ -n "${MOLTBOOK_API_KEY:-}" ]; then
+# M1: profile command returns data with karma field
+check M1 'python3 moltbook.py profile 2>&1 | python3 -c "
+import sys, json
+data = json.loads(sys.stdin.read())
+assert \"karma\" in data, \"karma field missing from profile\"
+"'
+
+# M2: notifications command returns valid response structure
+check M2 'python3 moltbook.py notifications 2>&1 | python3 -c "
+import sys, json
+data = json.loads(sys.stdin.read())
+assert isinstance(data, (list, dict)), \"notifications response is not list or dict\"
+"'
+else
+    skip M1; skip M2
+fi
+
 # ── T: Test suite ──────────────────────────────────────────────
 # T1: test_moltbook.py passes
 check T1 'python3 test_moltbook.py'
@@ -494,4 +644,7 @@ if [ -n "$GAPS" ]; then
     echo "GAPS: [${GAPS// /, }]"
 else
     echo "GAPS: []"
+fi
+if [ "$SKIP" -gt 0 ]; then
+    echo "SKIPPED: $SKIP"
 fi

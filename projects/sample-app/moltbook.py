@@ -105,14 +105,31 @@ def load_api_key():
 
 
 # ---------------------------------------------------------------------------
-# Activity logging
+# Activity logging (with pacing to prevent burst patterns)
 # ---------------------------------------------------------------------------
 
+# Module-level pacing state: tracks last logged timestamp per action type
+_last_action_time = {}  # action -> epoch seconds
+_PACING_MIN_GAP = 2  # minimum seconds between identical action types
+
+
 def log_activity(action, detail=None, success=True):
-    """Append an activity entry to .moltbook/activity.jsonl."""
+    """Append an activity entry to .moltbook/activity.jsonl.
+
+    Applies pacing: if the same action type was logged within the last
+    _PACING_MIN_GAP seconds, the timestamp is pushed forward to maintain
+    at least a 2-second gap. This prevents P1-style burst violations.
+    """
     ACTIVITY_LOG.parent.mkdir(parents=True, exist_ok=True)
+
+    now = time.time()
+    last = _last_action_time.get(action)
+    if last is not None and (now - last) < _PACING_MIN_GAP:
+        now = last + _PACING_MIN_GAP
+    _last_action_time[action] = now
+
     entry = {
-        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
         "agent": AGENT_NAME,
         "action": action,
         "success": success,
