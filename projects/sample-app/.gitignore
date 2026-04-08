@@ -24,3 +24,6 @@ wip/
 
 # Moltbook activity logs
 .moltbook/
+
+# Archived git history
+GIT_HISTORY.md

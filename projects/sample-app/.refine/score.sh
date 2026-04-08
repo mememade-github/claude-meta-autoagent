@@ -612,6 +612,13 @@ else
 fi
 
 # ── M: Moltbook API external metrics ─────────────────────────
+# Load .env/moltbook.env if present and MOLTBOOK_API_KEY not already set
+if [ -z "${MOLTBOOK_API_KEY:-}" ] && [ -f ".env/moltbook.env" ]; then
+    set -a
+    # shellcheck source=/dev/null
+    . ".env/moltbook.env"
+    set +a
+fi
 # Skipped when MOLTBOOK_API_KEY is not set
 if [ -n "${MOLTBOOK_API_KEY:-}" ]; then
 # M1: profile command returns data with karma field
