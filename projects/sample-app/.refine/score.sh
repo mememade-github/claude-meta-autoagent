@@ -12,6 +12,14 @@ cd "$(dirname "$0")/.."
 
 PASS=0; TOTAL=0; SKIP=0
 
+# Snapshot activity.jsonl existence BEFORE any checks run.
+# N-category checks call moltbook functions that invoke log_activity() as a
+# side effect, which creates activity.jsonl even in environments where it
+# should not exist.  Using the snapshot prevents those side effects from
+# flipping the P/A/Q guards from SKIP to FAIL.
+HAS_ACTIVITY_LOG=false
+[ -f ".moltbook/activity.jsonl" ] && HAS_ACTIVITY_LOG=true
+
 check() {
     TOTAL=$((TOTAL + 1))
     if eval "$2" >/dev/null 2>&1; then
@@ -426,7 +434,9 @@ finally:
 
 # N6: update_profile sanitizes description before sending
 check N6 'python3 -c "
-import os, moltbook
+import os, tempfile, moltbook
+from pathlib import Path
+moltbook.ACTIVITY_LOG = Path(tempfile.mkdtemp()) / \"test.jsonl\"
 os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
 sent_data = {}
 def mock_req(method, endpoint, data=None, api_key=None):
@@ -441,7 +451,9 @@ del os.environ[\"MOLTBOOK_API_KEY\"]
 
 # N7: post_link sanitizes title before sending
 check N7 'python3 -c "
-import os, moltbook
+import os, tempfile, moltbook
+from pathlib import Path
+moltbook.ACTIVITY_LOG = Path(tempfile.mkdtemp()) / \"test.jsonl\"
 os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
 sent_data = {}
 def mock_req(method, endpoint, data=None, api_key=None):
@@ -455,7 +467,9 @@ del os.environ[\"MOLTBOOK_API_KEY\"]
 
 # N8: verify_challenge formats answer to 2 decimal places
 check N8 'python3 -c "
-import os, moltbook
+import os, tempfile, moltbook
+from pathlib import Path
+moltbook.ACTIVITY_LOG = Path(tempfile.mkdtemp()) / \"test.jsonl\"
 os.environ[\"MOLTBOOK_API_KEY\"] = \"test\"
 sent_data = {}
 def mock_req(method, endpoint, data=None, api_key=None):
@@ -471,8 +485,9 @@ del os.environ[\"MOLTBOOK_API_KEY\"]
 check N9 'OUT=$(python3 moltbook.py 2>&1 || true); echo "$OUT" | grep -q "verify" && echo "$OUT" | grep -q "search" && echo "$OUT" | grep -q "subscribe" && echo "$OUT" | grep -q "notifications"'
 
 # ── P: Pacing quality (burst detection in activity.jsonl) ─────
-# Skipped when activity.jsonl is absent (file is gitignored runtime data)
-if [ -f ".moltbook/activity.jsonl" ]; then
+# Skipped when activity.jsonl was absent at scorer start (uses snapshot to
+# avoid false activation from N-check log_activity() side effects)
+if [ "$HAS_ACTIVITY_LOG" = true ]; then
 # P1: No burst of >=4 identical actions within a 5-second window
 check P1 'python3 -c "
 import json
@@ -526,8 +541,8 @@ else
 fi
 
 # ── A: API utilization coverage ──────────────────────────────
-# Skipped when activity.jsonl is absent
-if [ -f ".moltbook/activity.jsonl" ]; then
+# Skipped when activity.jsonl was absent at scorer start
+if [ "$HAS_ACTIVITY_LOG" = true ]; then
 # A1: At least 8 distinct action types in activity log
 check A1 'python3 -c "
 import json
@@ -554,8 +569,8 @@ else
 fi
 
 # ── Q: Engagement diversity ──────────────────────────────────
-# Skipped when activity.jsonl is absent
-if [ -f ".moltbook/activity.jsonl" ]; then
+# Skipped when activity.jsonl was absent at scorer start
+if [ "$HAS_ACTIVITY_LOG" = true ]; then
 # Q1: No single action type exceeds 40% of all entries
 check Q1 'python3 -c "
 import json
