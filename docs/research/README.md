@@ -10,6 +10,7 @@
 | [landscape.md](landscape.md) | Ecosystem overview — categories, key projects, comparison matrix |
 | [autoresearch-ecosystem.md](autoresearch-ecosystem.md) | Karpathy autoresearch and 194+ derivative projects |
 | [self-evolving-agents.md](self-evolving-agents.md) | Self-evolving agent frameworks (EvoAgentX, Hermes, etc.) |
+| [llm-wiki.md](llm-wiki.md) | Karpathy LLM Wiki pattern deep dive — architecture, RAG comparison, v2 extensions |
 | [patterns.md](patterns.md) | Architectural patterns — Ralph Loop, LLM Wiki, Scorer Evolution |
 
 ## Key Insight
