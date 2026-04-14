@@ -76,6 +76,29 @@ If the score reaches 1.00 (perfect), the agent flags potential scorer gaps — a
 
 ---
 
+## Wiki Layer
+
+When a project initializes `/wiki`, the three learning loops gain structured knowledge management:
+
+| Without Wiki | With Wiki |
+|---|---|
+| Strategies in flat JSONL | Strategy pages with `[[wikilinks]]` to related anti-patterns |
+| Load all JSONL to find relevant strategy | Read `index.md`, load only relevant pages |
+| No contradiction detection | `/wiki lint` flags conflicting strategies |
+| No consolidation | Similar strategies merged into single page |
+
+### How it works
+
+1. Run `/wiki init` in your project (creates `.claude/agent-memory/wiki/`)
+2. Each `/refine` KEEP creates/updates a strategy wiki page alongside the JSONL entry
+3. Each `/refine` DISCARD creates an anti-pattern page with cross-references
+4. The Audit agent reads `wiki/index.md` for selective retrieval (falls back to JSONL if no wiki)
+5. Run `/wiki lint` periodically to find contradictions, orphans, and duplicate patterns
+
+Wiki is additive — JSONL remains the primary format. Projects without wiki work exactly as before.
+
+---
+
 ## Data Locations
 
 ```
@@ -83,8 +106,14 @@ If the score reaches 1.00 (perfect), the agent flags potential scorer gaps — a
 ├── refinement/
 │   └── attempts/          # Per-run JSONL (includes reflexions)
 ├── skills/
-│   ├── strategies.jsonl   # Successful approaches (Loop 2)
-│   └── anti-patterns.jsonl # Failed approaches (Loop 2)
+│   ├── strategies.jsonl   # Successful approaches (Loop 2) — always written
+│   └── anti-patterns.jsonl # Failed approaches (Loop 2) — always written
+├── wiki/                  # Optional: structured knowledge (wiki layer)
+│   ├── index.md           # Master catalog
+│   ├── log.md             # Append-only chronology
+│   ├── strategies/        # Strategy pages with cross-references
+│   ├── anti-patterns/     # Anti-pattern pages with cross-references
+│   └── scorer-insights/   # Scorer evolution context
 └── scorer-evolution.jsonl  # Meta-learning log (Loop 3)
 ```
 

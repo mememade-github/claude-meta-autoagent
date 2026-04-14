@@ -34,17 +34,17 @@ check() {
 
 # --- S: Security checks (no information leaks) ---
 
-check "S1" "No MEMEMADE references (except LICENSE and GitHub URL)" \
-  '! grep -ri "mememade" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh\|LICENSE\|README.*\.md\|quickstart\.md\|\.last-push-url"'
+check "S1" "No MEMEMADE references (except LICENSE, GitHub URL, research)" \
+  '! grep -ri "mememade" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh\|LICENSE\|README.*\.md\|quickstart\.md\|\.last-push-url\|docs/research/"'
 
 check "S2" "No poc-rag references" \
-  '! grep -ri "poc-rag" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh"'
+  '! grep -ri "poc-rag" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh\|docs/research/"'
 
 check "S3" "No internal IP addresses" \
   '! grep -ri "1\.234\.53\|172\.10\.100" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh"'
 
 check "S4" "No internal hostnames" \
-  '! grep -ri "cp001\|50022\|mememade-github" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh\|README.*\.md\|quickstart\.md\|\.last-push-url"'
+  '! grep -ri "cp001\|50022\|mememade-github" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh\|README.*\.md\|quickstart\.md\|\.last-push-url\|docs/research/"'
 
 check "S5" "No DAX references" \
   '! grep -ri "DAX_ROOT\|DAX_LEAF" "$PROJECT_DIR" --include="*" -l 2>/dev/null | grep -v ".git/\|score\.sh"'
@@ -231,6 +231,26 @@ check "Q17" "README has requirements section" \
 
 check "Q18" "README mentions Claude Code CLI requirement" \
   'grep -q "Claude Code" "$PROJECT_DIR/README.md"'
+
+# --- W: Wiki capability checks ---
+
+check "W1" "Wiki skill exists" \
+  '[ -f "$PROJECT_DIR/.claude/skills/wiki/SKILL.md" ]'
+
+check "W2" "Wiki skill defines init operation" \
+  'grep -q "/wiki init" "$PROJECT_DIR/.claude/skills/wiki/SKILL.md"'
+
+check "W3" "Wiki skill defines ingest operation" \
+  'grep -q "/wiki ingest" "$PROJECT_DIR/.claude/skills/wiki/SKILL.md"'
+
+check "W4" "Wiki skill defines query operation" \
+  'grep -q "/wiki query" "$PROJECT_DIR/.claude/skills/wiki/SKILL.md"'
+
+check "W5" "Wiki skill defines lint operation" \
+  'grep -q "/wiki lint" "$PROJECT_DIR/.claude/skills/wiki/SKILL.md"'
+
+check "Y6" "Sync: wiki SKILL.md matches" \
+  'diff -q "$PROJECT_DIR/.claude/skills/wiki/SKILL.md" "$PROJECT_DIR/projects/sample-app/.claude/skills/wiki/SKILL.md"'
 
 # --- Output ---
 

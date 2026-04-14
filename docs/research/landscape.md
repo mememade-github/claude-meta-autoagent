@@ -99,7 +99,7 @@ Related:
 ### Category 4: Meta-Evolution Systems
 
 #### claude-meta-autoagent (this project)
-- **Repository**: https://github.com/mememade-github/claude-meta-autoagent
+- **Repository**: (this project)
 - **Core**: 2-layer architecture — ROOT evolves `.claude/` system, Sub-project evolves code
 - **Unique**: Scorer evolution, 3-loop CAESAR learning, cross-run skill library
 - **Positioning**: Only known system with explicit meta-evolution layer

@@ -12,12 +12,14 @@
 | **Learning** | Each experiment starts fresh (zero memory) | 3-loop cross-run learning |
 | **Architecture** | Single agent, single container | **2-layer**: ROOT evolves the agent system (meta), sub-project agent evolves the code (implementation) |
 | **Metric** | val_bpb (fixed) | Project-specific scorer (you define it) |
+| **Knowledge base** | No | **Yes** ([LLM Wiki](docs/cross-run-learning.md#wiki-layer)) |
 
 **Key improvements:**
 1. **Cross-run memory** — accumulates successful strategies and failed anti-patterns across runs ([details](docs/cross-run-learning.md))
 2. **Scorer evolution** — tracks whether your scorer is growing with your project or stagnating
 3. **2-layer meta-evolution** — a ROOT agent observes sub-project agents in independent containers and improves the system itself ([details](docs/meta-evolution.md))
 4. **Universal** — works on web apps, APIs, CLI tools, libraries — anything with a testable scorer
+5. **Knowledge wiki** — structured knowledge base with cross-referencing, consolidation, and contradiction detection (`/wiki` skill)
 
 ## Quick start
 
@@ -151,7 +153,7 @@ claude-meta-autoagent/                    # ROOT — single integrated system
 ├── .claude/                              # Agent system ORIGIN (syncs to sub-projects)
 │   ├── agents/evaluator.md, wip-manager.md
 │   ├── hooks/pre-commit-gate, session-start, refinement-gate, pre-push-gate
-│   ├── skills/refine, status, verify
+│   ├── skills/refine, status, verify, wiki
 │   └── rules/devcontainer-patterns.md
 │
 ├── .devcontainer/                        # ROOT container
