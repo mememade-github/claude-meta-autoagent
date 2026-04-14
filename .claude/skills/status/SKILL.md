@@ -19,14 +19,11 @@ echo "Workspace root: $WORKSPACE_ROOT"
 Use `$WORKSPACE_ROOT` for ALL subsequent paths.
 
 ## 1. Git Repos
-Check git status for the workspace:
+Delegate to the canonical git-status script (single source of truth for repo enumeration):
 ```bash
-if [ -x "$WORKSPACE_ROOT/scripts/git/git-status.sh" ]; then
-  "$WORKSPACE_ROOT/scripts/git/git-status.sh" --brief
-else
-  git -C "$WORKSPACE_ROOT" status --short
-fi
+"$WORKSPACE_ROOT/scripts/git/git-status.sh" --brief
 ```
+This covers root, products/root/*, products/derived/*, and nested repos within derived projects.
 
 ## 2. Unpushed Commits
 For each repo with a remote, check:

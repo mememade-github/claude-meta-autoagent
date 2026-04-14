@@ -76,29 +76,10 @@ Read the project and construct a Verification Contract.
 1. **Read the project** — Glob, Read, Grep to understand structure.
 2. **Find verification infrastructure** (in priority order):
    a. **Check for `.refine/score.sh`** — project-local scorer plugin (checked BEFORE other infrastructure).
-      Projects can provide `.refine/score.sh` as a domain-specific scorer.
-      The scorer output MUST be parseable as either **JSON** or **plain text** format:
-
-      **JSON format** (preferred):
-      ```json
-      {"score": 0.65, "feedback": "R3 title mismatch, R7 missing endpoint", "metrics": {"R1": "pass", "R3": "fail", "R7": "fail"}}
-      ```
-
-      **Plain text format** (also accepted):
-      ```
-      SCORE: 0.65
-      FEEDBACK: R3 title mismatch, R7 missing endpoint
-      R1: pass
-      R3: fail
-      R7: fail
-      ```
-
-      When parsing scorer output, detect the format first:
-      - If the last non-empty line starts with `{`, parse as JSON with `jq`.
-      - Otherwise, parse as plain text: extract `SCORE:` line for score, `FEEDBACK:` line for feedback, and `key: pass/fail` lines for metrics.
-
+      Projects can provide `.refine/score.sh` as a domain-specific scorer with JSON interface:
+      `{"score": 0.0-1.0, "feedback": "...", "metrics": {...}}`.
       The project owns and evolves this scorer — it is the authoritative metric source when present.
-      If `.refine/score.sh` hits an error, fails, or crashes internally, the scorer must still output `{"score":0}` (JSON) or `SCORE: 0` (plain text) — it should never crash silently or produce no output.
+      If `.refine/score.sh` hits an error, fails, or crashes internally, the scorer must still output `{"score":0}` — it should never crash silently or produce no output.
    b. Test suites, build systems, linters, type checkers, verification scripts
 3. **Construct the Verification Contract**:
 
@@ -319,23 +300,11 @@ ITERATION=$(wc -l < "$ATTEMPTS" 2>/dev/null || echo "0")
 
 | Condition | Action |
 |---|---|
-| `SCORE >= THRESHOLD` | **ACCEPT** — cleanup and report (see below) |
-| `ITERATION >= MAX_ITER` | **STOP** — cleanup and report best (see below) |
+| `SCORE >= THRESHOLD` | **ACCEPT** — `rm -f .claude/.refinement-active`, report |
+| `ITERATION >= MAX_ITER` | **STOP** — `rm -f .claude/.refinement-active`, report best |
 | Otherwise | Continue to Step 3 |
 
-**Cleanup (mandatory on every exit path):**
-
-Whether the loop ends by ACCEPT, STOP, or error, execute cleanup before reporting results:
-
-```bash
-# 1. Remove the refinement-active marker
-rm -f .claude/.refinement-active
-
-# 2. Report results
-jq -s 'sort_by(.score)|last' "$ATTEMPTS"
-```
-
-**`.refinement-active` removal is mandatory.** A stale marker blocks future `/refine` runs (Step 0 checks for it). If the orchestrator exits without cleanup — due to error, timeout, or user abort — the marker must be removed manually before the next run.
+**Mandatory: clean up `.refinement-active` on every exit path.** Whether the loop ends by ACCEPT, STOP, or error, you must always `rm -f .claude/.refinement-active` before reporting results.
 
 On exit: `jq -s 'sort_by(.score)|last' "$ATTEMPTS"`
 
@@ -529,7 +498,7 @@ it receives evidence from a separate Audit agent, not from its own assumptions.
 12. **No dead data** — only store what has a consumer (score, gaps, result, feedback)
 13. **Self-contained** — SKILL.md + evaluator agent + rubric fallback. Portable with `.claude/`
 14. **Evidence before modification** — structurally enforced by Audit→Modify separation
-15. **Scorer independence** — scorer and product code never modified in same iteration (empirical)
+15. **Scorer independence** — scorer and product code never modified in same iteration (empirical: poc-rag 2026-04-04)
 16. **Reflexion on failure** — DISCARD generates structured reflection + principle for next Audit (verbal RL)
 17. **Skill accumulation** — KEEP→strategies.jsonl, DISCARD→anti-patterns.jsonl (cross-run learning)
 18. **Scorer evolution tracking** — post-run meta-learning records to scorer-evolution.jsonl
