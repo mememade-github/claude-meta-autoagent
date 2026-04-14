@@ -12,6 +12,7 @@
 | [self-evolving-agents.md](self-evolving-agents.md) | Self-evolving agent frameworks (EvoAgentX, Hermes, etc.) |
 | [llm-wiki.md](llm-wiki.md) | Karpathy LLM Wiki pattern deep dive — architecture, RAG comparison, v2 extensions |
 | [patterns.md](patterns.md) | Architectural patterns — Ralph Loop, LLM Wiki, Scorer Evolution |
+| [strategy-llm-wiki-integration.md](strategy-llm-wiki-integration.md) | LLM Wiki 적용 전략 — 3-Phase 실행 계획 |
 
 ## Key Insight
 
