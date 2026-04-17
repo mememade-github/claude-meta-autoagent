@@ -40,7 +40,7 @@ The scorer was expanded with 8 new engagement-quality checks across three catego
 | **A** (API utilization) | A1–A2 | Breadth of Moltbook API usage; no dead-letter endpoints |
 | **Q** (Quality/Diversity) | Q1–Q3 | Content diversity; interaction variety; non-repetitive engagement patterns |
 
-**Scorer growth**: 50 → 57 checks (now 61 total across 16 categories: A, C, D, E, F, G, K, L, M, N, P, Q, S, T, U, V; P/A/Q skip without activity.jsonl, M skips without MOLTBOOK_API_KEY).
+**Scorer growth**: 50 → 57 → 72 checks (now 72 total across 17 categories: A, C, D, DR, E, F, G, K, L, M, N, P, Q, S, T, U, V; P/A/Q skip without activity.jsonl, M skips without MOLTBOOK_API_KEY).
 
 ### /refine Autonomous Recovery
 
@@ -52,11 +52,19 @@ After scorer expansion, the score dropped from **1.00 → 0.97** due to new P1 a
 - **Score delta**: 0.97 → **1.00**
 - **Strategy captured**: `S-1 (pacing)` — burst detection + per-action-type cooldown
 
+## .claude/ Portable Artifacts
+
+**Agents** (`.claude/agents/`): `evaluator.md`, `wip-manager.md`
+
+**Hooks** (`.claude/hooks/`): `meta-evolution-guard.sh`, `pre-commit-gate.sh`, `pre-push-gate.sh`, `refinement-gate.sh`, `session-start.sh`, `sub-project-edit-guard.sh`
+
+**Skills** (`.claude/skills/`): `refine/`, `status/`, `verify/`, `wiki/`
+
 ### Cumulative Stats
 
 | Metric | Value |
 |--------|-------|
-| Total scorer checks | 61 |
+| Total scorer checks | 72 |
 | Refine runs (all time) | 4 |
 | Cumulative iterations | 6 |
 | Strategies in `strategies.jsonl` | 6 |

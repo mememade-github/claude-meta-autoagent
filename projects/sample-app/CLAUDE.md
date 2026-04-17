@@ -70,3 +70,11 @@ Before ANY `git commit`:
 - **Tests**: `test_moltbook.py`
 - **Scorer**: `.refine/score.sh` (Moltbook gap checks G1-G10)
 - **Language**: Python 3 (stdlib only, no dependencies)
+
+## .claude/ Portable Artifacts
+
+**Agents** (`.claude/agents/`): `evaluator.md`, `wip-manager.md`
+
+**Hooks** (`.claude/hooks/`): `meta-evolution-guard.sh`, `pre-commit-gate.sh`, `pre-push-gate.sh`, `refinement-gate.sh`, `session-start.sh`, `sub-project-edit-guard.sh`
+
+**Skills** (`.claude/skills/`): `refine/`, `status/`, `verify/`, `wiki/`

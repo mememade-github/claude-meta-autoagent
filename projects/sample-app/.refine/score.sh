@@ -625,7 +625,8 @@ if [ -n "${MOLTBOOK_API_KEY:-}" ]; then
 check M1 'python3 moltbook.py profile 2>&1 | python3 -c "
 import sys, json
 data = json.loads(sys.stdin.read())
-assert \"karma\" in data, \"karma field missing from profile\"
+agent = data.get(\"agent\", data)
+assert \"karma\" in agent, \"karma field missing from profile\"
 "'
 
 # M2: notifications command returns valid response structure
@@ -657,6 +658,144 @@ check U4 'grep -q "moltbook.py" CLAUDE.md && ! grep -q "app\.py.*Markdown" CLAUD
 
 # U5: README.md reflects Moltbook as the demo app
 check U5 'grep -qi "moltbook" README.md && ! grep -q "python app.py" README.md'
+
+# ── DR: Bidirectional drift detection (.claude/ ↔ docs) ──────
+
+# DR1: Forward — every agent on disk is mentioned in CLAUDE.md
+check DR1 'python3 -c "
+import glob, os
+agents = sorted(os.path.basename(f) for f in glob.glob(\".claude/agents/*.md\"))
+assert agents, \"No agents on disk\"
+doc = open(\"CLAUDE.md\").read()
+missing = [a for a in agents if a not in doc]
+assert not missing, f\"Agents not in CLAUDE.md: {missing}\"
+"'
+
+# DR2: Forward — every hook on disk is mentioned in CLAUDE.md
+check DR2 'python3 -c "
+import glob, os
+hooks = sorted(os.path.basename(f) for f in glob.glob(\".claude/hooks/*.sh\"))
+assert hooks, \"No hooks on disk\"
+doc = open(\"CLAUDE.md\").read()
+missing = [h for h in hooks if h not in doc]
+assert not missing, f\"Hooks not in CLAUDE.md: {missing}\"
+"'
+
+# DR3: Forward — every skill dir on disk is mentioned in CLAUDE.md
+check DR3 'python3 -c "
+import os
+skills = sorted(d for d in os.listdir(\".claude/skills\") if os.path.isdir(os.path.join(\".claude/skills\", d)))
+assert skills, \"No skills on disk\"
+doc = open(\"CLAUDE.md\").read()
+missing = [s for s in skills if s + \"/\" not in doc]
+assert not missing, f\"Skills not in CLAUDE.md: {missing}\"
+"'
+
+# DR4: Forward — every agent on disk is mentioned in README.md
+check DR4 'python3 -c "
+import glob, os
+agents = sorted(os.path.basename(f) for f in glob.glob(\".claude/agents/*.md\"))
+doc = open(\"README.md\").read()
+missing = [a for a in agents if a not in doc]
+assert not missing, f\"Agents not in README.md: {missing}\"
+"'
+
+# DR5: Forward — every hook on disk is mentioned in README.md
+check DR5 'python3 -c "
+import glob, os
+hooks = sorted(os.path.basename(f) for f in glob.glob(\".claude/hooks/*.sh\"))
+doc = open(\"README.md\").read()
+missing = [h for h in hooks if h not in doc]
+assert not missing, f\"Hooks not in README.md: {missing}\"
+"'
+
+# DR6: Forward — every skill dir on disk is mentioned in README.md
+check DR6 'python3 -c "
+import os
+skills = sorted(d for d in os.listdir(\".claude/skills\") if os.path.isdir(os.path.join(\".claude/skills\", d)))
+doc = open(\"README.md\").read()
+missing = [s for s in skills if s + \"/\" not in doc]
+assert not missing, f\"Skills not in README.md: {missing}\"
+"'
+
+# DR7: Reverse — every agent named in CLAUDE.md resolves to a real file
+check DR7 'python3 -c "
+import re, os
+doc = open(\"CLAUDE.md\").read()
+names = []
+for line in doc.splitlines():
+    if \".claude/agents/\" in line:
+        names.extend(re.findall(r\"([\w][\w.-]*\.md)\", line))
+assert names, \"No agent refs in CLAUDE.md artifacts section\"
+for n in names:
+    assert os.path.isfile(os.path.join(\".claude/agents\", n)), f\"{n} not on disk\"
+"'
+
+# DR8: Reverse — every hook named in CLAUDE.md resolves to a real file
+check DR8 'python3 -c "
+import re, os
+doc = open(\"CLAUDE.md\").read()
+names = []
+for line in doc.splitlines():
+    if \".claude/hooks/\" in line:
+        names.extend(re.findall(r\"([\w][\w.-]*\.sh)\", line))
+assert names, \"No hook refs in CLAUDE.md artifacts section\"
+for n in names:
+    assert os.path.isfile(os.path.join(\".claude/hooks\", n)), f\"{n} not on disk\"
+"'
+
+# DR9: Reverse — every skill named in CLAUDE.md resolves to a real directory
+check DR9 'python3 -c "
+import re, os
+doc = open(\"CLAUDE.md\").read()
+names = []
+for line in doc.splitlines():
+    if \".claude/skills/\" in line and \":\" in line:
+        after = line.split(\":\", 1)[1]
+        names.extend(re.findall(r\"([\w][\w-]*/)\", after))
+assert names, \"No skill refs in CLAUDE.md artifacts section\"
+for n in names:
+    d = n.rstrip(\"/\")
+    assert os.path.isdir(os.path.join(\".claude/skills\", d)), f\"{n} not on disk\"
+"'
+
+# DR10: Reverse — every artifact named in README.md resolves to a real file/dir
+check DR10 'python3 -c "
+import re, os
+doc = open(\"README.md\").read()
+for line in doc.splitlines():
+    if \".claude/agents/\" in line:
+        for n in re.findall(r\"([\w][\w.-]*\.md)\", line):
+            assert os.path.isfile(os.path.join(\".claude/agents\", n)), f\"agent {n} not on disk\"
+    if \".claude/hooks/\" in line:
+        for n in re.findall(r\"([\w][\w.-]*\.sh)\", line):
+            assert os.path.isfile(os.path.join(\".claude/hooks\", n)), f\"hook {n} not on disk\"
+    if \".claude/skills/\" in line and \":\" in line:
+        after = line.split(\":\", 1)[1]
+        for n in re.findall(r\"([\w][\w-]*/)\", after):
+            assert os.path.isdir(os.path.join(\".claude/skills\", n.rstrip(\"/\"))), f\"skill {n} not on disk\"
+"'
+
+# DR11: Count parity — artifact counts in CLAUDE.md equal on-disk counts
+check DR11 'python3 -c "
+import glob, os, re
+da = len(glob.glob(\".claude/agents/*.md\"))
+dh = len(glob.glob(\".claude/hooks/*.sh\"))
+ds = len([d for d in os.listdir(\".claude/skills\") if os.path.isdir(os.path.join(\".claude/skills\", d))])
+doc = open(\"CLAUDE.md\").read()
+ca = ch = cs = 0
+for line in doc.splitlines():
+    if \".claude/agents/\" in line:
+        ca += len(re.findall(r\"[\w][\w.-]*\.md\", line))
+    if \".claude/hooks/\" in line:
+        ch += len(re.findall(r\"[\w][\w.-]*\.sh\", line))
+    if \".claude/skills/\" in line and \":\" in line:
+        after = line.split(\":\", 1)[1]
+        cs += len(re.findall(r\"[\w][\w-]*/\", after))
+assert da == ca, f\"Agent count: disk={da} doc={ca}\"
+assert dh == ch, f\"Hook count: disk={dh} doc={ch}\"
+assert ds == cs, f\"Skill count: disk={ds} doc={cs}\"
+"'
 
 # ── Score ──────────────────────────────────────────────────────
 SCORE=$(echo "$PASS $TOTAL" | awk '{printf "%.2f", $1/$2}')
