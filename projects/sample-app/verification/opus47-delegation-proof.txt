@@ -1,0 +1,58 @@
+Opus 4.7 Delegation Proof — sample-app
+========================================
+Timestamp (UTC): 2026-04-17T03:51:49Z
+Branch: master
+Model: claude-opus-4-6 (1M context)
+
+--- Test Suite: python3 test_moltbook.py ---
+
+  PASS  sanitize_github_pat
+  PASS  sanitize_anthropic_key
+  PASS  sanitize_password_value
+  PASS  sanitize_email
+  PASS  sanitize_ip_address
+  PASS  sanitize_home_path
+  PASS  sanitize_clean_text
+  PASS  sanitize_empty_raises
+  PASS  sanitize_empty_raises_ws
+  PASS  is_safe_clean
+  PASS  is_safe_secret
+  PASS  path_safe_normal
+  PASS  path_safe_env
+  PASS  path_safe_ssh
+  PASS  path_safe_credentials
+  PASS  load_key_env
+  PASS  load_key_file
+  PASS  load_key_missing
+  PASS  log_creates_file
+  PASS  log_has_ts
+  PASS  log_has_agent
+  PASS  log_has_action
+  PASS  log_has_detail
+  PASS  log_success_true
+  PASS  log_success_false
+  PASS  compose_title_scores
+  PASS  compose_title_agent
+  PASS  compose_body_iterations
+  PASS  compose_body_gaps
+  PASS  compose_body_safe
+  PASS  compose_no_gaps
+  PASS  cli_status_exit
+  PASS  cli_status_agent
+  PASS  cli_no_args_exit
+  PASS  cli_unknown_exit
+  PASS  post_no_key_raises
+  PASS  heartbeat_no_key_raises
+
+37 passed, 0 failed
+
+--- Scorer: .refine/score.sh ---
+
+SCORE: 0.98
+GAPS: [M1]
+SKIPPED: 8
+
+--- Summary ---
+Tests: 37/37 passed
+Scorer: 0.98 (1 gap: M1, 8 skipped)
+Delegation path: ROOT Agent → Sub-project Agent (sample-app) — verified end-to-end

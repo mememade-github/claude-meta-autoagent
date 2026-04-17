@@ -83,10 +83,28 @@ The `meta-evolution-guard.sh` hook (PreToolUse) blocks it mechanically.
 All delegation MUST go through `scripts/meta/delegate-goal.sh`:
 ```bash
 scripts/meta/delegate-goal.sh <project-key> "<GOAL>"
+# Override effort:  EFFORT=high scripts/meta/delegate-goal.sh <project-key> "<GOAL>"
 ```
 The wrapper enforces GOAL-not-METHOD validation, injects the role declaration header,
-and logs every launch to `.claude/.delegate-log/`. If the wrapper lacks a needed
-project, extend its PROJECTS map — do not bypass.
+passes `--effort` (default: medium LCD), and logs every launch to
+`.claude/.delegate-log/`. If the wrapper lacks a needed project, extend its PROJECTS
+map — do not bypass.
+
+**Opus 4.7+ behavioral notes:**
+- **Literal-following**: The model follows instructions with high fidelity. GOAL
+  prompts must be precise, complete outcome descriptions. Vague or ambiguous phrasing
+  may produce narrow literal interpretations rather than the intended broad action.
+  State the desired end-state explicitly; do not rely on implied context.
+- **Effort levels**: The wrapper defaults to `medium` (LCD across CLI versions).
+  Override via `EFFORT` env var when tasks require deeper reasoning (`high`/`max`)
+  or are simple enough for `low`.
+
+**Observation constraint — thinking content omission:**
+Agent logs (`/tmp/agent.log`) capture text output only. The model's internal
+thinking/reasoning chain is **not** emitted in `-p` (print) mode. Observers cannot
+inspect the agent's reasoning process from logs — only its actions and final output.
+Observation must therefore focus on **artifacts** (commits, file changes, scores,
+service state) rather than reasoning traces.
 
 **Execution sequence (all steps mandatory):**
 1. **Diagnose**: Identify which standard principle is insufficient
@@ -100,7 +118,7 @@ project, extend its PROJECTS map — do not bypass.
 
 **Observation items:**
 - Process survival (`ps aux | grep claude`)
-- Agent logs (`/tmp/agent.log` — flushed on completion)
+- Agent logs (`/tmp/agent.log` — text output only; thinking content omitted)
 - git commit/diff/status
 - `.refinement-active` file presence
 - `attempts/` JSONL new files

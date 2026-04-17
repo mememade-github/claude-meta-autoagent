@@ -11,9 +11,24 @@
 # All delegation MUST use this wrapper.
 #
 # Reference: CLAUDE.md §6 (Meta-Evolution), Role Relativity, Pre-action gate.
+#
+# Effort level: Defaults to "medium" (LCD across CLI versions). Override via
+# EFFORT env var:  EFFORT=high scripts/meta/delegate-goal.sh sample-app "..."
+# Valid values: low, medium, high, max
+#
+# Opus 4.7+ note: The model follows instructions very literally. GOAL prompts
+# must be precise outcome descriptions — vague phrasing may produce narrow
+# literal interpretations rather than the intended broad action.
 # =============================================================================
 
 set -euo pipefail
+
+# --- Effort level (LCD default: medium) ---
+EFFORT_LEVEL="${EFFORT:-medium}"
+if ! echo "$EFFORT_LEVEL" | grep -qE '^(low|medium|high|max)$'; then
+  echo -e "\033[0;31mERROR:\033[0m Invalid EFFORT='$EFFORT_LEVEL'. Must be: low, medium, high, max" >&2
+  exit 1
+fi
 
 # --- Project map (extend as needed) ---
 # Keys are short identifiers; values are container names.
@@ -90,13 +105,15 @@ cat > "$LOG_FILE" <<EOF
 timestamp: ${TIMESTAMP}
 project_key: ${PROJECT_KEY}
 container: ${CONTAINER}
+effort: ${EFFORT_LEVEL}
 goal: ${GOAL}
 status: launching
 EOF
 
 echo -e "${GREEN}${BOLD}Delegating to ${PROJECT_KEY}${NC} (container: ${CONTAINER})"
-echo -e "  GOAL: ${GOAL}"
-echo -e "  Log:  ${LOG_FILE}"
+echo -e "  GOAL:   ${GOAL}"
+echo -e "  Effort: ${EFFORT_LEVEL}"
+echo -e "  Log:    ${LOG_FILE}"
 
 # --- Container liveness check ---
 if ! docker inspect "$CONTAINER" --format '{{.State.Running}}' 2>/dev/null | grep -q "true"; then
@@ -105,8 +122,11 @@ if ! docker inspect "$CONTAINER" --format '{{.State.Running}}' 2>/dev/null | gre
 fi
 
 # --- Launch agent (detached) ---
+# --effort: LCD default "medium", overridable via EFFORT env var.
+# Note: agent.log captures text output only; thinking/reasoning content is
+# omitted by the CLI in -p mode (Opus 4.7+ observation constraint).
 docker exec -d "$CONTAINER" bash -c \
-  "cd /workspaces && claude --dangerously-skip-permissions -p $(printf '%q' "$FULL_PROMPT") > /tmp/agent.log 2>&1"
+  "cd /workspaces && claude --dangerously-skip-permissions --effort $(printf '%q' "$EFFORT_LEVEL") -p $(printf '%q' "$FULL_PROMPT") > /tmp/agent.log 2>&1"
 
 echo "status: launched" >> "$LOG_FILE"
 echo -e "${GREEN}Agent launched.${NC} Monitor with:"
