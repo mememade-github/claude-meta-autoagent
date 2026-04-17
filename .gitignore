@@ -26,6 +26,7 @@ Thumbs.db
 .claude/.last-*
 .claude/.update-check-cache
 .claude/worktrees/
+.claude/.delegate-log/
 
 # Refinement attempts (session-specific)
 .refine-output

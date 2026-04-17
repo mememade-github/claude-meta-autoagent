@@ -69,6 +69,25 @@ When improving the agent system itself, verify through sub-project Agents.
 - Sub-project Agent observation → issue discovery → **immediate** improvement (do not wait for results)
 - Cannot restart yourself → sub-project Agent serves as verification
 
+**Role Relativity:** The ROOT Agent provides GOAL only. Sub-project Agents select
+METHOD autonomously. Never embed slash commands, file paths, or imperative instructions
+in delegation prompts — describe the desired outcome and let the sub-agent plan execution.
+
+**Pre-action gate:** Before ANY agent delegation, validate:
+1. The prompt is a GOAL (outcome description), not a METHOD (step-by-step recipe)
+2. The target project key maps to a known container
+3. The working directory is the project ROOT (`/workspaces`), not a sub-path
+
+**Wrapper enforcement:** Direct `docker exec ... claude -p` is **prohibited**.
+The `meta-evolution-guard.sh` hook (PreToolUse) blocks it mechanically.
+All delegation MUST go through `scripts/meta/delegate-goal.sh`:
+```bash
+scripts/meta/delegate-goal.sh <project-key> "<GOAL>"
+```
+The wrapper enforces GOAL-not-METHOD validation, injects the role declaration header,
+and logs every launch to `.claude/.delegate-log/`. If the wrapper lacks a needed
+project, extend its PROJECTS map — do not bypass.
+
 **Execution sequence (all steps mandatory):**
 1. **Diagnose**: Identify which standard principle is insufficient
 2. **Modify**: Improve CLAUDE.md / SKILL.md or other portable files
@@ -76,17 +95,8 @@ When improving the agent system itself, verify through sub-project Agents.
 4. **Commit & push** the ROOT workspace
 5. **Sync**: Copy `.claude/` portable artifacts to all sub-projects + push
 6. **Container check**: Verify sync reflected in sub-project containers
-7. **Agent restart**: Launch headless Agent with improved system
+7. **Delegate**: Launch sub-project Agent via `delegate-goal.sh` wrapper
 8. **Resume observation**: Full observation (process, logs, git, refinement, score, file mtime)
-
-**Headless Agent execution:**
-```bash
-# Run Agent in sub-project container
-docker exec -d <container> bash -c 'cd /workspaces && claude --dangerously-skip-permissions -p "<prompt>" > /tmp/agent.log 2>&1'
-
-# Pre-approve actions in the prompt for non-interactive execution
-# claude -p is non-interactive — no mid-run input possible
-```
 
 **Observation items:**
 - Process survival (`ps aux | grep claude`)
