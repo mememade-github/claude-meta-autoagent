@@ -1,13 +1,19 @@
 #!/bin/bash
 # =============================================================================
-# Claude Code DevContainer — Environment Setup (postCreateCommand)
+# Claude Code DevContainer — Environment Setup (runs on every container start)
+# =============================================================================
+# Policies:
+#   - Claude CLI auto-updates here (fail-soft) so containers do not drift
+#     from the image-build-time pin. Set SKIP_CLAUDE_UPDATE=1 to bypass.
+#   - MCP servers (Context7, Serena) are NOT auto-registered. Binaries remain
+#     available in the image; registration is an explicit user opt-in.
 # =============================================================================
 set -e
 
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-STEP_TOTAL=4
+STEP_TOTAL=3
 STEP=0
 step() { STEP=$((STEP + 1)); echo "[${STEP}/${STEP_TOTAL}] $1"; }
 
@@ -58,38 +64,25 @@ else
 fi
 
 # =============================================================================
-# 3. MCP: Context7 (library documentation search)
+# 3. Claude CLI self-update (fail-soft; set SKIP_CLAUDE_UPDATE=1 to bypass)
 # =============================================================================
-step "MCP: Context7..."
-if ! command -v claude &>/dev/null; then
-    echo "      WARN: claude CLI not installed — skipping MCP setup"
-elif ! command -v npx &>/dev/null; then
-    echo "      WARN: npx not installed — skipping Context7"
-else
-    claude mcp remove context7 --scope user >/dev/null 2>&1 || true
-    claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp@latest >/dev/null 2>&1 \
-        && echo "      context7: OK" \
-        || echo "      WARN: context7 registration failed"
-fi
-
-# =============================================================================
-# 4. MCP: Serena (code intelligence — pre-installed in Dockerfile)
-# =============================================================================
-step "MCP: Serena..."
-SERENA_DIR="${HOME}/work/serena"
-UV_PATH=$(command -v uv 2>/dev/null || echo "${HOME}/.local/bin/uv")
-
-if ! command -v claude &>/dev/null; then
+step "Claude CLI update..."
+if [ "${SKIP_CLAUDE_UPDATE:-0}" = "1" ]; then
+    echo "      Skipped (SKIP_CLAUDE_UPDATE=1)"
+elif ! command -v claude &>/dev/null; then
     echo "      WARN: claude CLI not installed — skipping"
-elif [ ! -d "$SERENA_DIR" ]; then
-    echo "      WARN: Serena not installed ($SERENA_DIR not found)"
-elif [ ! -x "$UV_PATH" ]; then
-    echo "      WARN: uv not installed"
 else
-    claude mcp remove serena --scope user >/dev/null 2>&1 || true
-    claude mcp add --scope user serena -- "$UV_PATH" run --directory "$SERENA_DIR" serena-mcp-server --context claude-code --project-from-cwd >/dev/null 2>&1 \
-        && echo "      serena: OK" \
-        || echo "      WARN: serena registration failed"
+    before="$(claude --version 2>/dev/null | awk '{print $1}' || echo unknown)"
+    if claude update >/dev/null 2>&1; then
+        after="$(claude --version 2>/dev/null | awk '{print $1}' || echo unknown)"
+        if [ "$before" = "$after" ]; then
+            echo "      Up to date (${after})"
+        else
+            echo "      Updated: ${before} -> ${after}"
+        fi
+    else
+        echo "      WARN: claude update failed (non-fatal; image version retained: ${before})"
+    fi
 fi
 
 # =============================================================================
@@ -111,7 +104,11 @@ echo "=============================================="
 echo "  Setup Complete!"
 echo "=============================================="
 echo ""
-echo "MCP: $(claude mcp list 2>/dev/null | grep -c 'Connected\|Failed' || echo '0') servers"
+echo "MCP servers are NOT auto-registered (opt-in). To enable, run:"
+echo "  Context7:  claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp@latest"
+echo "  Serena:    claude mcp add --scope user serena -- \"\$HOME/.local/bin/uv\" run --directory \"\$HOME/work/serena\" serena-mcp-server --context claude-code --project-from-cwd"
+echo ""
+echo "Skip Claude CLI auto-update on next start:  export SKIP_CLAUDE_UPDATE=1"
 echo ""
 echo "Start:  claude"
 echo ""

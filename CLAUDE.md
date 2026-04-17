@@ -177,7 +177,13 @@ Data location: `.claude/agent-memory/skills/`, `.claude/agent-memory/scorer-evol
 ## Environment
 
 - **Ports**: Managed in `.devcontainer/.env` (copy from `.env.example`; PORT_APP, PORT_API, PORT_DB, PORT_EXTRA)
-- **Claude Code**: Native binary (~/.local/bin/claude, auto-updated)
+- **Claude Code**: Native binary (~/.local/bin/claude). Installed at image build
+  and auto-updated on every container start by `setup-env.sh` (fail-soft, so a
+  failed update never blocks the container). Set `SKIP_CLAUDE_UPDATE=1` to bypass
+  the on-start update.
 - **Node.js**: Node 22 LTS always installed for MCP
 - **Persistent volumes**: `~/.claude` (auth tokens), `/commandhistory` (history)
-- **MCP**: Context7 (documentation), Serena (code intelligence) — auto-configured by setup-env.sh
+- **MCP**: Context7 (documentation) and Serena (code intelligence) binaries are
+  pre-installed, but NOT auto-registered. Registration is an explicit user opt-in:
+  - `claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp@latest`
+  - `claude mcp add --scope user serena -- "$HOME/.local/bin/uv" run --directory "$HOME/work/serena" serena-mcp-server --context claude-code --project-from-cwd`
