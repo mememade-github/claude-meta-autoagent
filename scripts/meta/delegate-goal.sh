@@ -18,7 +18,7 @@ set -euo pipefail
 # --- Project map (extend as needed) ---
 # Keys are short identifiers; values are container names.
 declare -A PROJECTS=(
-  [sample-app]="sample-app-devcontainer-1"
+  [sample-app]="sample-app"
 )
 
 # --- UI ---
