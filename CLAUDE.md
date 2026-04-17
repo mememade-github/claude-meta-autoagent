@@ -1,5 +1,7 @@
 # CLAUDE.md — Project Governance
 
+@.claude/rules/behavioral-core.md
+
 ## Core Principle: INTEGRITY
 
 **Every claim must be verified by execution before statement.**
