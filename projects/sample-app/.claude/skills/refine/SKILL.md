@@ -76,29 +76,10 @@ Read the project and construct a Verification Contract.
 1. **Read the project** — Glob, Read, Grep to understand structure.
 2. **Find verification infrastructure** (in priority order):
    a. **Check for `.refine/score.sh`** — project-local scorer plugin (checked BEFORE other infrastructure).
-      Projects can provide `.refine/score.sh` as a domain-specific scorer.
-      The scorer output MUST be parseable as either **JSON** or **plain text** format:
-
-      **JSON format** (preferred):
-      ```json
-      {"score": 0.65, "feedback": "R3 title mismatch, R7 missing endpoint", "metrics": {"R1": "pass", "R3": "fail", "R7": "fail"}}
-      ```
-
-      **Plain text format** (also accepted):
-      ```
-      SCORE: 0.65
-      FEEDBACK: R3 title mismatch, R7 missing endpoint
-      R1: pass
-      R3: fail
-      R7: fail
-      ```
-
-      When parsing scorer output, detect the format first:
-      - If the last non-empty line starts with `{`, parse as JSON with `jq`.
-      - Otherwise, parse as plain text: extract `SCORE:` line for score, `FEEDBACK:` line for feedback, and `key: pass/fail` lines for metrics.
-
+      Projects can provide `.refine/score.sh` as a domain-specific scorer with JSON interface:
+      `{"score": 0.0-1.0, "feedback": "...", "metrics": {...}}`.
       The project owns and evolves this scorer — it is the authoritative metric source when present.
-      If `.refine/score.sh` hits an error, fails, or crashes internally, the scorer must still output `{"score":0}` (JSON) or `SCORE: 0` (plain text) — it should never crash silently or produce no output.
+      If `.refine/score.sh` hits an error, fails, or crashes internally, the scorer must still output `{"score":0}` — it should never crash silently or produce no output.
    b. Test suites, build systems, linters, type checkers, verification scripts
 3. **Construct the Verification Contract**:
 
@@ -168,11 +149,14 @@ Attempts file: <$ATTEMPTS path>
 Current GAPS: <$GAPS array from last evaluation>
 Skill Library: <$PROJECT/.claude/agent-memory/skills/strategies.jsonl> (if exists)
 Anti-patterns: <$PROJECT/.claude/agent-memory/skills/anti-patterns.jsonl> (if exists)
+Wiki Index: <$PROJECT/.claude/agent-memory/wiki/index.md> (if exists)
 
 PROTOCOL:
 1. Read .claude/.refine-output to identify which checks are FAILING (metrics with "fail" value).
 2. Read $ATTEMPTS to see which gaps were addressed in prior iterations — avoid re-diagnosing resolved gaps.
    Also read any "reflection" and "principle" entries — these are lessons from failed approaches.
+   If wiki/index.md exists, read it to identify relevant strategy/anti-pattern PAGES and
+   load only those pages (selective retrieval). Fall back to JSONL if wiki does not exist.
 3. For each failing check, gather EVIDENCE across ALL system layers:
    - Code: Read the referenced file:line, understand expected vs actual state.
    - Configuration: Check service configs, environment variables, deployment settings.
@@ -311,6 +295,26 @@ On **DISCARD** — record the anti-pattern:
 echo "{\"id\":\"A-$ITERATION\",\"domain\":\"<gap area>\",\"pattern\":\"<what was attempted>\",\"cause\":\"<why it failed>\",\"prevention\":\"<how to avoid>\"}" >> "$SKILLS_DIR/anti-patterns.jsonl"
 ```
 
+**D. Wiki Integration** (if `.claude/agent-memory/wiki/index.md` exists):
+
+```bash
+WIKI_DIR="$PROJECT/.claude/agent-memory/wiki"
+if [ -f "$WIKI_DIR/index.md" ]; then
+  # On KEEP: create/update wiki/strategies/<domain>-<slug>.md
+  #   Include: frontmatter, approach, files modified, score delta
+  #   Add [[wikilinks]] to related anti-patterns and prior strategies
+  #   Update wiki/index.md and append to wiki/log.md
+
+  # On DISCARD: create wiki/anti-patterns/<domain>-<slug>.md
+  #   Include: what was attempted, why it failed, prevention
+  #   Add [[wikilink]] to the strategy it was attempting
+  #   Update wiki/index.md and append to wiki/log.md
+fi
+```
+
+Wiki writes are additive — JSONL is always written first (backward compatibility).
+Projects without wiki initialization work exactly as before.
+
 ### Step 8: Check Termination
 
 ```bash
@@ -319,23 +323,11 @@ ITERATION=$(wc -l < "$ATTEMPTS" 2>/dev/null || echo "0")
 
 | Condition | Action |
 |---|---|
-| `SCORE >= THRESHOLD` | **ACCEPT** — cleanup and report (see below) |
-| `ITERATION >= MAX_ITER` | **STOP** — cleanup and report best (see below) |
+| `SCORE >= THRESHOLD` | **ACCEPT** — `rm -f .claude/.refinement-active`, report |
+| `ITERATION >= MAX_ITER` | **STOP** — `rm -f .claude/.refinement-active`, report best |
 | Otherwise | Continue to Step 3 |
 
-**Cleanup (mandatory on every exit path):**
-
-Whether the loop ends by ACCEPT, STOP, or error, execute cleanup before reporting results:
-
-```bash
-# 1. Remove the refinement-active marker
-rm -f .claude/.refinement-active
-
-# 2. Report results
-jq -s 'sort_by(.score)|last' "$ATTEMPTS"
-```
-
-**`.refinement-active` removal is mandatory.** A stale marker blocks future `/refine` runs (Step 0 checks for it). If the orchestrator exits without cleanup — due to error, timeout, or user abort — the marker must be removed manually before the next run.
+**Mandatory: clean up `.refinement-active` on every exit path.** Whether the loop ends by ACCEPT, STOP, or error, you must always `rm -f .claude/.refinement-active` before reporting results.
 
 On exit: `jq -s 'sort_by(.score)|last' "$ATTEMPTS"`
 
@@ -356,7 +348,16 @@ if [ "$SCORE" = "1" ] || [ "$SCORE" = "1.0" ] || [ "$SCORE" = "1.00" ]; then
   # Scorer modification happens in a SEPARATE /refine run (scorer independence)
 fi
 
-# 3. Record regressions (any DISCARD that occurred during this run)
+# 3. Wiki scorer insight (if wiki exists)
+WIKI_DIR="$PROJECT/.claude/agent-memory/wiki"
+if [ -f "$WIKI_DIR/index.md" ]; then
+  # Create/update wiki/scorer-insights/<task_id>.md
+  # Include: final score, iterations, threshold, discard count
+  # Cross-reference strategies used during this run
+  # Update wiki/index.md and append to wiki/log.md
+fi
+
+# 4. Record regressions (any DISCARD that occurred during this run)
 DISCARD_COUNT=$(grep -c '"DISCARD' "$ATTEMPTS" 2>/dev/null || echo "0")
 if [ "$DISCARD_COUNT" -gt 0 ]; then
   echo "{\"date\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"event\":\"regressions_during_run\",\"task_id\":\"$TASK_ID\",\"discard_count\":$DISCARD_COUNT}" >> "$SCORER_LOG"
@@ -529,7 +530,7 @@ it receives evidence from a separate Audit agent, not from its own assumptions.
 12. **No dead data** — only store what has a consumer (score, gaps, result, feedback)
 13. **Self-contained** — SKILL.md + evaluator agent + rubric fallback. Portable with `.claude/`
 14. **Evidence before modification** — structurally enforced by Audit→Modify separation
-15. **Scorer independence** — scorer and product code never modified in same iteration (empirical)
+15. **Scorer independence** — scorer and product code never modified in same iteration (empirically validated)
 16. **Reflexion on failure** — DISCARD generates structured reflection + principle for next Audit (verbal RL)
 17. **Skill accumulation** — KEEP→strategies.jsonl, DISCARD→anti-patterns.jsonl (cross-run learning)
 18. **Scorer evolution tracking** — post-run meta-learning records to scorer-evolution.jsonl
