@@ -152,7 +152,7 @@ The ROOT agent observes sub-project agents and improves the `.claude/` system:
 claude-meta-autoagent/                    # ROOT — single integrated system
 ├── .claude/                              # Agent system ORIGIN (syncs to sub-projects)
 │   ├── agents/evaluator.md, wip-manager.md
-│   ├── hooks/pre-commit-gate, session-start, refinement-gate, pre-push-gate
+│   ├── hooks/pre-commit-gate, session-start, refinement-gate, pre-push-gate, meta-evolution-guard, sub-project-edit-guard
 │   ├── skills/refine, status, verify, wiki
 │   └── rules/devcontainer-patterns.md
 │

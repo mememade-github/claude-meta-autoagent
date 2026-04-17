@@ -19,6 +19,118 @@ PASS=0
 TOTAL=0
 GAPS=()
 
+# --- DR helpers: doc-vs-reality drift detection ---
+# Background: a README advertising 13 agents while only 2 existed went undetected
+# for ~50 days. These helpers enumerate the real artifacts under .claude/ and the
+# names that CLAUDE.md / README.md claim, so the scorer can flag any mismatch.
+
+_drift_list_agents() {
+  find "$PROJECT_DIR/.claude/agents" -maxdepth 1 -name '*.md' -printf '%f\n' 2>/dev/null | sed 's/\.md$//' | sort
+}
+_drift_list_hooks() {
+  find "$PROJECT_DIR/.claude/hooks" -maxdepth 1 -name '*.sh' -printf '%f\n' 2>/dev/null | sed 's/\.sh$//' | sort
+}
+_drift_list_skills() {
+  find "$PROJECT_DIR/.claude/skills" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort
+}
+
+_drift_all_mentioned() {
+  local names="$1" file="$2" n
+  [ -f "$file" ] || return 1
+  [ -n "$names" ] || return 1
+  while IFS= read -r n; do
+    [ -z "$n" ] && continue
+    grep -qF "$n" "$file" || return 1
+  done <<< "$names"
+  return 0
+}
+
+_drift_agents_in_claude_md() { _drift_all_mentioned "$(_drift_list_agents)" "$PROJECT_DIR/CLAUDE.md"; }
+_drift_agents_in_readme()    { _drift_all_mentioned "$(_drift_list_agents)" "$PROJECT_DIR/README.md"; }
+_drift_hooks_in_readme()     { _drift_all_mentioned "$(_drift_list_hooks)"  "$PROJECT_DIR/README.md"; }
+_drift_skills_in_readme()    { _drift_all_mentioned "$(_drift_list_skills)" "$PROJECT_DIR/README.md"; }
+
+# Reverse direction: every name the doc claims must resolve to an artifact on disk.
+_drift_claude_md_agents_exist() {
+  local claimed n
+  claimed=$(grep -E '^\| [a-z][a-z-]+ \|' "$PROJECT_DIR/CLAUDE.md" \
+            | awk -F'|' '{gsub(/^ +| +$/,"",$2); print $2}')
+  [ -n "$claimed" ] || return 1
+  for n in $claimed; do
+    [ -f "$PROJECT_DIR/.claude/agents/$n.md" ] || return 1
+  done
+  return 0
+}
+
+# Extract the name list from a README tree line like "│   ├── hooks/a, b, c"
+_drift_readme_tree_names() {
+  local kind="$1"
+  grep -E "^│[^│]*├──[[:space:]]*${kind}/" "$PROJECT_DIR/README.md" \
+    | head -1 | sed -E "s|.*${kind}/||; s/,//g; s/\r//g"
+}
+
+_drift_readme_hooks_exist() {
+  local claimed n
+  claimed=$(_drift_readme_tree_names hooks)
+  [ -n "$claimed" ] || return 1
+  for n in $claimed; do
+    [ -f "$PROJECT_DIR/.claude/hooks/$n.sh" ] || return 1
+  done
+  return 0
+}
+
+_drift_readme_skills_exist() {
+  local claimed n
+  claimed=$(_drift_readme_tree_names skills)
+  [ -n "$claimed" ] || return 1
+  for n in $claimed; do
+    [ -d "$PROJECT_DIR/.claude/skills/$n" ] || return 1
+  done
+  return 0
+}
+
+_drift_readme_agents_exist() {
+  local claimed line n
+  # README line 154 format: "│   ├── agents/evaluator.md, wip-manager.md"
+  line=$(grep -E "^│[^│]*├──[[:space:]]*agents/" "$PROJECT_DIR/README.md" | head -1)
+  [ -n "$line" ] || return 1
+  claimed=$(echo "$line" | sed -E 's|.*agents/||; s/,//g; s/\.md//g')
+  [ -n "$claimed" ] || return 1
+  for n in $claimed; do
+    [ -f "$PROJECT_DIR/.claude/agents/$n.md" ] || return 1
+  done
+  return 0
+}
+
+# Count parity: README enumeration length must equal actual artifact count.
+_drift_hooks_count_parity() {
+  local claimed claimed_n actual_n
+  claimed=$(_drift_readme_tree_names hooks)
+  [ -n "$claimed" ] || return 1
+  claimed_n=$(echo $claimed | wc -w)
+  actual_n=$(find "$PROJECT_DIR/.claude/hooks" -maxdepth 1 -name '*.sh' 2>/dev/null | wc -l)
+  [ "$claimed_n" -eq "$actual_n" ]
+}
+
+_drift_skills_count_parity() {
+  local claimed claimed_n actual_n
+  claimed=$(_drift_readme_tree_names skills)
+  [ -n "$claimed" ] || return 1
+  claimed_n=$(echo $claimed | wc -w)
+  actual_n=$(find "$PROJECT_DIR/.claude/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+  [ "$claimed_n" -eq "$actual_n" ]
+}
+
+_drift_agents_count_parity() {
+  local claimed claimed_n actual_n line
+  line=$(grep -E "^│[^│]*├──[[:space:]]*agents/" "$PROJECT_DIR/README.md" | head -1)
+  [ -n "$line" ] || return 1
+  claimed=$(echo "$line" | sed -E 's|.*agents/||; s/,//g; s/\.md//g')
+  claimed_n=$(echo $claimed | wc -w)
+  actual_n=$(find "$PROJECT_DIR/.claude/agents" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l)
+  [ "$claimed_n" -eq "$actual_n" ]
+}
+
 check() {
   local id="$1"
   local desc="$2"
@@ -251,6 +363,44 @@ check "W5" "Wiki skill defines lint operation" \
 
 check "Y6" "Sync: wiki SKILL.md matches" \
   'diff -q "$PROJECT_DIR/.claude/skills/wiki/SKILL.md" "$PROJECT_DIR/projects/sample-app/.claude/skills/wiki/SKILL.md"'
+
+# --- DR: Drift detection (CLAUDE.md/README.md claims vs .claude/ reality) ---
+# Fails whenever an artifact under .claude/ is not documented, or any documented
+# name has no corresponding file. Catches the stale-advertisement drift that
+# otherwise accumulates silently between sync/edit cycles.
+
+check "DR1" "Every .claude/agents/*.md is mentioned in CLAUDE.md" \
+  '_drift_agents_in_claude_md'
+
+check "DR2" "Every .claude/agents/*.md is mentioned in README.md" \
+  '_drift_agents_in_readme'
+
+check "DR3" "Every .claude/hooks/*.sh is mentioned in README.md" \
+  '_drift_hooks_in_readme'
+
+check "DR4" "Every .claude/skills/*/ is mentioned in README.md" \
+  '_drift_skills_in_readme'
+
+check "DR5" "Every agent in CLAUDE.md §5 table exists as .md file" \
+  '_drift_claude_md_agents_exist'
+
+check "DR6" "Every agent listed in README tree exists as .md file" \
+  '_drift_readme_agents_exist'
+
+check "DR7" "Every hook listed in README tree exists as .sh file" \
+  '_drift_readme_hooks_exist'
+
+check "DR8" "Every skill listed in README tree exists as dir" \
+  '_drift_readme_skills_exist'
+
+check "DR9" "README agents enumeration count == actual .md count" \
+  '_drift_agents_count_parity'
+
+check "DR10" "README hooks enumeration count == actual .sh count" \
+  '_drift_hooks_count_parity'
+
+check "DR11" "README skills enumeration count == actual dir count" \
+  '_drift_skills_count_parity'
 
 # --- Output ---
 
