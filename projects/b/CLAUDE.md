@@ -40,6 +40,17 @@ Require explicit user approval before executing:
   priority over LLM judgment.
 - **Meaningful changes**: use `/refine`.  Changes affecting 2+ files MUST use
   `/refine`.
+- **Load-bearing reasoning deliverables**: when the task is to produce a
+  single argumentative or analytic document (proof sketch, minimality
+  claim, design rationale, structural argument — anything without a fixed
+  correctness oracle), `/refine` is *also* mandatory.  A single-file
+  output does not make the task simple; what matters is whether the
+  correctness question is settled by the first draft.  Reasoning tasks
+  where a second read might reveal a structural blind spot — missed
+  operator fusions, missed dual formulations, missed counterexamples —
+  must go through `/refine`'s audit → modify → evaluate → keep/discard
+  loop, with the evaluator agent scoring each iteration against an
+  explicit rubric the task itself makes clear.
 - **Trivial changes** (typo, single config line): direct edit.
 - Never self-evaluate.  Delegate to the **evaluator** agent.
 - **Scorer independence**: scorer and product code MUST NOT be modified in the
