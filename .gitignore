@@ -40,3 +40,4 @@ wip/
 # To track a new sub-project: add !projects/<name>/ below.
 projects/*/
 !projects/a/
+!projects/b/

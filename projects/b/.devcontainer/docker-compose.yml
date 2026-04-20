@@ -1,0 +1,48 @@
+# =============================================================================
+# projects/b — Level-3b Sub-project DevContainer
+# =============================================================================
+# Independent container.  ROOT observes this via `docker exec claude-meta-autoagent-b`.
+# Ports offset from ROOT (5xxx vs 3xxx) and from projects/a (4xxx) to avoid
+# collision when all three run at once.
+#
+# Mount scope: the bind-mount below resolves to projects/b/ on the host —
+# this sub-project has no visibility into ROOT-only materials under
+# docs/research/ or scripts/meta/.
+# =============================================================================
+
+services:
+  claude-devcontainer:
+    container_name: ${CONTAINER_NAME:-claude-meta-autoagent-b}
+    image: ${IMAGE_NAME:-claude-devcontainer-b}:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PROJECT_NODE_VERSION=${PROJECT_NODE_VERSION:-}
+
+    volumes:
+      - ${HOST_WORKSPACE_PATH:-..}:/workspaces:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    ports:
+      - "${PORT_APP:-5000}:3000"
+      - "${PORT_API:-5080}:8080"
+
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
+
+    environment:
+      - TZ=${TZ:-UTC}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+
+    stdin_open: true
+    tty: true
+
+    healthcheck:
+      test: ["CMD-SHELL", "claude --version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
