@@ -165,10 +165,34 @@ Any hit voids the cycle per
 
 **Cycle execution sequence (all steps ROOT-owned):**
 
+0. **Pre-cycle prep** — harden the paper-leak-guard reversed-form
+   patterns in both `projects/a/.claude/hooks/paper-leak-guard.sh` and
+   `projects/b/.claude/hooks/paper-leak-guard.sh` if any new path,
+   filename, or reference identifier should be blocked for this
+   cycle; ensure `projects/b/.frozen` exists; commit; then
+   `git tag cycle-NN-pre HEAD` to snapshot the baseline.  This is the
+   only point at which ROOT may edit `projects/a/` — the hardening is
+   a defense-in-depth update that must be symmetric across A and B.
+   The edit-guard blocks Edit/Write on frozen sub-projects, so A's
+   `.frozen` must be removed (via Bash, working-tree only) during the
+   edit and restored bitwise-identically after; the net `git diff`
+   for `.frozen` is zero.  All non-`.frozen` A changes done in this
+   step must appear in the commit that is tagged `cycle-NN-pre`;
+   nothing more.
 1. **Prepare task** — write `docs/research/eml-paper/cycle-NN/TASK.md`
    (same prompt delivered to A and B).  Do not mention paper keywords.
+   Explicitly record any *structural hints* from the underlying source
+   that were intentionally omitted from the prompt (e.g. "does a single
+   binary + single constant suffice?"  is a shape hint), so drift
+   between cycles in task-framing is visible.
 2. **Launch** — `scripts/meta/delegate-sub.sh a "<GOAL>"` and
-   `scripts/meta/delegate-sub.sh b "<GOAL>"` in parallel.
+   `scripts/meta/delegate-sub.sh b "<GOAL>"` in parallel.  A and B
+   containers need Claude Code auth; a fresh build under
+   `projects/<a|b>/.devcontainer/` starts with an empty
+   `~/.claude/`, so credentials must be bootstrapped before the
+   launch — copy `~/.claude/.credentials.json` from the ROOT
+   container into each sub-container (`chmod 600` after) or the
+   `claude -p` invocation will fail silently.
 3. **Observe** — `docker exec` for process / log / git / artifact
    status on each container.
 4. **Paper-leak audit** — `paper-leak-audit.sh` on each
