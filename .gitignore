@@ -30,6 +30,7 @@ Thumbs.db
 
 # Refinement attempts (session-specific)
 .refine-output
+projects/*/attempts/
 
 # WIP tasks (session-specific)
 wip/
