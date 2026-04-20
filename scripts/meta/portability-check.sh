@@ -127,8 +127,7 @@ for file in "${PORTABLE_FILES[@]}"; do
 
     for project in "${PROJECT_NAMES[@]}"; do
         # Pattern 1: direct project name reference (case-sensitive, word boundary)
-        # Allow generic references like "sample-app" in comments/examples only if
-        # they appear in documentation context — but flag them anyway for review
+        # Flag any bare project name references so they get reviewed manually.
         matches=$(grep -n "\b${project}\b" "$file" 2>/dev/null || true)
         if [ -n "$matches" ]; then
             while IFS= read -r line; do

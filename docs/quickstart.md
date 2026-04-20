@@ -1,12 +1,12 @@
 # Quick Start Guide
 
-Three usage levels, from simplest to full Meta-Evolution.
+Two usage levels, from simplest to full Meta-Evolution.
 
 ---
 
 ## Level 1: Add /refine to an external project (no meta-evolution)
 
-Copy the agent system for standalone /refine only. This does **not** create a sub-project — for the full 2-layer ROOT→Sub-project architecture, see Level 3.
+Copy the agent system for standalone /refine only. This does **not** create a sub-project — for the full 2-layer ROOT→Sub-project architecture, see Level 2.
 
 ```bash
 # Clone this repo
@@ -45,28 +45,7 @@ Then in Claude Code:
 
 ---
 
-## Level 2: Try the sample project
-
-Experience `/refine` with the included sample app.
-
-```bash
-cd projects/sample-app
-
-# Run the app
-echo "# Hello World" | python3 app.py -
-
-# See current quality score
-bash .refine/score.sh
-
-# In Claude Code, run /refine
-/refine "improve the sample app" --project ./projects/sample-app
-```
-
-The agent discovers gaps (error handling, edge cases), fixes them one at a time, and iterates.
-
----
-
-## Level 3: Full 2-layer Meta-Evolution
+## Level 2: Full 2-layer Meta-Evolution
 
 The complete system: ROOT agent observes a sub-project agent and evolves the agent system itself.
 
@@ -81,11 +60,11 @@ docker compose up -d
 ### Step 2: Start the sub-project container
 
 ```bash
-cd projects/sample-app/.devcontainer
+cd projects/<sub-project>/.devcontainer
 docker compose up -d
 ```
 
-Now you have two containers: `claude-meta-autoagent` (ROOT) and `sample-app` (sub-project).
+Now you have two containers: `claude-meta-autoagent` (ROOT) and `<sub-project>` (sub-project).
 
 ### Step 3: Authenticate Claude Code in the sub-project container
 
@@ -94,22 +73,22 @@ The sub-project container needs Claude Code authentication to run headless agent
 **Option A: API key** (recommended for headless agents):
 ```bash
 # Set your API key in the sub-project's .env
-echo "ANTHROPIC_API_KEY=your-key-here" >> projects/sample-app/.devcontainer/.env
+echo "ANTHROPIC_API_KEY=your-key-here" >> projects/<sub-project>/.devcontainer/.env
 
 # Restart the container to pick up the key
-cd projects/sample-app/.devcontainer && docker compose up -d
+cd projects/<sub-project>/.devcontainer && docker compose up -d
 ```
 
 **Option B: Interactive login** (for manual testing):
 ```bash
-docker exec -it sample-app claude login
+docker exec -it <sub-project> claude login
 ```
 
 ### Step 4: Launch a headless agent in the sub-project
 
 From the ROOT container:
 ```bash
-docker exec -d sample-app bash -c \
+docker exec -d <sub-project> bash -c \
   'cd /workspaces && claude --dangerously-skip-permissions \
    -p "Run /refine to improve production quality of the app" \
    > /tmp/agent.log 2>&1'
@@ -119,19 +98,19 @@ docker exec -d sample-app bash -c \
 
 ```bash
 # Is the agent running?
-docker exec sample-app ps aux | grep claude
+docker exec <sub-project> ps aux | grep claude
 
 # Check agent log
-docker exec sample-app cat /tmp/agent.log
+docker exec <sub-project> cat /tmp/agent.log
 
 # Check refinement status
-docker exec sample-app cat /workspaces/.refine-output 2>/dev/null
+docker exec <sub-project> cat /workspaces/.refine-output 2>/dev/null
 
 # Check git commits
-docker exec sample-app git -C /workspaces log --oneline -5
+docker exec <sub-project> git -C /workspaces log --oneline -5
 
 # Check cross-run learning data
-docker exec sample-app ls /workspaces/.claude/agent-memory/skills/ 2>/dev/null
+docker exec <sub-project> ls /workspaces/.claude/agent-memory/skills/ 2>/dev/null
 ```
 
 ### Step 6: Diagnose — project issue or system issue?
@@ -155,11 +134,11 @@ The key question: is the problem in the **project code** or the **agent system**
 #    Example: improve SKILL.md to prevent the pattern you observed
 
 # 2. Sync the improved system to sub-project
-./scripts/sync/sync-claude.sh projects/sample-app
+./scripts/sync/sync-claude.sh projects/<sub-project>
 
 # 3. Restart sub-project agent with the improved system
-docker exec sample-app pkill -f claude  # stop old agent
-docker exec -d sample-app bash -c \
+docker exec <sub-project> pkill -f claude  # stop old agent
+docker exec -d <sub-project> bash -c \
   'cd /workspaces && claude --dangerously-skip-permissions \
    -p "Run /refine to improve production quality" \
    > /tmp/agent.log 2>&1'
@@ -182,12 +161,13 @@ mkdir -p projects/my-project/.refine
 # 2. Sync agent system from ROOT (makes this a sub-project)
 ./scripts/sync/sync-claude.sh projects/my-project
 
-# 3. Copy DevContainer template
+# 3. Copy DevContainer template (from ROOT .devcontainer; then edit
+#    docker-compose.yml for a unique container_name and offset ports)
 cp .devcontainer/Dockerfile projects/my-project/.devcontainer/
 cp .devcontainer/entrypoint.sh projects/my-project/.devcontainer/
 cp .devcontainer/setup-env.sh projects/my-project/.devcontainer/
-cp projects/sample-app/.devcontainer/docker-compose.yml projects/my-project/.devcontainer/
-cp projects/sample-app/.devcontainer/devcontainer.json projects/my-project/.devcontainer/
+cp .devcontainer/docker-compose.yml projects/my-project/.devcontainer/
+cp .devcontainer/devcontainer.json projects/my-project/.devcontainer/
 
 # 4. Set UNIQUE container name and ports (REQUIRED — avoids collision)
 cat > projects/my-project/.devcontainer/.env << 'EOF'
@@ -199,15 +179,12 @@ EOF
 
 # 5. Create CLAUDE.md (sections 1-5 from ROOT, NO section 6 Meta-Evolution)
 #    Sub-projects are the target of meta-evolution, not the subject.
-cp projects/sample-app/CLAUDE.md projects/my-project/CLAUDE.md
-#    Edit Identity section to match your project.
+#    Start from ROOT CLAUDE.md, strip §6, edit Identity section to match your project.
 
 # 6. Create your scorer (.refine/score.sh)
 #    Must output: SCORE: 0.XX and GAPS: [ID1, ID2, ...]
-#    See projects/sample-app/.refine/score.sh for a working example.
 
-# 7. Create .gitignore for runtime artifacts
-cp projects/sample-app/.gitignore projects/my-project/.gitignore
+# 7. Create .gitignore for runtime artifacts (e.g., .refine-output, __pycache__, etc.)
 
 # 8. Track in ROOT repo (optional — or add to .gitignore exceptions)
 #    To include in public repo: add !projects/my-project/ to ROOT .gitignore

@@ -21,11 +21,11 @@
 
 ## 빠른 시작
 
-세 가지 수준 — 필요에 맞는 것을 선택하세요. 전체 가이드: [docs/quickstart.md](docs/quickstart.md)
+두 가지 수준 — 필요에 맞는 것을 선택하세요. 전체 가이드: [docs/quickstart.md](docs/quickstart.md)
 
 ### Level 1: 외부 프로젝트에 /refine 추가 (가장 간단, 메타 진화 없음)
 
-> 참고: 이것은 standalone /refine만 사용합니다. 2계층 ROOT→Sub-project 전체 시스템은 Level 3을 참조하세요.
+> 참고: 이것은 standalone /refine만 사용합니다. 2계층 ROOT→Sub-project 전체 시스템은 Level 2를 참조하세요.
 
 ```bash
 git clone https://github.com/mememade-github/claude-meta-autoagent.git
@@ -34,15 +34,7 @@ cp -r claude-meta-autoagent/.claude/ /path/to/your/project/.claude/
 
 프로젝트에 `.refine/score.sh`를 만들고: `/refine "improve production quality"`
 
-### Level 2: 샘플로 체험
-
-```bash
-cd projects/sample-app
-bash .refine/score.sh              # 현재 점수 확인
-# Claude Code에서: /refine "improve the sample app" --project ./projects/sample-app
-```
-
-### Level 3: 2계층 메타 진화 전체 구동
+### Level 2: 2계층 메타 진화 전체 구동
 
 ```bash
 # 모든 명령은 호스트(또는 docker.sock이 마운트된 외부 컨테이너)에서 실행
@@ -50,22 +42,22 @@ bash .refine/score.sh              # 현재 점수 확인
 # 1. ROOT 컨테이너 시작
 cd claude-meta-autoagent/.devcontainer && docker compose up -d && cd ..
 
-# 2. Sub-project 컨테이너 시작 (독립)
-cd projects/sample-app/.devcontainer && docker compose up -d && cd ../../..
+# 2. Sub-project 컨테이너 시작 (독립, projects/<sub-project>/ 아래)
+cd projects/<sub-project>/.devcontainer && docker compose up -d && cd ../../..
 
 # 3. Sub-project에 headless 에이전트 실행 (ROOT에서)
-docker exec -d sample-app bash -c \
+docker exec -d <sub-project> bash -c \
   'cd /workspaces && claude --dangerously-skip-permissions \
    -p "Run /refine to improve production quality" \
    > /tmp/agent.log 2>&1'
 
 # 4. ROOT에서 관측
-docker exec sample-app cat /tmp/agent.log
-docker exec sample-app git -C /workspaces log --oneline -5
-docker exec sample-app cat /workspaces/.refine-output
+docker exec <sub-project> cat /tmp/agent.log
+docker exec <sub-project> git -C /workspaces log --oneline -5
+docker exec <sub-project> cat /workspaces/.refine-output
 
 # 5. 시스템 이슈 발견 시 .claude/ 수정, 동기화, 에이전트 재시작
-./scripts/sync/sync-claude.sh projects/sample-app
+./scripts/sync/sync-claude.sh projects/<sub-project>
 ```
 
 ## 작동 원리
@@ -164,13 +156,12 @@ claude-meta-autoagent/                    # ROOT — 단일 통합 시스템
 │   └── meta/completion-checker.sh        # 커밋 전 검증
 │
 ├── projects/                             # Sub-project들 (ROOT 시스템의 일부)
-│   └── sample-app/                       # 계층 2 Sub-project (공개 데모)
+│   └── <sub-project>/                    # 계층 2 Sub-project
 │       ├── .claude/                      # ROOT에서 동기화 (읽기 전용 거버넌스)
 │       ├── .devcontainer/                # 격리 컨테이너 (ROOT가 관측)
 │       ├── .refine/score.sh              # 프로젝트 고유 scorer
 │       ├── CLAUDE.md                     # 프로젝트 거버넌스 (§6 메타 진화 없음)
-│       ├── app.py                        # 샘플 CLI 도구
-│       └── test_app.py                   # 테스트
+│       └── <프로젝트 소스 + 테스트>        # 애플리케이션 코드
 │
 ├── docs/                                 # 문서
 │   ├── quickstart.md, cross-run-learning.md, meta-evolution.md
@@ -202,7 +193,7 @@ GPU 불필요.
 ## 실증 결과
 
 이 시스템은 실제 headless 에이전트로 end-to-end 검증되었습니다:
-- Sub-project 에이전트: /refine으로 sample-app을 0.72→0.89로 자율 개선 (테이블, 이미지, 인용문 감지 추가)
+- Sub-project 에이전트: /refine으로 scorer가 있는 sub-project를 여러 /refine iteration에 걸쳐 자율 개선
 - ROOT 에이전트: sub-project를 관측하고, scorer 버그와 코드 gap을 정확히 분류, scorer 독립성 준수
 - 교차 실행 학습: strategies.jsonl이 iteration 간 축적, DISCARD 시 anti-patterns 기록
 - 2컨테이너 배포 검증 완료 (ROOT + sub-project, 독립 포트, `.claude/` 동기화 공유)

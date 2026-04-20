@@ -173,8 +173,8 @@ W6: /refine 완료 시 lint 실행 확인
 knowledge/                           # ROOT 전용 (sub-project로 sync 안 됨)
 ├── raw/
 │   ├── observations/                # 관찰 로그 (docker exec 결과 스냅샷)
-│   │   ├── 2026-04-07-sample-app-run1.md
-│   │   └── 2026-04-14-sample-app-run2.md
+│   │   ├── 2026-04-07-<sub-project>-run1.md
+│   │   └── 2026-04-14-<sub-project>-run2.md
 │   ├── reflexions/                  # 시스템 수준 반성
 │   └── external/                    # 외부 리서치 (autoresearch 생태계 등)
 ├── wiki/
@@ -187,7 +187,7 @@ knowledge/                           # ROOT 전용 (sub-project로 sync 안 됨)
 │   │   ├── refine-dual-format.md    # "scorer 이중 포맷 → JSON 단순화" 결정
 │   │   └── rubrics-addition.md
 │   └── sub-project-profiles/        # 프로젝트별 특성 프로파일
-│       └── sample-app.md
+│       └── <sub-project>.md
 └── schema.md
 ```
 
@@ -285,7 +285,7 @@ Phase 2 → Phase 3: agent-memory 위키 구조를
 
 | Phase | 지표 | 측정 방법 |
 |-------|------|----------|
-| 1 | `/wiki` skill이 외부 프로젝트에서 작동 | sample-app에서 `/wiki init` + `/wiki ingest` 테스트 |
+| 1 | `/wiki` skill이 외부 프로젝트에서 작동 | sub-project에서 `/wiki init` + `/wiki ingest` 테스트 |
 | 2 | /refine KEEP 시 위키 페이지 자동 생성 | agent-memory/wiki/ 파일 수 증가 확인 |
 | 2 | Lint가 모순 전략 감지 | 의도적 모순 삽입 후 lint 감지 테스트 |
 | 3 | 관찰 10회 후 패턴 축적 확인 | knowledge/wiki/system-patterns/ 페이지 수 ≥ 3 |

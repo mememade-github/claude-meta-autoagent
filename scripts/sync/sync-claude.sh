@@ -7,7 +7,7 @@
 # under ROOT's governance and can be observed via docker exec.
 #
 # Usage:
-#   ./scripts/sync/sync-claude.sh projects/sample-app
+#   ./scripts/sync/sync-claude.sh projects/b
 #   ./scripts/sync/sync-claude.sh projects/my-new-project
 #
 # What syncs:    agents/, hooks/, skills/, settings.json, rules/*.md (root level)
@@ -18,7 +18,7 @@ set -euo pipefail
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 <target-project-path>" >&2
-  echo "Example: $0 projects/sample-app" >&2
+  echo "Example: $0 projects/b" >&2
   exit 1
 fi
 

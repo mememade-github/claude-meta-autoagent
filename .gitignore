@@ -35,9 +35,7 @@ projects/*/attempts/
 # WIP tasks (session-specific)
 wip/
 
-# Sub-projects — part of ROOT system, but only sample-app is public.
-# New sub-projects (e.g. projects/my-project/) are gitignored from the
-# public repo but remain internal to the ROOT system architecture.
-# To track a new sub-project: add !projects/my-project/ below.
+# Sub-projects — part of the ROOT system. Sub-projects not listed below are
+# gitignored from the public repo but remain internal to the ROOT system.
+# To track a new sub-project: add !projects/<name>/ below.
 projects/*/
-!projects/sample-app/

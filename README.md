@@ -23,11 +23,11 @@
 
 ## Quick start
 
-Three levels — pick the one that fits. Full details in [docs/quickstart.md](docs/quickstart.md).
+Two levels — pick the one that fits. Full details in [docs/quickstart.md](docs/quickstart.md).
 
 ### Level 1: Add /refine to an external project (simplest, no meta-evolution)
 
-> Note: This is standalone /refine only. For the full 2-layer ROOT→Sub-project system, see Level 3.
+> Note: This is standalone /refine only. For the full 2-layer ROOT→Sub-project system, see Level 2.
 
 ```bash
 git clone https://github.com/mememade-github/claude-meta-autoagent.git
@@ -36,15 +36,7 @@ cp -r claude-meta-autoagent/.claude/ /path/to/your/project/.claude/
 
 Create `.refine/score.sh` in your project, then: `/refine "improve production quality"`
 
-### Level 2: Try the sample
-
-```bash
-cd projects/sample-app
-bash .refine/score.sh              # See current score
-# In Claude Code: /refine "improve the sample app" --project ./projects/sample-app
-```
-
-### Level 3: Full 2-layer Meta-Evolution
+### Level 2: Full 2-layer Meta-Evolution
 
 ```bash
 # All commands run from the host (or an outer container with docker.sock)
@@ -52,22 +44,22 @@ bash .refine/score.sh              # See current score
 # 1. Start ROOT container
 cd claude-meta-autoagent/.devcontainer && docker compose up -d && cd ..
 
-# 2. Start sub-project container (independent)
-cd projects/sample-app/.devcontainer && docker compose up -d && cd ../../..
+# 2. Start sub-project container (independent, under projects/<sub-project>/)
+cd projects/<sub-project>/.devcontainer && docker compose up -d && cd ../../..
 
 # 3. Launch headless agent in sub-project (from ROOT)
-docker exec -d sample-app bash -c \
+docker exec -d <sub-project> bash -c \
   'cd /workspaces && claude --dangerously-skip-permissions \
    -p "Run /refine to improve production quality" \
    > /tmp/agent.log 2>&1'
 
 # 4. Observe from ROOT
-docker exec sample-app cat /tmp/agent.log
-docker exec sample-app git -C /workspaces log --oneline -5
-docker exec sample-app cat /workspaces/.refine-output
+docker exec <sub-project> cat /tmp/agent.log
+docker exec <sub-project> git -C /workspaces log --oneline -5
+docker exec <sub-project> cat /workspaces/.refine-output
 
 # 5. Identify system improvements, fix .claude/, sync, restart agent
-./scripts/sync/sync-claude.sh projects/sample-app
+./scripts/sync/sync-claude.sh projects/<sub-project>
 ```
 
 ## How it works
@@ -166,13 +158,12 @@ claude-meta-autoagent/                    # ROOT — single integrated system
 │   └── meta/completion-checker.sh        # Pre-commit verification
 │
 ├── projects/                             # Sub-projects (internal to ROOT)
-│   └── sample-app/                       # Layer 2 sub-project (public demo)
+│   └── <sub-project>/                    # Layer 2 sub-project
 │       ├── .claude/                      # SYNCED from ROOT (read-only governance)
 │       ├── .devcontainer/                # Isolated container (observed by ROOT)
 │       ├── .refine/score.sh              # Project-specific scorer
 │       ├── CLAUDE.md                     # Project governance (no §6 Meta-Evolution)
-│       ├── app.py                        # Sample CLI tool
-│       └── test_app.py                   # Tests
+│       └── <project source + tests>      # Application code
 │
 ├── docs/                                 # Documentation
 │   ├── quickstart.md, cross-run-learning.md, meta-evolution.md
@@ -204,7 +195,7 @@ No GPU required.
 ## Validated
 
 This system has been tested end-to-end with real headless agents:
-- Sub-project agent: autonomously improved sample-app from 0.72 to 0.89 via /refine (tables, images, blockquotes detection added)
+- Sub-project agent: autonomously improved a scored sub-project via /refine across multiple /refine iterations
 - ROOT agent: observed sub-project, correctly diagnosed scorer bugs vs code gaps, respected scorer independence
 - Cross-run learning: strategies.jsonl accumulated across iterations, anti-patterns recorded on DISCARD
 - Full 2-container deployment verified (ROOT + sub-project, independent ports, shared `.claude/` sync)
