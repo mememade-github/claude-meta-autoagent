@@ -10,7 +10,17 @@
 # The meta-evolution-guard.sh hook blocks direct `docker exec ... claude -p`.
 # All delegation MUST use this wrapper.
 #
-# Reference: CLAUDE.md §6 (Meta-Evolution), Role Relativity, Pre-action gate.
+# Structural derivation (CLAUDE.md §1 Behavioral Foundation):
+#   §1.3 Surgical Changes  — one delegation equals one OUTCOME; this wrapper is
+#                            the single canonical path that preserves that
+#                            invariant (rejects METHOD injection, enforces one
+#                            GOAL per call).
+#   §1.4 State = Success   — emits a verifiable end-state (launch + audit log
+#                            entry), not a speculative step list.
+#   §1.5 Literal Intent    — injects the role-declaration header verbatim,
+#                            transcribing role/layer/boundary explicitly rather
+#                            than relying on the model to infer them.
+# Operational role: CLAUDE.md §6.4 Wrapper enforcement.
 #
 # Effort level: Defaults to "medium" (LCD across CLI versions). Override via
 # EFFORT env var:  EFFORT=high scripts/meta/delegate-goal.sh b "..."

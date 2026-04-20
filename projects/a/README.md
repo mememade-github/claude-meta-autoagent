@@ -14,7 +14,7 @@ A's purpose is to sit still so B's evolutionary pressure has something to be mea
 
 `.claude/` is intentionally minimal. It ships only what is needed to enforce sandbox discipline:
 
-- **CLAUDE.md** — the four-rule karpathy-skills behavioral anchor (Think Before Coding / Simplicity First / Surgical Changes / Goal-Driven Execution). Nothing more.
+- **CLAUDE.md** — the four-rule karpathy-skills behavioral anchor (Think Before Coding / Simplicity First / Surgical Changes / Goal-Driven Execution), verbatim. A's `CLAUDE.md` does not merely cite the anchor — it **is** the anchor. Nothing more.
 - **`.claude/hooks/web-block.sh`** — PreToolUse hook that rejects `WebFetch` and `WebSearch`.
 - **`.claude/hooks/paper-leak-guard.sh`** — PreToolUse hook that rejects tool payloads matching restricted identifiers. The guard reconstructs the identifier list from reversed forms at runtime; the hook source itself does not contain the forward-form strings it blocks.
 

@@ -10,6 +10,14 @@
 # last place before the container boundary where a leak could still be
 # introduced on purpose or by accident.
 #
+# Structural derivation (CLAUDE.md §1 Behavioral Foundation):
+#   §1.1 Think Before Executing — surface *what you are allowed to say*
+#                                  before the GOAL crosses the container
+#                                  boundary; refuse on any restricted keyword.
+#   §1.3 Surgical Changes       — one GOAL per launch; the wrapper's pre-filter
+#                                  runs once, then forwards to the single
+#                                  canonical launcher (delegate-goal.sh).
+#
 # Usage:
 #   scripts/meta/delegate-sub.sh <a|b> "<GOAL>"
 #   EFFORT=high scripts/meta/delegate-sub.sh a "<GOAL>"

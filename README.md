@@ -2,6 +2,18 @@
 
 > A meta-agent system that runs an **A/B comparative evolution cycle** on a shared reasoning task. One sub-agent (A) is a frozen baseline; the other (B) is evolvable. A Meta-Agent (ROOT) judges both outputs, improves its own governance, and improves B between cycles. A human delegate oversees the Meta-Agent; the end user sets the GOAL.
 
+## Foundation: the Karpathy behavioral anchor
+
+This system is **built from the Karpathy behavioral anchor** — four rules about how a language model should approach coding, extended here to six for agent-system operation (`CLAUDE.md §1` in every layer). The rules are not a cited reference; they are the structural foundation of the entire system, and every other section of governance declares the rule(s) it operationalizes.
+
+| Layer | Foundation form |
+|---|---|
+| ROOT (`CLAUDE.md §1`) | Six-rule extended anchor: Think Before Executing · Simplicity First · Surgical Changes · State = Success · Literal Intent · Bias Disclosure |
+| Level-3b / B (`projects/b/CLAUDE.md §1`) | Same six-rule extended anchor as ROOT |
+| Level-3a / A (`projects/a/CLAUDE.md`) | The original four-rule Karpathy anchor, verbatim — A's CLAUDE.md **is** the rules |
+
+Every operational section below (the four-layer architecture, paper-knowledge isolation, the cycle sequence, cross-run learning) is a derivation from those rules and names the derivation explicitly.
+
 ## Four-layer architecture
 
 This repository is organised as four role layers. Each layer has a strict subset of the authority of the one above it.

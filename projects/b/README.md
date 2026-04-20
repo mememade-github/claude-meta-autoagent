@@ -13,13 +13,13 @@ The **B** sub-project is the evolvable arm of the A/B comparative evolution cycl
 
 `.claude/` is a subset of the ROOT system, minus the Meta-Evolution section. B executes tasks; it does not meta-evolve. Its CLAUDE.md deliberately omits §6 and pushes reasoning deliverables through `/refine` just like code changes.
 
-- **CLAUDE.md** — behavioral-core + the automated-workflow rules from ROOT §1–5 (session start, change evaluation, pre-commit gate, multi-session, agent delegation). Explicit note that load-bearing reasoning deliverables are also mandatory-`/refine` territory.
+- **CLAUDE.md** — opens with `§1 Behavioral Foundation` (the six-rule extended Karpathy anchor — the structural foundation of this sub-project). All subsequent sections (`§2` INTEGRITY, `§3` Operational Gates, `§4` Change Evaluation including the load-bearing-reasoning `/refine` mandate, `§5` Coding rules, `§6` Paper-leak defense) declare the rule(s) they operationalize. No `§6 Meta-Evolution` — B executes; it does not meta-evolve.
 - **`.claude/agents/`** — `evaluator.md`, `wip-manager.md`.
 - **`.claude/hooks/`** —
   - `session-start.sh`, `pre-commit-gate.sh`, `pre-push-gate.sh`, `refinement-gate.sh`, `meta-evolution-guard.sh` (the same operational hooks ROOT uses, minus `sub-project-edit-guard.sh`).
   - `web-block.sh` — PreToolUse rejection of `WebFetch` and `WebSearch`.
   - `paper-leak-guard.sh` — PreToolUse rejection of payloads matching restricted identifiers (reversed-form pattern reconstruction, same as A).
-- **`.claude/rules/`** — `behavioral-core.md`, `devcontainer-patterns.md`.
+- **`.claude/rules/`** — `devcontainer-patterns.md`. (The rule foundation lives inline in `CLAUDE.md §1`, not in a sidecar rules file.)
 - **`.claude/skills/`** — `refine/`, `status/`, `verify/`, `wiki/`.
 
 ### Cross-run learning
