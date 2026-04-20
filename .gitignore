@@ -39,3 +39,4 @@ wip/
 # gitignored from the public repo but remain internal to the ROOT system.
 # To track a new sub-project: add !projects/<name>/ below.
 projects/*/
+!projects/a/

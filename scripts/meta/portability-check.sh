@@ -150,12 +150,16 @@ for file in "${PORTABLE_FILES[@]}"; do
             done <<< "$matches"
         fi
 
-        # Pattern 3: container name matching project
-        matches=$(grep -n "docker exec.*${project}" "$file" 2>/dev/null || true)
-        if [ -n "$matches" ]; then
-            while IFS= read -r line; do
-                report_violation "$rel_file" "Container reference: $project" "$line"
-            done <<< "$matches"
+        # Pattern 3: container name matching project.  Short names are skipped
+        # for the same reason Pattern 1 is — "docker exec ... a" occurs in any
+        # generic example string that ends with a standalone "a" or "b".
+        if [ "${#project}" -ge 3 ]; then
+            matches=$(grep -n "docker exec.*${project}" "$file" 2>/dev/null || true)
+            if [ -n "$matches" ]; then
+                while IFS= read -r line; do
+                    report_violation "$rel_file" "Container reference: $project" "$line"
+                done <<< "$matches"
+            fi
         fi
     done
 done
