@@ -540,7 +540,8 @@ def main():
 
     elif cmd == "profile":
         result = get_profile()
-        print(json.dumps(result, indent=2))
+        data = result.get("agent", result) if isinstance(result, dict) else result
+        print(json.dumps(data, indent=2))
 
     elif cmd == "update-profile":
         if len(sys.argv) < 3:
