@@ -125,8 +125,11 @@ fi
 # --effort: LCD default "medium", overridable via EFFORT env var.
 # Note: agent.log captures text output only; thinking/reasoning content is
 # omitted by the CLI in -p mode (Opus 4.7+ observation constraint).
+# Auth: an *empty* ANTHROPIC_API_KEY in the container env forces the CLI onto
+# the API-key auth path with an empty secret (→ 401), bypassing the OAuth
+# credentials at ~/.claude/.credentials.json. Unset when empty so OAuth wins.
 docker exec -d "$CONTAINER" bash -c \
-  "cd /workspaces && claude --dangerously-skip-permissions --effort $(printf '%q' "$EFFORT_LEVEL") -p $(printf '%q' "$FULL_PROMPT") > /tmp/agent.log 2>&1"
+  "[ -z \"\${ANTHROPIC_API_KEY:-}\" ] && unset ANTHROPIC_API_KEY; cd /workspaces && claude --dangerously-skip-permissions --effort $(printf '%q' "$EFFORT_LEVEL") -p $(printf '%q' "$FULL_PROMPT") > /tmp/agent.log 2>&1"
 
 echo "status: launched" >> "$LOG_FILE"
 echo -e "${GREEN}Agent launched.${NC} Monitor with:"
