@@ -128,11 +128,18 @@ for file in "${PORTABLE_FILES[@]}"; do
     for project in "${PROJECT_NAMES[@]}"; do
         # Pattern 1: direct project name reference (case-sensitive, word boundary)
         # Flag any bare project name references so they get reviewed manually.
-        matches=$(grep -n "\b${project}\b" "$file" 2>/dev/null || true)
-        if [ -n "$matches" ]; then
-            while IFS= read -r line; do
-                report_violation "$rel_file" "Project name: $project" "$line"
-            done <<< "$matches"
+        # Skip names shorter than 3 chars — a word-boundary match on "a" or
+        # "b" would fire on every standalone English article in portable prose
+        # and produce noise that swamps real violations.  Pattern 2 (path) and
+        # Pattern 3 (docker exec) below still catch substantive references to
+        # short-named projects.
+        if [ "${#project}" -ge 3 ]; then
+            matches=$(grep -n "\b${project}\b" "$file" 2>/dev/null || true)
+            if [ -n "$matches" ]; then
+                while IFS= read -r line; do
+                    report_violation "$rel_file" "Project name: $project" "$line"
+                done <<< "$matches"
+            fi
         fi
 
         # Pattern 2: hardcoded path to project
