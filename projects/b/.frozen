@@ -1,0 +1,1 @@
+B is the evolvable arm of the A/B cycle; frozen for the cycle's duration. ROOT may unfreeze briefly between JUDGMENT commit and the B-improvement commit, then refreeze. See CLAUDE.md §6.

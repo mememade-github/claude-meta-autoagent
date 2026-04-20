@@ -29,6 +29,10 @@ REV=(
   'kelowyzrdO'
   'reffehS'
   '25812.3062'
+  'hcraeser/scod'
+  'repap-lme'
+  'fdp.repap'
+  'txt.repap'
 )
 
 for r in "${REV[@]}"; do
