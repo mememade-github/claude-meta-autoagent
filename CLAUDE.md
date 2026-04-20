@@ -62,107 +62,178 @@ Before ANY `git commit`:
 | evaluator | After code changes (1-pass review); within /refine loop |
 | wip-manager | When task spans sessions |
 
-### 6. Meta-Evolution (Agent System Self-Improvement)
+### 6. Meta-Evolution (A/B cycle — judge, improve self, improve B)
 
-When improving the agent system itself, verify through sub-project Agents.
+ROOT runs a cycle that compares two sibling sub-projects that receive the
+**same task** from identical prompts:
 
-**Principles:**
-- All improvements must be **standard and generic** — no project-specific rules
-- Sub-project Agent observation → issue discovery → **immediate** improvement (do not wait for results)
-- Cannot restart yourself → sub-project Agent serves as verification
+- **Level-3a (A)** — `projects/a/`, container `claude-meta-autoagent-a`.
+  Karpathy-skills only.  No `/refine`, no cross-run learning, no
+  agent-memory.  One-shot baseline.
+- **Level-3b (B)** — `projects/b/`, container `claude-meta-autoagent-b`.
+  ROOT-subset .claude/ with `/refine`, `evaluator`, `wip-manager`, and
+  cross-run learning enabled.  No §6.  Evolvable.
 
-**Role Relativity:** The ROOT Agent provides GOAL only. Sub-project Agents select
-METHOD autonomously. Never embed slash commands, file paths, or imperative instructions
-in delegation prompts — describe the desired outcome and let the sub-agent plan execution.
+ROOT's job across a cycle: judge A's ARGUMENT.md, judge B's ARGUMENT.md,
+improve **ROOT's own** system, and improve **B's** system.  ROOT does
+**not** modify A.
 
-**Pre-action gate:** Before ANY agent delegation, validate:
-1. The prompt is a GOAL (outcome description), not a METHOD (step-by-step recipe)
-2. The target project key maps to a known container
-3. The working directory is the project ROOT (`/workspaces`), not a sub-path
+**Role Relativity (four layers):**
 
-**Wrapper enforcement:** Direct `docker exec ... claude -p` is **prohibited**.
-The `meta-evolution-guard.sh` hook (PreToolUse) blocks it mechanically.
-All delegation MUST go through `scripts/meta/delegate-goal.sh`:
+| Level | Role | Allowed | Prohibited |
+|---|---|---|---|
+| 0 | Human (end user) | Set ROOT GOAL; approve rollbacks | — |
+| 1 | Human delegate | Deliver GOAL to ROOT; restart ROOT; roll back | Edit A/B/ROOT files directly |
+| 2 | ROOT (this agent) | Judge A and B; improve self; improve B | Modify A's files; leak paper knowledge to A or B; drop or weaken §6 |
+| 3a | Level-3a (A) | Produce `task/ARGUMENT.md` from first principles | Edit own `.claude/`; WebFetch; WebSearch |
+| 3b | Level-3b (B) | Produce `task/ARGUMENT.md` via `/refine` | Edit own `.claude/`; WebFetch; WebSearch |
+
+ROOT provides GOAL only.  Sub-agents select METHOD autonomously.  Never
+embed slash commands, file paths, or imperative instructions into a
+delegation prompt — describe the desired end-state and let the sub-agent
+plan execution.
+
+**Paper-knowledge isolation:**
+
+Paper source material lives under `docs/research/eml-paper/` and is
+ROOT-only.  A and B each mount `projects/a/` or `projects/b/` (via their
+own `docker-compose.yml` bind mounts) as `/workspaces`.  They have no
+filesystem visibility into `docs/`, `scripts/meta/`, or the ROOT
+workspace root.  Both A and B additionally carry two PreToolUse hooks:
+
+- `.claude/hooks/web-block.sh` — rejects `WebFetch` and `WebSearch`.
+- `.claude/hooks/paper-leak-guard.sh` — rejects any tool payload whose
+  content matches a restricted identifier pattern (reconstructed at
+  runtime from reversed forms, so the hook source contains no
+  forward-form identifier).
+
+ROOT prompts for A and B must not mention paper-identifying keywords.
+`scripts/meta/delegate-sub.sh` pre-filters every GOAL and refuses to
+launch a sub-agent if any keyword appears.
+
+**Baseline vs evolvable (why A is frozen):**
+
+The cycle exists to measure whether the evolvable architecture (B) out-
+reasons the baseline (A) on a shared task.  Any mid-cycle modification
+of A invalidates the comparison.  Protocol: no edits under
+`projects/a/` between cycle start and the moment the cycle's
+`JUDGMENT.md` is committed.  The `sub-project-edit-guard.sh` hook
+enforces this — its `SUB_PROJECTS` list contains `projects/a/`.  B may
+be improved only **between** cycles, by ROOT, after the JUDGMENT is in.
+
+**Wrapper enforcement:**
+
+Direct `docker exec ... claude -p` is prohibited.  The
+`.claude/hooks/meta-evolution-guard.sh` hook blocks it mechanically.
+
+- Generic delegation wrapper: `scripts/meta/delegate-goal.sh <key> "<GOAL>"`
+  where `<key>` is `a` or `b` (extend its `PROJECTS` map when adding new
+  containers).  Enforces GOAL-not-METHOD, injects the role declaration
+  header, honours `EFFORT` (default `medium` LCD), and audit-logs each
+  launch under `.claude/.delegate-log/`.
+- A/B cycle wrapper: `scripts/meta/delegate-sub.sh <a|b> "<GOAL>"`.
+  Adds the paper-keyword pre-filter on top of the generic wrapper and
+  forwards on success.
+
+Both wrappers route through `delegate-goal.sh` for the actual launch, so
+audit-log entries and role-declaration injection are identical.
+
+**Post-run audit — ARGUMENT.md leak check:**
+
+After every cycle run, scan each sub-agent's deliverable:
+
 ```bash
-scripts/meta/delegate-goal.sh <project-key> "<GOAL>"
-# Override effort:  EFFORT=high scripts/meta/delegate-goal.sh <project-key> "<GOAL>"
+scripts/meta/paper-leak-audit.sh projects/a/task/ARGUMENT.md
+scripts/meta/paper-leak-audit.sh projects/b/task/ARGUMENT.md
 ```
-The wrapper enforces GOAL-not-METHOD validation, injects the role declaration header,
-passes `--effort` (default: medium LCD), and logs every launch to
-`.claude/.delegate-log/`. If the wrapper lacks a needed project, extend its PROJECTS
-map — do not bypass.
 
-**Opus 4.7+ behavioral notes:**
-- **Literal-following**: The model follows instructions with high fidelity. GOAL
-  prompts must be precise, complete outcome descriptions. Vague or ambiguous phrasing
-  may produce narrow literal interpretations rather than the intended broad action.
-  State the desired end-state explicitly; do not rely on implied context.
-- **Effort levels**: The wrapper defaults to `medium` (LCD across CLI versions).
-  Override via `EFFORT` env var when tasks require deeper reasoning (`high`/`max`)
-  or are simple enough for `low`.
+Any hit voids the cycle per
+`docs/research/eml-paper/judgment-rubric.md` (Disqualification).
 
-**Observation constraint — thinking content omission:**
-Agent logs (`/tmp/agent.log`) capture text output only. The model's internal
-thinking/reasoning chain is **not** emitted in `-p` (print) mode. Observers cannot
-inspect the agent's reasoning process from logs — only its actions and final output.
-Observation must therefore focus on **artifacts** (commits, file changes, scores,
-service state) rather than reasoning traces.
+**Opus 4.7+ behavioural notes:**
 
-**Execution sequence (all steps mandatory):**
-1. **Diagnose**: Identify which standard principle is insufficient
-2. **Modify**: Improve CLAUDE.md / SKILL.md or other portable files
-3. **Verify**: Run `completion-checker.sh`
-4. **Commit & push** the ROOT workspace
-5. **Sync**: Copy `.claude/` portable artifacts to all sub-projects + push
-6. **Container check**: Verify sync reflected in sub-project containers
-7. **Delegate**: Launch sub-project Agent via `delegate-goal.sh` wrapper
-8. **Resume observation**: Full observation (process, logs, git, refinement, score, file mtime)
+- **Literal-following** — Opus 4.7 follows instructions with very high
+  fidelity.  GOAL prompts must be precise outcome descriptions.  Vague
+  phrasing produces narrow literal interpretations rather than the
+  intended action.
+- **Effort levels** — `delegate-goal.sh` defaults to `medium` (LCD).
+  Override via `EFFORT=high` (or `max`, `low`) when the task warrants.
+- **Thinking-content omission** — `/tmp/agent.log` captures text output
+  only.  Reasoning traces are not emitted in `-p` mode.  Observation
+  must focus on artifacts (commits, file changes, scores, service
+  state), not reasoning.
 
-**Observation items:**
+**Cycle execution sequence (all steps ROOT-owned):**
+
+1. **Prepare task** — write `docs/research/eml-paper/cycle-NN/TASK.md`
+   (same prompt delivered to A and B).  Do not mention paper keywords.
+2. **Launch** — `scripts/meta/delegate-sub.sh a "<GOAL>"` and
+   `scripts/meta/delegate-sub.sh b "<GOAL>"` in parallel.
+3. **Observe** — `docker exec` for process / log / git / artifact
+   status on each container.
+4. **Paper-leak audit** — `paper-leak-audit.sh` on each
+   `projects/<a|b>/task/ARGUMENT.md`.  Disqualify on hit.
+5. **Judge** — score each ARGUMENT.md against
+   `docs/research/eml-paper/judgment-rubric.md`; write
+   `docs/research/eml-paper/cycle-NN/JUDGMENT.md` with per-criterion
+   evidence.
+6. **Improve ROOT** — commit any ROOT `.claude/` or `CLAUDE.md` change
+   that addresses a weakness surfaced by the comparison.
+7. **Improve B** — commit any `projects/b/.claude/` or
+   `projects/b/CLAUDE.md` change that addresses B-specific weakness.
+8. **Verify A untouched** — `git diff --quiet HEAD~N -- projects/a/`
+   must hold.
+9. **Log** — append cycle summary to `cycle-log.md`.
+10. **Push** — `git push origin main`.
+
+**Observation items (during step 3):**
+
 - Process survival (`ps aux | grep claude`)
-- Agent logs (`/tmp/agent.log` — text output only; thinking content omitted)
-- git commit/diff/status
-- `.refinement-active` file presence
-- `attempts/` JSONL new files
-- `.refine-output` score changes
+- Agent logs (`/tmp/agent.log` — text output only)
+- git commit / diff / status on each sub-project
+- `.refinement-active` marker presence (B only)
+- `projects/b/attempts/` JSONL arrivals (B only)
+- `.refine-output` score changes (B only)
 - File mtime changes
-- Deployment target service status (varies by project)
-- **Outcome verification** (external interactions — see below)
+- Deployment target service status (per sub-project)
+- **Outcome verification** (see below)
 
 **Outcome verification principle:**
 
-API call success (HTTP 2xx) ≠ intended outcome achieved. When the agent interacts with
-external systems, the observer MUST verify outcomes independently, not just count actions.
+API call success (HTTP 2xx) ≠ intended outcome achieved.  When a
+sub-agent interacts with external systems, verify outcomes independently:
 
-Checklist (generic, adapt per project):
-1. **Result validation**: After write operations (create/update), read back and confirm
-   the resource exists and is visible/accessible as intended.
-2. **Rate & pattern analysis**: Check action frequency and spacing. Bursts of identical
-   operations (e.g., N actions in <M seconds) indicate missing pacing or deduplication.
-3. **Effectiveness ratio**: Compare actions taken vs. measurable impact achieved.
-   A low ratio (many actions, negligible impact) signals wasted effort or silent rejection.
-4. **Error log review**: Scan activity logs not just for explicit errors, but for
-   patterns that suggest soft failures (repeated retries, missing expected fields,
-   resources created but not retrievable).
-5. **Response body validation**: Check activity log entries for empty or placeholder IDs
-   (e.g., `post_id: ""`, `post_id: "1"`). These indicate the API returned 2xx but did not
-   actually create the resource. Count such entries as failures, not successes.
-6. **Before/after delta**: Compare profile metrics (karma, posts, followers, comments)
-   before and after the agent run. If action count >> metric delta, investigate which
-   actions had no effect and why.
+1. **Result validation** — after a write operation, read back and
+   confirm the resource exists and is visible as intended.
+2. **Rate & pattern analysis** — bursts of identical operations
+   indicate missing pacing or deduplication.
+3. **Effectiveness ratio** — compare actions taken vs. measurable
+   impact.  Low ratios signal wasted effort or silent rejection.
+4. **Error-log review** — scan for soft failures (repeated retries,
+   missing fields, resources created but not retrievable).
+5. **Response body validation** — empty or placeholder IDs
+   (e.g. `post_id: ""`, `post_id: "1"`) mean the API returned 2xx but
+   did not actually create the resource.
+6. **Before/after delta** — compare metrics before and after the
+   sub-agent run.  Investigate actions that produced no delta.
 
-**Learning mechanism (3-loop cross-run learning):**
+**Learning mechanism (3-loop cross-run learning — B only):**
 
-The agent system accumulates knowledge across sessions through 3 learning loops:
+B carries /refine and accumulates knowledge across its own runs:
 
-1. **Reflexion** (within iteration): On /refine DISCARD, generate structured reflection
-   and inject into next iteration's Audit agent. Prevents repeating failure patterns.
-2. **Skill Library** (across runs): On KEEP, accumulate strategies to strategies.jsonl;
-   on DISCARD, accumulate anti-patterns to anti-patterns.jsonl. Retrieved in future /refine runs.
-3. **Scorer Evolution** (meta): After /refine completion, identify scorer gaps and
-   record to scorer-evolution.jsonl. Track regression counts on DISCARD.
+1. **Reflexion** (within iteration) — on DISCARD, generate a structured
+   reflection and inject it into the next iteration's Audit step.
+2. **Skill Library** (across runs) — KEEP → `strategies.jsonl`,
+   DISCARD → `anti-patterns.jsonl`.  Read in future `/refine` runs.
+3. **Scorer Evolution** (meta) — on completion, identify scorer gaps
+   and append to `scorer-evolution.jsonl`.  Track DISCARD regression
+   counts.
 
-Data location: `.claude/agent-memory/skills/`, `.claude/agent-memory/scorer-evolution.jsonl`
+Data location (inside B's container, under `/workspaces/.claude/`):
+`.claude/agent-memory/skills/`, `.claude/agent-memory/scorer-evolution.jsonl`.
+
+A does not have `/refine` and does not accumulate agent-memory.  That
+is the controlled asymmetry the cycle measures.
 
 ## Coding Rules
 

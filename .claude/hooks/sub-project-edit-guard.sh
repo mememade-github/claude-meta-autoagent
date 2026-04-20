@@ -1,16 +1,15 @@
 #!/bin/bash
-# Role Relativity — Edit/Write guard for §6-bearing sub-projects.
+# PreToolUse (Edit|Write): block edits to any sub-project marked frozen.
 #
-# ROOT Agent acts as Human for sub-projects that carry their own Meta-Evolution.
-# Human role cannot modify sub-project files directly — only deliver STATE +
-# GOAL via scripts/meta/delegate-goal.sh. This hook blocks Edit/Write tool
-# calls targeting any file under a registered sub-project root.
+# A sub-project is frozen for the duration of a Meta-Evolution cycle by
+# placing a `.frozen` marker file at its root (e.g. `projects/<name>/.frozen`).
+# ROOT acts as Human for such sub-projects: it may only deliver STATE + GOAL
+# via the delegate-* wrappers, never edit their files directly.
 #
-# Self-disabling: if the current project has no §6 in CLAUDE.md, this is not
-# a Meta-Evolution ROOT layer, so the hook exits 0 (no blocking). This lets
-# the hook be portable via .claude/ sync without accidental effect downstream.
-#
-# Extend SUB_PROJECTS below when a new §6-bearing sub-project is added.
+# Self-disabling: if the current CLAUDE.md has no §6, this is not a
+# Meta-Evolution ROOT layer, so the hook exits 0 unconditionally.  That
+# keeps the hook portable via .claude/ sync without affecting downstream
+# projects that don't carry §6.
 set -euo pipefail
 
 INPUT=$(cat)
@@ -35,26 +34,37 @@ case "$FILE_PATH" in
   *)  FILE_PATH="${PROJECT_ROOT}/$FILE_PATH" ;;
 esac
 
-SUB_PROJECTS=(
-  "/workspaces/products/root/claude-meta-autoagent"
-)
+# Discover frozen sub-projects by scanning PROJECT_ROOT for `.frozen` markers.
+SUB_PROJECTS=()
+SUBS_PARENT="${PROJECT_ROOT}/projects"
+if [ -d "$SUBS_PARENT" ]; then
+  for dir in "$SUBS_PARENT"/*/; do
+    [ -d "$dir" ] || continue
+    dir="${dir%/}"
+    [ -f "${dir}/.frozen" ] && SUB_PROJECTS+=("$dir")
+  done
+fi
 
 for sp in "${SUB_PROJECTS[@]}"; do
   case "$FILE_PATH" in
     "$sp"/*)
-      cat >&2 <<EOF
-Blocked: $TOOL_NAME on file inside §6-bearing sub-project.
+      REASON_FILE="${sp}/.frozen"
+      REASON=""
+      if [ -s "$REASON_FILE" ]; then
+        REASON=$(head -1 "$REASON_FILE")
+      fi
+      cat >&2 <<EOF2
+Blocked: $TOOL_NAME on file inside a frozen sub-project.
 
 Target:            $FILE_PATH
 Sub-project root:  $sp
+Marker:            $REASON_FILE${REASON:+
+Marker reason:     $REASON}
 
-Per Role Relativity (ARCHITECTURE.md), the current project's ROOT Agent acts
-as Human for this sub-project. Do not edit its files directly — deliver
-STATE + GOAL to its ROOT Agent via the wrapper.
-
-Delegation:
-  scripts/meta/delegate-goal.sh $(basename "$sp") "<GOAL>"
-EOF
+Per CLAUDE.md §6 (frozen-sub-project protocol), ROOT must not edit this
+sub-project's files.  Deliver STATE + GOAL via the delegate wrapper
+instead, or remove the .frozen marker to unfreeze.
+EOF2
       exit 2
       ;;
   esac
