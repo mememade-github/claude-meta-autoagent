@@ -13,7 +13,7 @@
 # Reference: CLAUDE.md §6 (Meta-Evolution), Role Relativity, Pre-action gate.
 #
 # Effort level: Defaults to "medium" (LCD across CLI versions). Override via
-# EFFORT env var:  EFFORT=high scripts/meta/delegate-goal.sh sample-app "..."
+# EFFORT env var:  EFFORT=high scripts/meta/delegate-goal.sh b "..."
 # Valid values: low, medium, high, max
 #
 # Opus 4.7+ note: The model follows instructions very literally. GOAL prompts
@@ -33,7 +33,8 @@ fi
 # --- Project map (extend as needed) ---
 # Keys are short identifiers; values are container names.
 declare -A PROJECTS=(
-  [sample-app]="sample-app"
+  [a]="claude-meta-autoagent-a"
+  [b]="claude-meta-autoagent-b"
 )
 
 # --- UI ---
