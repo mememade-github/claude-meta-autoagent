@@ -1,202 +1,147 @@
 # claude-meta-autoagent
 
-> [karpathy/autoresearch](https://github.com/karpathy/autoresearch)에서 영감을 받았습니다 — AI 에이전트가 자율적으로 실험하고, 성공하면 유지하고, 실패하면 폐기하고, 무한히 반복합니다. 동일한 "자율 반복 + keep/discard" 패턴을 **모든 소프트웨어 프로젝트**에 적용하고, **교차 실행 학습**과 **2계층 자기진화 아키텍처**로 확장합니다.
+> 동일한 추론 과제를 두 하위 에이전트에게 부여하고 **A/B 비교 진화 사이클**을 돌리는 메타 에이전트 시스템입니다. 하나(A)는 고정된 baseline, 다른 하나(B)는 진화 가능한 sub-agent. Meta-Agent(ROOT)가 두 산출물을 판정하고, 자기 거버넌스를 개선하고, 사이클 사이에 B를 개선합니다. Human delegate가 Meta-Agent를 감독하며, 최종 사용자가 GOAL을 제시합니다.
 
-## autoresearch와의 차이점
+## 4계층 아키텍처
 
-| | [autoresearch](https://github.com/karpathy/autoresearch) | claude-meta-autoagent |
+이 저장소는 네 개의 역할 계층으로 구성됩니다. 각 계층은 상위 계층 권한의 엄격한 부분집합만 갖습니다.
+
+```
+Level 0  최종 사용자 (Human)
+         │  ROOT GOAL 설정, 롤백 승인
+         ▼
+Level 1  Human delegate
+         │  ROOT에 GOAL 전달, ROOT 재시작, 롤백 권한
+         ▼
+Level 2  ROOT — Meta-Agent  (저장소 최상위 .claude/ + CLAUDE.md)
+         │  A와 B 판정, 자기 개선, B 개선; A에는 손대지 않음
+         ▼  docker exec via scripts/meta/delegate-sub.sh
+┌────────┴────────┐
+Level 3a            Level 3b
+A Sub-Agent         B Sub-Agent
+projects/a/         projects/b/
+baseline            evolvable
+one-shot            /refine + 교차 실행 학습
+사이클 중 frozen     사이클 중 frozen,
+                    사이클 사이에 ROOT가 개선
+```
+
+### 역할 표 (허용 / 금지)
+
+| 계층 | 역할 | 허용 | 금지 |
+|---|---|---|---|
+| 0 | 최종 사용자 | ROOT GOAL 설정, 롤백 승인 | — |
+| 1 | Human delegate | ROOT에 GOAL 전달, ROOT 재시작, 롤백 | A/B/ROOT 파일 직접 수정 |
+| 2 | ROOT (Meta-Agent) | A와 B 판정, 자기 개선, B 개선 | A 파일 수정, A/B에 논문 지식 누출, §6 약화·폐지 |
+| 3a | A Sub-Agent | `task/ARGUMENT.md`를 첫 원리로부터 생성 | 자신의 `.claude/` 수정, `WebFetch`, `WebSearch` |
+| 3b | B Sub-Agent | `task/ARGUMENT.md`를 `/refine`으로 생성 | 자신의 `.claude/` 수정, `WebFetch`, `WebSearch` |
+
+ROOT는 GOAL만 제공합니다. 하위 에이전트가 METHOD를 자율적으로 선택합니다. delegation 프롬프트에는 슬래시 커맨드·파일 경로·명령형 지시가 포함되어서는 안 됩니다 — 원하는 end-state만 서술하고 실행 설계는 하위 에이전트에 맡깁니다.
+
+## 논문 지식 격리
+
+A/B 사이클은 진화 가능한 아키텍처가 baseline보다 동일한 추론 과제에서 더 잘 사고하는지를 측정합니다. 과제는 어떤 논문에서 파생되지만, **논문은 ROOT만 보유**합니다. A와 B는 첫 원리로부터 논증해야 합니다.
+
+격리는 세 층위에서 강제됩니다:
+
+1. **파일시스템** — 논문 자료는 ROOT workspace 루트의 `docs/research/` 아래에 있습니다. A와 B 컨테이너는 각각 `projects/a/`, `projects/b/`를 `/workspaces`로 bind-mount하므로, ROOT의 논문 디렉터리·`scripts/meta/`·외부 workspace를 볼 수 없습니다.
+2. **도구 훅 (A/B 내부 PreToolUse)** —
+   - `.claude/hooks/web-block.sh`가 `WebFetch`와 `WebSearch`를 차단.
+   - `.claude/hooks/paper-leak-guard.sh`가 제한 식별자를 포함한 도구 페이로드를 거부. 훅 소스는 해당 식별자를 **역순 형태로만** 보관하므로, 훅 자체가 차단 대상 forward-form 문자열을 누출하지 않습니다.
+3. **프롬프트 사전 필터 (ROOT 측)** — `scripts/meta/delegate-sub.sh`가 모든 GOAL 텍스트를 제한 식별자 목록과 대조해 하나라도 걸리면 launch를 거부합니다. `scripts/meta/paper-leak-audit.sh`는 각 하위 에이전트의 `task/ARGUMENT.md`에 동일한 스캔을 사후 적용하며, 적중 시 사이클이 무효화됩니다.
+
+## 사이클 실행 순서
+
+모든 사이클은 ROOT 소유이며 동일한 10단계를 따릅니다 (상세는 `CLAUDE.md §6`).
+
+0. **Pre-cycle prep** — 새 경로·식별자를 추가 차단해야 하면 양쪽 하위 프로젝트의 paper-leak-guard 역순 패턴을 강화; `projects/b/.frozen` 존재 확인; commit 후 `git tag cycle-NN-pre HEAD`. 이것이 ROOT가 `projects/a/`를 편집할 수 있는 **유일한** 시점이며, A와 B 양쪽에 대칭적이어야 합니다. A의 `.frozen`은 편집 동안 `Bash`로(워킹 트리만) 제거 후, 수정하고, 다시 비트 단위로 복원 — `.frozen`에 대한 순수 `git diff`는 0이어야 합니다.
+1. **Task 준비** — `docs/research/cycle-NN/TASK.md` 작성; 제한 식별자를 언급하지 않습니다. 프롬프트에서 의도적으로 생략한 구조적 힌트를 기록해, 사이클 사이 task-framing drift가 보이도록 합니다.
+2. **Launch** — `scripts/meta/delegate-sub.sh a "<GOAL>"`와 `scripts/meta/delegate-sub.sh b "<GOAL>"`를 병렬 실행. 새로 빌드된 하위 컨테이너는 `~/.claude/`가 비어 있으므로, launch 전에 ROOT 컨테이너의 `~/.claude/.credentials.json`을 각 하위 컨테이너로 복사(`chmod 600`)해야 합니다.
+3. **Observe** — `docker exec`로 프로세스 생존, `/tmp/agent.log`, git 상태, 산출물 존재, 그리고 B의 `.refinement-active`/attempts JSONL/`.refine-output`을 관측.
+4. **Paper-leak audit** — 각 `projects/<a|b>/task/ARGUMENT.md`에 `scripts/meta/paper-leak-audit.sh` 실행. 적중은 실격.
+5. **Judge** — 각 ARGUMENT.md를 `docs/research/…/judgment-rubric.md` 기준으로 채점; 해당 사이클의 `JUDGMENT.md`를 criterion 단위로 기록.
+6. **Improve ROOT** — 비교에서 드러난 약점을 해결하는 `.claude/` 또는 `CLAUDE.md` 변경을 commit.
+7. **Improve B** — B 고유 약점을 해결하는 `projects/b/.claude/` 또는 `projects/b/CLAUDE.md` 변경을 commit(`Bash`로 unfreeze → edit → 비트 단위 refreeze).
+8. **A 무변경 확인** — `git diff --quiet cycle-NN-pre -- projects/a/`가 성립해야 함.
+9. **Log** — cycle-log에 사이클 요약을 append.
+10. **Push** — `git push origin main`.
+
+직접 `docker exec ... claude -p`는 금지됩니다. `.claude/hooks/meta-evolution-guard.sh` 훅이 차단하며, 모든 delegation은 `scripts/meta/delegate-goal.sh` 또는 `scripts/meta/delegate-sub.sh`를 통과해야 합니다.
+
+## 사이클을 처음부터 launch하기
+
+요구사항: Docker (devcontainer 내부에서 실행 시 `docker.sock` 마운트 필요), Claude Code CLI v2.1+, 그리고 ROOT 컨테이너가 이미 인증(`~/.claude/.credentials.json`)되어 있어야 합니다.
+
+```bash
+# 1. ROOT 컨테이너 기동
+cd .devcontainer && docker compose up -d && cd ..
+
+# 2. A, B 두 하위 컨테이너 기동
+cd projects/a/.devcontainer && docker compose up -d && cd ../../..
+cd projects/b/.devcontainer && docker compose up -d && cd ../../..
+
+# 3. 각 하위 컨테이너에 Claude 자격증명 주입
+for c in claude-meta-autoagent-a claude-meta-autoagent-b; do
+  docker cp ~/.claude/.credentials.json "$c":/home/vscode/.claude/.credentials.json
+  docker exec "$c" chmod 600 /home/vscode/.claude/.credentials.json
+done
+
+# 4. ROOT 컨테이너에서: pre-cycle prep, tag, delegate
+#    (GOAL 텍스트는 ROOT 책임이며, 소스 논문을 명시하지 않고
+#     추론 end-state를 서술해야 함)
+git tag cycle-NN-pre HEAD
+scripts/meta/delegate-sub.sh a "<GOAL>" &
+scripts/meta/delegate-sub.sh b "<GOAL>" &
+wait
+
+# 5. 관측, audit, 판정, 개선, push — CLAUDE.md §6 참조
+```
+
+ROOT 컨테이너 내부에서 돌아가는 Claude 세션(= Meta-Agent)이 위 10단계를 수행합니다. 모든 행위는 기록됩니다 — delegation마다 `.claude/.delegate-log/`에 기록되고, 사이클마다 최상위 `cycle-log.md`에 요약이 추가되며, `docs/research/.../cycle-NN/` 아래의 각 JUDGMENT.md는 불변 사이클 산출물입니다.
+
+## 교차 실행 학습 (B 전용)
+
+B는 `/refine`과 `.claude/agent-memory/` 아래의 세 JSONL 메모리 파일을 갖습니다:
+
+| 파일 | 기록 시점 | 이후 실행에서 읽는 곳 |
 |---|---|---|
-| **루프** | train.py 수정 → 5분 GPU 실행 → val_bpb → keep/discard | 코드 수정 → scorer 실행 → 점수 비교 → keep/discard |
-| **범위** | LLM 학습 전용 (GPU 필요) | 모든 소프트웨어 프로젝트 (GPU 불필요) |
-| **지시** | program.md (단일 파일) | CLAUDE.md + SKILL.md + hooks (전체 거버넌스 시스템) |
-| **학습** | 매 실험 zero-memory | 3-loop 교차 실행 학습 |
-| **아키텍처** | 단일 에이전트, 단일 컨테이너 | **2계층**: ROOT는 에이전트 시스템을 진화(메타), Sub-project 에이전트는 코드를 진화(구현) |
-| **메트릭** | val_bpb (고정) | 프로젝트별 scorer (사용자 정의) |
+| `skills/strategies.jsonl` | /refine iteration이 KEEP으로 종료 | audit 단계 |
+| `skills/anti-patterns.jsonl` | /refine iteration이 DISCARD로 종료 | audit 단계 |
+| `scorer-evolution.jsonl` | /refine 실행 완료 | meta 리뷰 |
 
-**핵심 개선사항:**
-1. **교차 실행 메모리** — 성공 전략과 실패 안티패턴을 실행 간 축적 ([상세](docs/cross-run-learning.md))
-2. **Scorer 진화** — scorer가 프로젝트와 함께 성장하는지, 정체되었는지 추적
-3. **2계층 메타 진화** — ROOT 에이전트가 독립 컨테이너의 sub-project 에이전트를 관측하고 시스템 자체를 개선 ([상세](docs/meta-evolution.md))
-4. **범용성** — 웹 앱, API, CLI 도구, 라이브러리 — 테스트 가능한 scorer만 있으면 적용 가능
+A는 `/refine`이 없고 agent-memory도 축적하지 않습니다. 이것이 사이클이 측정하는 제어된 비대칭입니다. reflexion / skill-library / scorer-evolution 메커니즘의 상세는 `docs/cross-run-learning.md`를 참조하세요.
 
-## 빠른 시작
-
-두 가지 수준 — 필요에 맞는 것을 선택하세요. 전체 가이드: [docs/quickstart.md](docs/quickstart.md)
-
-### Level 1: 외부 프로젝트에 /refine 추가 (가장 간단, 메타 진화 없음)
-
-> 참고: 이것은 standalone /refine만 사용합니다. 2계층 ROOT→Sub-project 전체 시스템은 Level 2를 참조하세요.
-
-```bash
-git clone https://github.com/mememade-github/claude-meta-autoagent.git
-cp -r claude-meta-autoagent/.claude/ /path/to/your/project/.claude/
-```
-
-프로젝트에 `.refine/score.sh`를 만들고: `/refine "improve production quality"`
-
-### Level 2: 2계층 메타 진화 전체 구동
-
-```bash
-# 모든 명령은 호스트(또는 docker.sock이 마운트된 외부 컨테이너)에서 실행
-
-# 1. ROOT 컨테이너 시작
-cd claude-meta-autoagent/.devcontainer && docker compose up -d && cd ..
-
-# 2. Sub-project 컨테이너 시작 (독립, projects/<sub-project>/ 아래)
-cd projects/<sub-project>/.devcontainer && docker compose up -d && cd ../../..
-
-# 3. Sub-project에 headless 에이전트 실행 (ROOT에서)
-docker exec -d <sub-project> bash -c \
-  'cd /workspaces && claude --dangerously-skip-permissions \
-   -p "Run /refine to improve production quality" \
-   > /tmp/agent.log 2>&1'
-
-# 4. ROOT에서 관측
-docker exec <sub-project> cat /tmp/agent.log
-docker exec <sub-project> git -C /workspaces log --oneline -5
-docker exec <sub-project> cat /workspaces/.refine-output
-
-# 5. 시스템 이슈 발견 시 .claude/ 수정, 동기화, 에이전트 재시작
-./scripts/sync/sync-claude.sh projects/<sub-project>
-```
-
-## 작동 원리
-
-### 아키텍처
-
-ROOT와 Sub-project는 **하나의 통합 시스템**입니다 — Sub-project는 ROOT 저장소 내부(`projects/*/`)에 존재하며 ROOT의 거버넌스 하에 운영됩니다.
+## 저장소 레이아웃
 
 ```
-┌──────────────────── claude-meta-autoagent (단일 시스템) ──────────────────┐
-│                                                                           │
-│  ┌─────────────────────────────────────────────────────────────────────┐  │
-│  │  계층 1: ROOT — 메타 진화                                           │  │
-│  │  진화 대상: .claude/ 시스템 (hooks, skills, agents, rules)          │  │
-│  │                                                                    │  │
-│  │  .claude/ (ORIGIN)     사용자가 여기서 운영                         │  │
-│  │  ├── skills/refine/    ── /refine 루프                             │  │
-│  │  ├── hooks/            ── 게이트                                   │  │
-│  │  ├── agents/           ── 평가자                                   │  │
-│  │  └── rules/            ── 표준 규칙                                │  │
-│  │                                                                    │  │
-│  │  Sub-project 관측 ◄── docker exec ────┐                           │  │
-│  │  시스템 이슈 진단                      │                           │  │
-│  │  .claude/ 수정, 동기화 ───────────────┐│                           │  │
-│  └───────────────────────────────────────┼┼──────────────────────────┘  │
-│                                           ││                             │
-│                     .claude/ 동기화 ──────┘│                             │
-│                                            │                             │
-│  ┌─────────────────────────────────────────┼─────────────────────────┐  │
-│  │  계층 2: Sub-project (projects/*/)      │                        │  │
-│  │  진화 대상: 프로젝트 코드와 scorer       │                        │  │
-│  │                                         │                        │  │
-│  │  .claude/ (ROOT에서 동기화)              │                        │  │
-│  │  .refine/score.sh (프로젝트 scorer)      ◄───────────────────────┘  │
-│  │  [프로젝트 코드] ── 에이전트가 개선                                │  │
-│  │                                                                    │  │
-│  │  Headless 에이전트가 /refine 자율 실행                             │  │
-│  │  생성물: 커밋, 점수, strategies.jsonl                              │  │
-│  └────────────────────────────────────────────────────────────────────┘  │
-│                                                                           │
-└───────────────────────────────────────────────────────────────────────────┘
-```
-
-### /refine 루프
-
-```
-1. DISCOVER   — scorer 읽기, gap 발견
-2. BASELINE   — scorer 실행, 기준 점수
-3. AUDIT      — gap 분석 + 이력 참조 (전략, 안티패턴)
-4. MODIFY     — 최우선 gap 수정 (fresh subagent)
-5. EVALUATE   — scorer 재실행
-6. KEEP/DISCARD — 기준 점수와 비교
-7. RECORD+LEARN — 실패 시 반성, 전략 축적
-8. REPEAT     — threshold 또는 최대 반복까지
-```
-
-### 교차 실행 학습
-
-| 루프 | 트리거 | 학습 내용 | 저장소 |
-|------|--------|----------|--------|
-| **Reflexion** | DISCARD | "왜 실패했는가" + 방지 원칙 | attempts JSONL |
-| **Skill Library** | KEEP/DISCARD | 성공 전략 / 실패 안티패턴 | strategies.jsonl, anti-patterns.jsonl |
-| **Scorer Evolution** | 실행 완료 | scorer 커버리지 gap, 회귀 횟수 | scorer-evolution.jsonl |
-
-[교차 실행 학습 상세 →](docs/cross-run-learning.md)
-
-### 메타 진화: 자기 개선하는 에이전트 시스템
-
-ROOT 에이전트가 sub-project 에이전트를 관측하고 `.claude/` 시스템을 개선합니다:
-
-1. **실행** — sub-project 컨테이너에 headless 에이전트 기동
-2. **관측** — `docker exec`로 프로세스, 로그, git, 점수, 파일 변경 확인
-3. **진단** — 프로젝트 코드 문제인가, 에이전트 시스템 문제인가?
-4. **수정** — ROOT의 `.claude/` portable 파일 개선
-5. **동기화** — sub-project에 반영, 에이전트 재시작, 재관측
-
-[메타 진화 상세 →](docs/meta-evolution.md)
-
-## 프로젝트 구조
-
-```
-claude-meta-autoagent/                    # ROOT — 단일 통합 시스템
-├── .claude/                              # 에이전트 시스템 ORIGIN (Sub-project에 동기화)
-│   ├── agents/evaluator.md, wip-manager.md
-│   ├── hooks/pre-commit-gate, session-start, refinement-gate, pre-push-gate
-│   ├── skills/refine, status, verify
-│   └── rules/devcontainer-patterns.md
-│
-├── .devcontainer/                        # ROOT 컨테이너
-│   ├── Dockerfile, docker-compose.yml    # Claude Code + MCP + 도구
-│   ├── entrypoint.sh, setup-env.sh       # 자동 설정
-│   └── .env                              # 컨테이너 ID + 포트
-│
+claude-meta-autoagent/
+├── CLAUDE.md                           # ROOT 거버넌스 (§6 Meta-Evolution — A/B 사이클)
+├── .claude/                            # ROOT 에이전트 시스템 (hooks, skills, agents, rules)
+├── .devcontainer/                      # ROOT 컨테이너
+├── docs/
+│   └── research/                       # ROOT-전용 논문 자료 및 사이클별 JUDGMENT
+├── projects/
+│   ├── a/                              # Level-3a baseline (karpathy-skills만)
+│   └── b/                              # Level-3b evolvable (ROOT-subset, §6 제외)
 ├── scripts/
-│   ├── sync/sync-claude.sh               # ROOT → Sub-project 동기화
-│   └── meta/completion-checker.sh        # 커밋 전 검증
-│
-├── projects/                             # Sub-project들 (ROOT 시스템의 일부)
-│   └── <sub-project>/                    # 계층 2 Sub-project
-│       ├── .claude/                      # ROOT에서 동기화 (읽기 전용 거버넌스)
-│       ├── .devcontainer/                # 격리 컨테이너 (ROOT가 관측)
-│       ├── .refine/score.sh              # 프로젝트 고유 scorer
-│       ├── CLAUDE.md                     # 프로젝트 거버넌스 (§6 메타 진화 없음)
-│       └── <프로젝트 소스 + 테스트>        # 애플리케이션 코드
-│
-├── docs/                                 # 문서
-│   ├── quickstart.md, cross-run-learning.md, meta-evolution.md
-│
-├── CLAUDE.md                             # ROOT 거버넌스 (메타 진화 §6)
-└── README.md
+│   └── meta/
+│       ├── delegate-goal.sh            # 일반 GOAL-not-METHOD delegation wrapper
+│       ├── delegate-sub.sh             # 논문 키워드 사전 필터가 포함된 A/B wrapper
+│       ├── paper-leak-audit.sh         # ARGUMENT.md 사후 스캐너
+│       ├── completion-checker.sh
+│       └── portability-check.sh
+├── wip/                                # 다중 세션 task 상태
+└── cycle-log.md                        # 사이클별 요약 로그
 ```
 
-> Sub-project는 ROOT 시스템의 일부입니다. `.claude/`를 동기화로 받고, 격리 컨테이너에서 실행되며, ROOT가 메타 진화를 위해 관측합니다.
-
-## 좋은 scorer 작성법
-
-Scorer는 이 시스템에서 가장 중요한 파일입니다. 프로젝트의 "품질"이 무엇인지 정의합니다.
-
-1. **사용자가 경험하는 것을 테스트** — 코드 위생이 아닌 실제 기능
-2. **모든 상호작용 계층 커버** — API, UI/CLI, 장애 복구
-3. **ID 사용** — 각 체크에 F1, E1, C1... 부여, 에이전트가 특정 gap을 타겟
-4. **출력 형식** — `SCORE: 0.XX`와 `GAPS: [ID1, ID2, ...]` 출력 필수
-5. **Scorer 독립성** — scorer와 프로덕트 코드를 같은 `/refine` iteration에서 동시 수정 금지
+각 하위 프로젝트의 역할과 launch 명령은 `projects/a/README.md`와 `projects/b/README.md`를 참조하세요.
 
 ## 요구사항
 
-- [Claude Code](https://claude.ai/download) CLI (v2.1+)
-- Docker (DevContainer 및 메타 진화용)
-- 테스트 가능한 기능이 있는 프로젝트
+- Claude Code CLI v2.1+
+- Docker (devcontainer 내부에서 실행 시 `docker.sock` 마운트 필요)
 
 GPU 불필요.
-
-## 실증 결과
-
-이 시스템은 실제 headless 에이전트로 end-to-end 검증되었습니다:
-- Sub-project 에이전트: /refine으로 scorer가 있는 sub-project를 여러 /refine iteration에 걸쳐 자율 개선
-- ROOT 에이전트: sub-project를 관측하고, scorer 버그와 코드 gap을 정확히 분류, scorer 독립성 준수
-- 교차 실행 학습: strategies.jsonl이 iteration 간 축적, DISCARD 시 anti-patterns 기록
-- 2컨테이너 배포 검증 완료 (ROOT + sub-project, 독립 포트, `.claude/` 동기화 공유)
 
 ## 라이선스
 
