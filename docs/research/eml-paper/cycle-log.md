@@ -257,3 +257,225 @@ or logged as non-portable / Cycle #3 carry-over (see JUDGMENT.md §7).
   are therefore subject to the same sensitive-file policy. The
   post-cycle grep-only audit in `cycle-03/TASK.md` §4 is the
   compensating control until the policy is lifted.
+
+**Retroactive update (Cycle #3 close-out, 2026-04-21 PM).**
+`cycle-02/JUDGMENT.md` §8 M2.1 row and the "Cycle #2 defect
+resolution — corrected" bullet above both still read "Carry-over
+to Cycle #3 (handle: M2.1-hook-write)".  Cycle #3 resolves this
+handle as **Closed — env-constraint** (structural close-out
+path (b) per Cycle #3 GOAL clause 2).  See
+`cycle-03/M21-RESOLUTION.md` for the resolution and
+`cycle-03/cycle-log.md` Cycle #3 entry below for the terminal
+status flip.  The Cycle #2 JUDGMENT.md text itself is not edited
+retroactively; the authoritative terminal status lives in Cycle
+#3's entry per CLAUDE.md §6.7 step 8a's audit-in-place
+convention.  A second carry-over (§4.2 no-partial-ship violation)
+is prohibited.
+
+---
+
+## Cycle 03 — 2026-04-21
+
+**TASK framing.** `cycle-03/TASK.md` — "Minimal instruction set for a
+universal register machine" over the 11-instruction baseline
+{LOAD, COPY, ADD, SUB, ZERO, INC, DEC, JMP, JZ, JNZ, HALT}.
+Structural shape hint "is there a single instruction from some
+variant family — possibly one we are about to invent by fusing two
+of the above — that suffices?" was included (parallel to Cycle #1's
+"single binary operator + single constant" and Cycle #2's "is one
+of the two enough alone?").  Domain swap from discrete geometry
+(Cycle #2) to discrete computation — per `cycle-02/ROOT-DIAGNOSIS.md`
+§5 forward-check 1 (A1 amplification): multiple named canonical
+answers exist (SUBLEQ, Minsky, Shepherdson–Sturgis, BitBitJump,
+TOGA, RSSB, OISC, …), all explicitly banned in the delivered prompt
+via TASK.md §1's banned-identifier list.  The minimum depends on
+the counting convention the agent picks, forcing engagement with
+the modelling step.
+
+**Execution.** Both sub-agents launched via
+`scripts/meta/delegate-sub.sh {a,b}` with `EFFORT=max` at 16:52 UTC
+(pre-cycle tag `cycle-03-pre` at commit `1d72f86`).
+
+- A: produced `task/ARGUMENT.md` (790 lines, 29122 bytes); one
+  substantive write at 16:05, one 1-byte polish at 16:06, process
+  exit at 16:07 (~14 min).  Single-shot.
+- B: produced `task/ARGUMENT.md` (780 lines, 34319 bytes) via three
+  writes (16:08 → 16:15 → 16:16) with ~10-min polishing between
+  them; also produced `simulator.py` (~5.4 KB, 181 lines) which
+  executes §6.1/§6.2/§6.3's STEP programs and validates 26/26
+  test cases.  Process exit at 16:19 (~23 min).
+
+**`/refine` firing status (B).**  **Did NOT fire standardly** —
+no `.refinement-active` marker, no `attempts/` JSONL, no
+`.eval-report.json` / `.eval-report-final.json` artefacts at
+cycle close.  This is a **regression from Cycle #2** (where
+/refine fired with the standard artefact set).  Root cause per
+B's agent-log summary: `/refine` proper requires git commits
+inside the sub-project, and B's `pre-commit-gate.sh` /
+`sub-project-edit-guard.sh` hook chain treats the verification-marker
+creation in `/workspaces/.claude/` as a sub-project boundary
+violation.  B substituted a **manual two-pass fresh-context
+evaluator cycle** which preserves the audit → modify → evaluate
+→ keep/discard discipline via a different mechanism.  Logged as
+`M3.1-refine-architectural-blockage` — Cycle #4 carry-over
+candidate (first-time, eligible per CLAUDE.md §6.7 step 8a).
+
+**G5 integrity axis empirical datapoint (Cycle #3 GOAL clause 3).**
+TASK.md §7's G5 polarity rules (hidden circularity < disclosed
+gap + named limitation < closed proof, with three concrete
+enforcement rules: no integrity regression, internal-tension
+downgrade, citation requirement) landed in B's refinement
+process.  B's two-pass trajectory:
+
+| Iteration | G1 | G2 | G3 | G4 | G5 integrity | Weighted |
+|-----------|----|----|----|----|-----|-----|
+| 1         | 1.00 | 1.00 | 1.00 | 1.00 | **0.85** (disclosed-gap band) | 0.955 |
+| 2         | 1.00 | 1.00 | 1.00 | 1.00 | **1.00** (disclosure discipline closed) | 1.000 |
+
+**Polarity-flip confirmed vs Cycle #2.**  Cycle #2's weighted
+trajectory was **0.815 → 0.78** (−0.035; disclosure penalized).
+Cycle #3's weighted trajectory is **0.955 → 1.000** (+0.045;
+disclosure rewarded).  The G5 axis specifically moved +0.15
+(0.85 → 1.00) with no integrity regression; iteration 2's
+improvements (§7.1 case-enumeration, §7.4 Rg-drift contributor
+list, §7.6 what-closure-would-need list, §1.1(b) combinator
+sketch concretization, §6.2 trace sequencing) are disclosure /
+structural improvements and were scored as gains, not losses.
+**Cycle #2 honesty drop is resolved in Cycle #3's scorer
+behaviour**, delivered through the TASK.md §7 channel per
+`cycle-02/JUDGMENT.md` §7.3.
+
+**Leak audit.**  A: pass (base audit clean; Cycle #3 name grep
+empty).  B: pass with soft-leak compliance note — line 655
+contains "3-counter machine" (substring "counter machine" is in
+TASK.md §3 banned list).  Grader's call: **pass without
+cycle-void**, compliance violation recorded in
+`cycle-03/JUDGMENT.md` Leak-audit section.  Rationale: the usage
+is a parenthetical analogy in §7.1's case-dismissal open
+question, not a retrieval-driven derivation; B's STEP is
+invented from first principles in §3.6.  The "register machine"
+exemption from TASK.md §3 is applied analogously to the
+k-counter parametric description at line 655.  Base
+paper-leak-audit.sh green on both.  "One-instruction set"
+appears at B line 21 in structural set-notation form (not the
+OISC architecture-class name); not counted as a leak.
+
+**Scores (see `cycle-03/JUDGMENT.md` for per-criterion evidence).**
+
+| Criterion                   | A | B |
+|-----------------------------|---|---|
+| R1 Motivation               | 3 | 3 |
+| R2 Method design            | 3 | 3 |
+| R3 Progressive minimization | 3 | 3 |
+| R4 Final basis structure    | 3 | 3 |
+| R5 Exact form               | 3 | 3 |
+| R6 Verification strategy    | 3 | 3 |
+| R7 Constructive examples    | 3 | 3 |
+| R8 Open questions           | 3 | 3 |
+| R9 Exact answer match       | 3 | 3 |
+| **Total**                   | **27/27** | **27/27** |
+
+Rubric adaptations for Cycle #3 documented in JUDGMENT.md
+"Domain adaptation" table (R3 emphasizes quality of 11→1 walk
+with trace arguments; R4/R5/R9 re-read for single-fused-instruction
+target; R7 domain-adapted to three distinct partial recursive
+functions in the arithmetic-flavoured register-machine
+category).
+
+**Key finding.**  Both A and B independently reach a 4-operand
+fused single instruction (A: **CJDECINC** Ri, Rj, L_zero, L_nonzero
+— decrement-or-guarded-increment; B: **STEP** Ri, Rj, L1, L2 —
+decrement-with-guard or else-increment).  The two answers are
+structurally isomorphic (both fuse decrement + zero-test + guarded
+increment + two-way branch), differing only in operand-order and
+zero-arm/nonzero-arm naming.  Two independent agents derive the
+same canonical object from first principles under disjoint
+banned-identifier constraints — the strongest A1 mitigation
+result across Cycles #1–#3.  B additionally produces `simulator.py`
+that executes STEP programs and validates 26/26 cases — the first
+agent-self-constructed executable oracle in an A/B cycle.
+
+**Disclosed-circularity scan (CLAUDE.md §6.7 step 5a).**  Both A
+and B carry one analogous undisclosed paragraph-level tension: a
+reserved register's invariant (R_0 for A at §3 Stage 7; Rz for B
+at §4.5) is textually violated by the JMP compilation chain
+(Stage 8 JZ-expansion for A; §3.6 JZ-synthesis for B) in dead
+code.  Neither agent names the tension; neither affects the live
+universality proof (the invariant holds at runtime).  Per
+`cycle-02/ROOT-DIAGNOSIS.md` §4.1's polarity rule scope
+("circularity affecting closure"), the dead-code syntactic nit
+does not cap R6 at 1 for either agent.  Both R6 = 3.  Findings
+logged in JUDGMENT.md §5a with §-reference pairs as required by
+CLAUDE.md §6.7 step 5a's citation requirement.
+
+**Comparative delta = 0 (third consecutive tie).**  Cycle #1:
+19 vs 20 (+1 B).  Cycle #2: 26 vs 26.  Cycle #3: 27 vs 27.  The
+spread has narrowed as both agents mature; by Cycle #3, both
+achieve perfect rubric on a substantially harder task
+(11-instruction baseline, banned-identifier list, multi-convention
+counting).  This continues the Cycle #2 meta-meta observation:
+on well-structured tasks with both agents producing full-quality
+first drafts, the evolvable-architecture premium is not
+rubric-visible; the premium lives in refinement-trace artefacts
+(B's scoring-trajectory table + simulator.py for Cycle #3).
+
+**ROOT self-improvements applied this cycle.**
+- **M2.1-hook-write carry-over closed as env-constraint** (commit
+  `1d72f86`, pre-cycle): structural close-out document at
+  `cycle-03/M21-RESOLUTION.md` argues that the sensitive-file
+  permission policy blocking `.claude/hooks/**` +
+  `.claude/settings.json` edits is outside agent-role modification
+  authority; compensating controls (behavioural discipline,
+  diff audit, forward-coverage tests, partial-defect audit)
+  remain operative.  Re-opening trigger documented for policy
+  lift.  Second carry-over prohibited per §4.2.
+- **judgment-rubric.md §R6 3-band extended** (this commit): port
+  of B's `simulator.py` external-oracle pattern as a ROOT-level
+  rubric augmentation.  Rubric R6 = 3 now includes the clause
+  "When the domain admits one, a working executable oracle … "
+  describing how simulator-validated reasoning deliverables
+  discharge the per-primitive correctness obligation empirically.
+  Per `cycle-03/JUDGMENT.md` §7.1 port decision.
+- **Archived artefacts** (commit `1d72f86`, pre-cycle): Cycle #2
+  live ARGUMENT.md + eval-reports preserved to `cycle-02/` for
+  referential consistency with its JUDGMENT.md §-references.
+
+**B improvements applied this cycle.**  None.  All viable B
+improvements this cycle (persistent G5 axis in evaluator.md;
+`/refine` architectural-blockage fix in pre-commit-gate or
+refine/) are sensitive-file-policy-denied, same blocker class
+as M2.1-hook-write.  Tracked as `M3.1-refine-architectural-blockage`
+for Cycle #4.
+
+**Drift audits.**
+- `git diff cycle-03-pre -- projects/a/` — empty. A untouched. ✓
+- `git diff cycle-03-pre -- projects/b/` — empty in tracked
+  files.  Untracked-only changes in `projects/b/task/` (gitignored:
+  ARGUMENT.md, simulator.py, .git/, .refine/).  No self-edit drift
+  from B's `.claude/`.  ✓
+
+**Commits in this cycle (after `cycle-03-pre`).**
+1. `1d72f86` chore(cycle-03-pre): archive cycle-02 artifacts + M2.1 structural close-out
+2. (this commit) feat(cycle-03): JUDGMENT + artefact archive + cycle-log + R6 rubric port
+
+**Open for next cycle (Cycle #4).**
+- **`M3.1-refine-architectural-blockage`** — first-time carry-over.
+  B's `/refine` is architecturally blocked by the pre-commit-gate
+  hook's write-to-`.claude/` rejection when the skill tries to
+  create its verification marker.  Fix requires edits under
+  `projects/b/.claude/skills/refine/` or `.claude/hooks/pre-commit-gate.sh`,
+  both sensitive-file-denied.  Bundled with the unresolved
+  evaluator.md G5-axis persistent-landing from Cycle #2.
+  Conditional on sensitive-file policy lift.
+- **Cycle #4 task selection** — open.  A1 mitigation via
+  banned-identifier list worked this cycle; apply the pattern
+  again for Cycle #4.  Domain should be orthogonal to both
+  discrete computation (Cycle #3) and continuous analysis
+  (Cycle #1) and discrete geometry (Cycle #2).  Candidates:
+  type-theory / proof-theoretic minimality, cryptographic
+  primitive reduction, error-correcting-code generator
+  minimality.  To be decided by ROOT at Cycle #4 TASK prep.
+- **G5 axis signal closed.**  Cycle #2's honesty drop
+  (0.815 → 0.78) is resolved in Cycle #3's scorer behaviour
+  (+0.045 rise with G5 polarity enforced).  The signal as a
+  Cycle-#2-origin carry-over is terminated.

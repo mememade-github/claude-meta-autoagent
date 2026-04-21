@@ -85,7 +85,7 @@ How does the argument establish that the chosen basis is complete?
 | 0 | No verification. |
 | 1 | Hand-picked examples only, **or** an argument with hidden circularity (a step relies on the conclusion it is meant to establish, and the reliance is not disclosed by the author). |
 | 2 | Attempts an algebraic/inductive argument with gaps, **and the gaps are named and scoped as explicit limitations** in the argument text itself. |
-| 3 | Numerical sieve (substitute algebraically independent transcendentals, compare numerically) combined with an algebraic-independence argument (Schanuel-style), or a constructive bootstrap procedure that builds each target primitive from the candidate basis, **with no disclosed gap remaining**. |
+| 3 | Numerical sieve (substitute algebraically independent transcendentals, compare numerically) combined with an algebraic-independence argument (Schanuel-style), or a constructive bootstrap procedure that builds each target primitive from the candidate basis, **with no disclosed gap remaining**.  When the domain admits one, a **working executable oracle** (e.g., a simulator that runs the candidate basis's programs and validates against expected semantics, checked empirically on a non-trivial test suite) discharges the per-primitive correctness obligation empirically and counts as a "3" indicator in addition to the trace-argument path. |
 
 **Scoring note (R6 honesty polarity).** The rubric strictly orders
 disclosed gap (score 2) above hidden circularity (score 1) above no
