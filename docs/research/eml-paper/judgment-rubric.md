@@ -14,9 +14,13 @@
 
 - **R1–R8** each score 0–3 → 24 points possible.
 - **R9** is binary: 0 (not reached) or 3 (reached) → 3 points possible.
-- **Total**: 27 points.
+- **R10** scores 0–3 → 3 points possible.  Added at Cycle #4 pre-cycle to
+  surface an iteration-sensitive axis (R1–R9 ceilinged at 27/27 across
+  Cycles #2 and #3 while B's iteration activity left no rubric trace).
+- **Total**: 30 points.
 
-Missing criteria score 0. Partial credit within 0–3 ranges is allowed for R1–R8.
+Missing criteria score 0. Partial credit within 0–3 ranges is allowed for
+R1–R8 and R10.
 
 ## Criterion definitions
 
@@ -134,6 +138,47 @@ constant" that composes `exp` and `ln`?
 
 Partial credit is not allowed for R9.
 
+### R10 — Iteration depth and self-correction trace (0–3)
+
+Did the agent revise its argument through iteration that left a persisted,
+reason-carrying trace on the working disk?
+
+R10 is structurally asymmetric by design: the A baseline has no iteration
+affordance in its configuration (no `/refine` skill, no evaluator agent,
+single-shot `claude -p` run terminates after one argument emission).  A can
+therefore score > 0 on R10 only if its single-shot run happens to produce
+multiple time-separated substantive writes to the same deliverable with
+reasoning deltas between them, captured by filesystem mtimes and byte-level
+diffs — a rare but not impossible pattern.  B inherits `/refine`, an
+evaluator agent, and cross-run agent-memory, and is structurally capable of
+R10 = 3.  The asymmetry is the point: R10 measures whether the evolvable
+architecture uses its iteration affordance during the task, which R1–R9
+could not see because by Cycles #2 and #3 both architectures produced
+full-quality first drafts.
+
+| Score | Evidence |
+|---|---|
+| 0 | Single-shot: one substantive write of `task/ARGUMENT.md`, no on-disk trace of deliberation between emissions, no other iteration artefacts (no `attempts/`, no `.refine/`, no `.eval-report*.json`, no multi-step evaluator invocation). |
+| 1 | Superficial iteration: re-reads with spot fixes (typo, word-order, prose) and no structural change to the argument. Trace present but content-deltas are cosmetic. |
+| 2 | One substantive iteration: at least one reasoning-level change between emissions (an added case, a closed gap, a re-derivation, a retraction) with on-disk trace — either a multi-write ARGUMENT.md mtime sequence with byte-diff > ~1 KB on reasoning sections, or one `.refine/` / `attempts/` / `.eval-report.json` artefact. |
+| 3 | Two or more substantive iterations with on-disk traces, each showing a distinct reasoning delta, AND a citable path to each trace artefact that ROOT can name in JUDGMENT.md (e.g. `projects/b/task/.refine/attempt-01.jsonl`, `projects/b/task/.eval-report.json`, `projects/b/task/ARGUMENT.md @ mtime t1,t2,t3`). The progression itself must be visible in the final document (strengthened section, resolved tension, added verification) — scored together with R6 polarity. |
+
+**Evidence discipline.** Unlike R1–R9, R10 evidence is off-document: the
+JUDGMENT.md must name the on-disk paths (and, where useful, mtimes and
+byte sizes) that support the score.  Citing only ARGUMENT.md line numbers
+for R10 is insufficient.  If the trace artefacts are gitignored and will
+be cleaned up with the next cycle (as they are in this project's current
+configuration), the JUDGMENT.md must snapshot the evidence inline (mtimes
+/ sizes / a representative diff extract) at grading time before the
+artefacts disappear.
+
+**Non-inflation guard.** R10 and R6 are scored independently.  An
+iteration that mechanically re-generates output without resolving any R6
+issue does not earn R10 ≥ 2 even if the file-system trace is long.  The
+grader checks: does iteration k+1 close a gap that iteration k disclosed,
+or resolve a tension, or extend a verification?  If the answer is no on
+every iteration, the trace is cosmetic (R10 = 1) regardless of size.
+
 ## Disqualification rules (Leak)
 
 If any of these conditions hold, the argument scores **0 total** and the cycle is voided:
@@ -154,7 +199,7 @@ When grading, the ROOT Agent writes a JUDGMENT.md with this structure:
 ```
 # Cycle NN — JUDGMENT
 
-## Agent A score: X / 27
+## Agent A score: X / 30
 - R1: X  — <one-line justification from the A ARGUMENT.md>
 - R2: X  — ...
 - R3: X  — ...
@@ -164,8 +209,9 @@ When grading, the ROOT Agent writes a JUDGMENT.md with this structure:
 - R7: X  — ...
 - R8: X  — ...
 - R9: X  — ...
+- R10: X  — <on-disk evidence paths / mtimes / sizes>
 
-## Agent B score: Y / 27
+## Agent B score: Y / 30
 (same structure)
 
 ## Comparative analysis
