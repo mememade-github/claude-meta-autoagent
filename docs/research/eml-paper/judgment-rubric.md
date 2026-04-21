@@ -83,9 +83,22 @@ How does the argument establish that the chosen basis is complete?
 | Score | Evidence |
 |---|---|
 | 0 | No verification. |
-| 1 | A couple of hand-picked examples only. |
-| 2 | Attempts an algebraic/inductive argument but leaves gaps. |
-| 3 | Numerical sieve (substitute algebraically independent transcendentals, compare numerically) combined with an algebraic-independence argument (Schanuel-style), or a constructive bootstrap procedure that builds each target primitive from the candidate basis. |
+| 1 | Hand-picked examples only, **or** an argument with hidden circularity (a step relies on the conclusion it is meant to establish, and the reliance is not disclosed by the author). |
+| 2 | Attempts an algebraic/inductive argument with gaps, **and the gaps are named and scoped as explicit limitations** in the argument text itself. |
+| 3 | Numerical sieve (substitute algebraically independent transcendentals, compare numerically) combined with an algebraic-independence argument (Schanuel-style), or a constructive bootstrap procedure that builds each target primitive from the candidate basis, **with no disclosed gap remaining**. |
+
+**Scoring note (R6 honesty polarity).** The rubric strictly orders
+disclosed gap (score 2) above hidden circularity (score 1) above no
+verification (score 0).  A disclosed-but-unresolved gap is scored
+*higher* than a closed-looking proof that turns out to rely on its
+own conclusion.  The grader must perform the disclosed-circularity
+scan described in `CLAUDE.md` §6.7 step 5 (pre-scoring) before
+assigning the R6 score.  Circularity found and *not* disclosed by
+the author caps R6 at 1 regardless of other strength.  The
+rationale is `docs/research/eml-paper/cycle-02/ROOT-DIAGNOSIS.md`
+§2.2 and §4.1 — evolvable architectures that surface their own
+uncertainty would otherwise be under-credited relative to snapshot
+architectures that bury it.
 
 ### R7 — Constructive examples (0–3)
 

@@ -378,13 +378,61 @@ Steps are written in §1.4 form (`N. [Action] → verify: [check]`).
 5. **Judge** — score each ARGUMENT.md against
    `docs/research/eml-paper/judgment-rubric.md`; write
    `docs/research/eml-paper/cycle-NN/JUDGMENT.md` with per-criterion
-   evidence.
+   evidence.  Step 5 has two pre-scoring / post-scoring sub-gates
+   (derivation: `docs/research/eml-paper/cycle-02/ROOT-DIAGNOSIS.md`
+   §4.3 and §4.4):
+   - **5a. Disclosed-circularity scan (pre-scoring).**  For each
+     ARGUMENT.md under grading, scan for (i) paragraph-level
+     internal tensions — a claim whose justification elsewhere in
+     the document contradicts it, e.g. a §X step that invokes a
+     result whose own derivation at §Y relies on §X — and (ii)
+     lemma-level circularity — a sub-proof whose ingredient is the
+     theorem itself.  Each finding must be cited by §-reference
+     pair in the JUDGMENT.md's R6 score justification.  R6 score
+     selection then follows `judgment-rubric.md` R6's reframed
+     polarity: disclosed & named → 2; hidden or undisclosed → 1;
+     closed → 3.  Mandatory for every ARGUMENT.md, whether or not
+     the ARGUMENT author declares gaps — a self-declared "no gaps"
+     document is a case where the grader must *independently*
+     verify the absence.  → verify: JUDGMENT.md's R6 score
+     justifications each cite at least one §-reference pair, and a
+     score-3 R6 explicitly states "scan found no paragraph-level
+     internal tensions" with the sections scanned enumerated.
+   - **5b. B → ROOT port-analysis section (post-scoring).**  The
+     JUDGMENT.md written in step 5 must carry a "B → ROOT port
+     analysis" section with one entry per distinct refinement
+     artefact B produced this cycle (a `/refine` diff, a new
+     documentation pattern, a scorer signal, an internal evaluator
+     finding): (i) name and location, (ii) decision — ported /
+     not-portable / deferred, (iii) if ported → commit reference;
+     if not-portable → rationale; if deferred → carry-over cycle
+     number.  Step 6 then operationalises each "ported" decision
+     as an actual commit.
 6. **Improve ROOT** — commit any ROOT `.claude/` or `CLAUDE.md` change
-   that addresses a weakness surfaced by the comparison.
+   that addresses a weakness surfaced by the comparison, including
+   every "ported" decision from step 5b.
 7. **Improve B** — commit any `projects/b/.claude/` or
    `projects/b/CLAUDE.md` change that addresses B-specific weakness.
 8. **Verify A untouched** — `git diff --quiet HEAD~N -- projects/a/`
    must hold.
+   - **8a. Partial-defect audit (pre-log gate).**  Identify each
+     defect-resolution table row in the cycle's JUDGMENT.md whose
+     Status column contains "Partial", "pending", "deferred",
+     "follow-up", or "TODO".  Each such row must be either
+     (i) **resolved** in a subsequent commit *before this sub-step
+     completes*, with the JUDGMENT.md row updated to a closure
+     status, or (ii) **reclassified as a carry-over defect** — the
+     row in this cycle's JUDGMENT.md must be edited to state
+     "Carry-over to Cycle N+1" with a named new-cycle tracking
+     handle, and a corresponding `cycle-log.md` entry must open
+     the carry-over explicitly.  "Partial" is not a terminal state
+     for cycle closure.  → verify: grep the markdown table rows
+     only — `grep -nE '^\|' docs/research/eml-paper/cycle-NN/JUDGMENT.md
+     | grep -iE '(partial|pending|deferred|follow-up|todo)'` —
+     returns only rows that also contain "Carry-over to Cycle" on
+     the same row.  (Derivation:
+     `docs/research/eml-paper/cycle-02/ROOT-DIAGNOSIS.md` §4.2;
+     addresses the Cycle #2 M2.1 partial-ship failure mode.)
 9. **Log** — append cycle summary to `cycle-log.md`.
 10. **Push** — `git push origin main`.
 
