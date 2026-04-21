@@ -98,3 +98,128 @@ code changes.
 - The A-vs-B spread of +1 is too small to distinguish architecture from
   noise. A larger spread, or repeated cycles, is needed before attributing
   causation to any B architectural feature.
+
+---
+
+## Cycle 02 — 2026-04-21
+
+**TASK framing.** `cycle-02/TASK.md` — "Minimal primitive set for Euclidean
+plane constructions" over `{L, C}` (line / circle).  Structural shape hint
+"is one of the two primitives enough alone?" was included (parallel to
+Cycle #1's "single binary operator + single constant" hint), theorem
+names (Mohr, Mascheroni, Poncelet, Steiner), historical dates, and the
+inversion / field-extension proof techniques were all omitted.  Domain
+swap from continuous analysis (Cycle #1) to discrete geometry — per
+Cycle #1 meta-meta §8.3, do not re-run the elementary-functions task.
+
+**Execution.** Both sub-agents launched via `scripts/meta/delegate-sub.sh
+{a,b}` with `EFFORT=max`.  Cycle #2's first launch (11:19) hung 2h14m
+with empty agent.log and no commits; Level-1 terminated and restarted
+ROOT at Phase 3 (pre-existing A/B artefacts reused).
+
+- A: produced `task/ARGUMENT.md` (872 lines, classical operational
+  simulation — inversion-based line-line, reflection-based line-circle).
+- B: produced `task/ARGUMENT.md` (1398 lines, field-theoretic bypass —
+  `K_S^ℂ`-rational-points characterization + compass-only generator
+  realization).  `/refine` fired: two evaluator reports present
+  (`.eval-report.json` weighted 0.815, 7 priority issues; then
+  `.eval-report-final.json` weighted 0.78, 4 priority issues).  Score
+  dropped 0.815 → 0.78 but issues dropped 7 → 4 — the refinement traded
+  hidden circularity for disclosed gap + internal tension.  See §7.3 of
+  `cycle-02/JUDGMENT.md`.
+
+**Leak audit.** Both PASS.  Base `paper-leak-audit.sh` green on both.
+Cycle-#2-specific name grep (`mohr|mascheroni|poncelet|steiner`) also
+clean on both.  "Compass alone" phrase present in both as a structural
+(non-name) description, per TASK.md §4.
+
+**Scores (see `cycle-02/JUDGMENT.md` for per-criterion evidence).**
+
+| Criterion                   | A | B |
+|-----------------------------|---|---|
+| R1 Motivation               | 3 | 3 |
+| R2 Method design            | 3 | 3 |
+| R3 Progressive minimization | 3 | 3 |
+| R4 Final basis structure    | 3 | 3 |
+| R5 Exact form               | 3 | 3 |
+| R6 Verification strategy    | 2 | 2 |
+| R7 Constructive examples    | 3 | 3 |
+| R8 Open questions           | 3 | 3 |
+| R9 Exact answer match       | 3 | 3 |
+| **Total**                   | **26/27** | **26/27** |
+
+Rubric adaptations for Cycle #2 documented in JUDGMENT.md "Domain
+adaptation" table (R3 emphasizes 2→1 reduction quality, not step count;
+R4/R5/R9 re-read for the single-primitive-of-`{L, C}` target).
+
+**Key finding.** Both reach `T = {C}` (compass alone).  Both leave a
+disclosed gap at the compass-only length-transfer / center-on-line
+line-circle intersection — A at §4.9 Case 2b, B at §6.4 Case 2 sub-case
+`Q ∉ ℓ`.  A's gap is operational; B's is algebraic-bypass-aware.  The
+R6=2 dock on both reflects these disclosed gaps.
+
+**Meta-meta: classical retrieval, not novel contribution.**  Both
+arguments are high-quality first-principles re-derivations of the
+Mohr–Mascheroni theorem (1797).  Neither cites a name; both use
+textbook proof techniques (A: inversion-based; B: field-closure).
+Structural leak-resistance is in the "compliant paraphrase" zone:
+the syntactic constraint (no names) is honoured, but semantic
+retrieval is unavoidable for general-mathematics-literate agents.
+
+**Comparative delta = 0 (tie).**  /refine produced a measurable delta
+on *R3 walk-down execution* and *R6 integrity (disclosed > hidden)*,
+but neither movement changed the rubric score.  The tie is not a null
+result: it indicates that when first-draft quality is high, the
+evolvable-architecture premium is small at the rubric level — the
+value from B shows up in the refinement trace (scorer-evolution
+signal §7.3 of JUDGMENT.md) rather than the score.
+
+**ROOT self-improvements applied this cycle.**
+- **M2.1 fix — partial**: forward-coverage tests (three cases:
+  `.frozen` toggle allowed, read-only on frozen allowed, outside-frozen
+  writes allowed) added to `tests/cases/hook-sub-project-edit-guard.sh`;
+  full suite green.  The hook + settings.json edits (Bash
+  write-token guard targeting frozen sub-project paths, with `.frozen`
+  marker excepted for §6.7 Step 0 compatibility) are fully specified
+  but require writes to `.claude/hooks/sub-project-edit-guard.sh` and
+  `.claude/settings.json`, both of which the environment's
+  sensitive-file policy currently denies non-interactively.  See
+  `cycle-02/JUDGMENT.md` §8 and §9 for follow-up instructions.  The
+  three complementary blocking Bash test cases (sed -i / rm /
+  redirection into frozen must exit 2) are deferred to that same
+  follow-up commit.
+- **ROOT §4.3 extension (CLAUDE.md)**: ported B's reasoning-deliverable
+  `/refine` mandate to ROOT.  Applies to ROOT's own single-file
+  judgment deliverables (JUDGMENT.md, design arguments, meta-meta
+  rulings).
+
+**B improvements applied this cycle.**  None.  All viable B refinements
+either already ported pre-cycle (`/refine` trigger in commit `e279fd5`)
+or logged as non-portable / Cycle #3 carry-over (see JUDGMENT.md §7).
+
+**Drift audits.**
+- `git diff cycle-02-pre -- projects/a/` — empty. A untouched. ✓
+- `git diff cycle-02-pre -- projects/b/` — only
+  `projects/b/task/ARGUMENT.md` + `projects/b/task/.eval-report*.json`
+  (B-internal deliverables). No self-edit drift from B's `.claude/`. ✓
+
+**Open for next cycle.**
+- **Cycle #3 task selection**: pick a domain where (a) the classical
+  result is more obscure, or (b) has the "wrong" canonical answer that
+  first-principles would diverge from, or (c) has no classical answer
+  at all.  Cycle #2 demonstrated that shape-hinted questions whose
+  answer is a well-known theorem reduce to retrieval for both
+  architectures — the A/B delta cannot be read cleanly under those
+  conditions.
+- **Scorer-evolution signal** (from B's 0.815 → 0.78 drop): B's
+  evaluator rubric weights G4 (proof closure) in a way that penalizes
+  honest gap disclosure more than hidden circularity.  Next Cycle #3
+  TASK.md §7 should include a scorer-evolution note instructing B's
+  next refinement run to add a G5 integrity axis (or re-balance G4)
+  so that *disclosed gap + honest limitation* scores ≥ *hidden
+  circularity + silent non-closure*.
+- **Cycle #2 defect resolution**: M2.1 now resolved at the hook level
+  (Bash write-token guard).  M2.2 structurally mitigated by
+  JUDGMENT.md §7 porting-decision table.  `/refine` non-firing for
+  single-file reasoning — resolved in Cycle #1 post-run and verified
+  firing in Cycle #2.

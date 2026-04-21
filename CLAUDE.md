@@ -156,6 +156,19 @@ touching both code and scorer MUST use `/refine`. Direct edit bypass is a
 protocol violation. **Trivial changes** (typo, single config line): direct
 edit, no evaluation needed — see §1.6.
 
+**Load-bearing reasoning deliverables** (ported from `projects/b/CLAUDE.md`
+§4.3 after Cycle #2): when ROOT itself produces a single argumentative or
+analytic document whose correctness is not settled by an external oracle
+(a JUDGMENT.md, cycle-log entry, structural design argument, meta-meta
+ruling), `/refine` is *also* mandatory. A single-file output does not make
+the task simple (§1.2 is about the artifact, not the process that
+validates it); what matters is whether the correctness question is settled
+by the first draft. Reasoning tasks where a second read might reveal
+a structural blind spot (missed operator equivalences, missed dual
+formulations, missed counterexamples, undisclosed gaps) must go through
+`/refine`'s audit → modify → evaluate → keep/discard loop, with the
+evaluator agent scoring each iteration against an explicit rubric.
+
 ### §4.4 Never self-evaluate
 
 Delegate to the **evaluator** agent.
