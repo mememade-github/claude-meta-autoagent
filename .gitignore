@@ -35,9 +35,17 @@ projects/*/attempts/
 # WIP tasks (session-specific)
 wip/
 
+# Test runner logs (reproduced on every invocation)
+tests/results/
+
 # Sub-projects — part of the ROOT system. Sub-projects not listed below are
 # gitignored from the public repo but remain internal to the ROOT system.
 # To track a new sub-project: add !projects/<name>/ below.
 projects/*/
 !projects/a/
 !projects/b/
+
+# Cycle deliverables — regenerated per cycle in A/B containers.
+# Permanent snapshots live under docs/research/eml-paper/cycle-NN/.
+projects/a/task/
+projects/b/task/

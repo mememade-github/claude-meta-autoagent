@@ -102,6 +102,10 @@ after (§1.1).
 - Execute the build and confirm success before claiming "build succeeds."
 - Test functionality and demonstrate results before claiming "works."
 
+The Agent-behaviour reproducibility suite is `bash tests/run.sh` —
+exercises every hook, delegation script, and cross-file invariant.
+Exit 0 ⇔ all green. See `tests/README.md` for coverage.
+
 ## 3. Operational Gates
 
 ### §3.1 Destructive operations — approval required
