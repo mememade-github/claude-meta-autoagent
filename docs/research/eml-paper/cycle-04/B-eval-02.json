@@ -1,0 +1,204 @@
+{
+  "contract_score": 0.86,
+  "checks_passed": 22,
+  "checks_total": 25,
+  "findings": [
+    {
+      "check": "Regression 1: No banned names (Church, Curry, Rosser, Schönfinkel, SKI, BCKW, BCIW, Iota, ι-combinator, Jot, Unlambda, BLC, X-combinator, Xi-combinator, Zot, Turing's universal combinator)",
+      "tool": "Grep case-insensitive for all banned patterns in /workspaces/task/ARGUMENT.md",
+      "result": "pass",
+      "evidence": "Zero matches for: Church, Curry, Rosser, Schönfinkel, Schonfinkel, SKI, BCKW, BCIW, Iota, Jot, Unlambda, BLC, 'X-combinator', 'Xi-combinator', Zot. Turing appears only in 'Turing-complete' (lines 69, 58) and 'Turing machines' (line 58), which are generic technical terms and not on the banned list. Hard-constraint violation from v1 (Church-numeral lines 456/458) has been resolved — Example 6.2 is now titled 'Iterator-numeral successor' and the phrase is 'Iterator-style numerals' (lines 471-474)."
+    },
+    {
+      "check": "Regression 2(a): §4 hypothetical J framed as explicitly excluded by convention, not as author's answer",
+      "tool": "Read §4 lines 372-410",
+      "result": "pass",
+      "evidence": "Section header is '### Excluded construction — rules that cross-reference primitives' (line 372). Framing phrases: 'hypothetically, in violation of our convention' (line 381), 'cross-reference — forbidden by §4' annotation on the rule (line 384), 'But this rule writes S and K into its RHS as object-language constants, not as bound variables' (line 398-400), 'In our declared convention it is not' (line 404). The headline result on line 412 reaffirms 'Declared headline result (our convention of §4): P* = {S, K}, size 2'. The construction is clearly excluded, not adopted."
+    },
+    {
+      "check": "Regression 2(b): J-combinator trace — J a = a S K produces J J ≡ I, J(JJ) ≡ S K, J(J(JJ)) ≡ K, J(J(J(JJ))) ≡ S — all correct by direct β-reduction",
+      "tool": "Python SK-combinator reducer; manual β-trace verification",
+      "result": "pass",
+      "evidence": "Verified computationally: (1) J J → J S K → (J S) K → (S S K) K → S K (K K), and (S K)(K K) v →_S K v ((K K) v) →_K K v K →_K v — extensionally I. (2) J (J J) →* ((S K)(K K)) S K; reducer confirms (S K)(K K) S K → S K (matches claim Π₂). (3) J (J (J J)) →* (S K) S K; reducer confirms S K S K → K (matches claim). (4) J (J (J (J J))) →* K S K; reducer confirms K S K → S (matches claim). All four claims are β-correct. Lines 386-396 are mathematically sound."
+    },
+    {
+      "check": "β-trace: I = S K K",
+      "tool": "reduce S K K x",
+      "result": "pass",
+      "evidence": "S K K x → K x (K x) → x, 2 steps. Document line 225-226 correct."
+    },
+    {
+      "check": "β-trace: Π₂ = K I",
+      "tool": "reduce K I x y",
+      "result": "pass",
+      "evidence": "(K I) x y → I y → y. Line 156 correct."
+    },
+    {
+      "check": "β-trace: T = C I",
+      "tool": "reduce C I x y",
+      "result": "pass",
+      "evidence": "(C I) x y → I y x → y x. Line 165-166 correct."
+    },
+    {
+      "check": "β-trace: D = B B",
+      "tool": "reduce B B x y z w",
+      "result": "pass",
+      "evidence": "B B x y → B (x y); then B (x y) z w → (x y)(z w) = x y (z w). Lines 171-177 correct."
+    },
+    {
+      "check": "β-trace: V = B C (C I)",
+      "tool": "reduce B C (C I) x y z",
+      "result": "pass",
+      "evidence": "B C (C I) x → C ((C I) x); then C ((C I) x) y z → ((C I) x) z y → (I z x) y → z x y. Python reducer confirms result = 'z x y'. Lines 182-186 correct."
+    },
+    {
+      "check": "β-trace: M = S I I",
+      "tool": "reduce S I I x",
+      "result": "pass",
+      "evidence": "S I I x → I x (I x) → x x. Python reducer confirms result = 'x x'. Lines 188-189 correct."
+    },
+    {
+      "check": "β-trace: C = S (B B S) (K K) — 6-step clean left-to-right trace",
+      "tool": "Read document trace lines 197-209; Python reducer cross-check",
+      "result": "pass",
+      "evidence": "All 6 steps checked: (1) S-rule → (B B S) x ((K K) x) y z; (2) (K K) x → K → (B B S) x K y z; (3) (B B S) x → B (S x) → B (S x) K y z; (4) B-rule → (S x)(K y) z; (5) S-rule → x z ((K y) z); (6) (K y) z → y → x z y. Python reducer confirms S (B B S)(K K) x y z ↠ x z y in 13 internal steps. Trace is clean and correct."
+    },
+    {
+      "check": "β-trace: W = S S (S K) — clean trace",
+      "tool": "Read document trace lines 211-219; Python reducer cross-check",
+      "result": "pass",
+      "evidence": "Steps: (1) outer S → S x ((S K) x) y; (2) next S → x y ((S K) x y); (3) inner (S K) x y → K y (x y) → y; (4) → x y y. Python reducer confirms S S (S K) x y ↠ x y y in 9 internal steps. Trace is clean."
+    },
+    {
+      "check": "β-trace: B = S (K S) K — 4-step clean trace",
+      "tool": "Read document trace lines 232-239; Python reducer cross-check",
+      "result": "pass",
+      "evidence": "4 steps: (1) S-rule → (K S) x (K x) y z; (2) (K S) x → S → S (K x) y z; (3) S-rule → (K x) z (y z); (4) (K x) z → x → x (y z). Python reducer confirms S (K S) K x y z ↠ x (y z). Clean straight left-to-right β-trace (improvement over v1's noted muddling)."
+    },
+    {
+      "check": "β-trace: Y' via bracket abstraction",
+      "tool": "Read §3 Stage 3→2 lines 244-278; verify bracket-abstraction correctness",
+      "result": "pass",
+      "evidence": "Y' = S ϕ ϕ with ϕ = S (S (K S)(S (K K) I))(K (S I I)) is correctly derived from λf. (λx. f (x x))(λx. f (x x)) via bracket abstraction steps. The document acknowledges that full token-level trace is long and defers to bracket-abstraction correctness theorem (§5 V2) rather than asserting explicit β-steps. This matches v1's prior suggestion. Mathematically sound."
+    },
+    {
+      "check": "Example 6.2: neutral 'iterator-numeral' phrasing replaces 'Church numerals'",
+      "tool": "Read lines 471-497",
+      "result": "pass",
+      "evidence": "Title 'Example 6.2 — Iterator-numeral successor' (line 471). Phrasing: 'Iterator-style numerals — the standard lambda-term encoding of n ∈ ℕ as \"apply f to x exactly n times\"' (lines 473-474). c₀ = K I, c₁ = I defined correctly. Successor definition succ = λn f x. f (n f x) (line 479) is correct."
+    },
+    {
+      "check": "Example 6.2: compact 'succ = S (S (K S) K) (S (K K) I)' formula is correct combinator for succ",
+      "tool": "Python SK-combinator reducer on succ n f x; succ c₀ f x",
+      "result": "FAIL",
+      "evidence": "The formula succ = S (S (K S) K) (S (K K) I) does NOT compute the successor. Python reducer on (succ_def) n f x with succ_def = S (S (K S) K) (S (K K) I): result is 'n n x' (19 steps), not 'f (n f x)'. On succ c₀ f x with c₀ = K I: result is 'x' (13 steps), not 'f x' as the document's sanity check claims. The correct compact form is succ = S B = S (S (K S) K) (without the second argument (S (K K) I)) — the reducer confirms this form yields 'f (n f x)' correctly. Lines 493-494 contain an incorrect claim, and the sanity check on lines 496-497 is an unverified λ-calculation that masquerades as a verification of the incorrect compact formula. This is a NEW issue introduced by the revision (or carried over; the v1 Example 6.2 was flagged for a DIFFERENT reason — 'Church' name — not for formula correctness)."
+    },
+    {
+      "check": "Example 6.2: derivation rigor — bracket abstraction of succ stops short of final formula",
+      "tool": "Re-derive [f](S (K f)(S (K (n f)) I)) from bracket-abstraction rules",
+      "result": "FAIL",
+      "evidence": "My re-derivation: [f](S (K f)) = S (K S) (S (K K) I) (not 'S (K S) K'). [f](S (K (n f)) I) = S (S (K S)(S (K K)(S (K n) I)))(K I). The full formula is: [f](body) = S (S (K S)(S (K K) I)) (S (S (K S)(S (K K)(S (K n) I)))(K I)). Then [n] of that would add further layers. The document's compact 'succ = S (S (K S) K) (S (K K) I)' is (a) too simple by multiple factors and (b) does not reflect either the intermediate [f] result or the final [n][f] result. The document's derivation elides 'Each sub-abstraction is a mechanical application' and jumps to an incorrect answer."
+    },
+    {
+      "check": "Example 6.3: Y' formula and trace correct and in {S, K}",
+      "tool": "Read lines 499-514",
+      "result": "pass",
+      "evidence": "Y' = S ψ ψ with ψ = S (S (K S)(S (K K)(S K K)))(K (S (S K K)(S K K))) — full I = S K K substitution. The fixed-point trace Y' f → A(f) A(f) →_β f (A(f) A(f)) = f (Y' f) is correct by bracket-abstraction correctness and standard fixed-point-combinator theory. Non-trivial instance Y' K → K (Y' K) matches baseline Y-behavior. Sound."
+    },
+    {
+      "check": "§4 internal consistency: P* = {S, K} declared size 2",
+      "tool": "Read §4 line 329 and §4 line 412",
+      "result": "pass",
+      "evidence": "Line 329: 'Result: P* = { S, K }, |P*| = 2.' Line 412: 'Declared headline result (our convention of §4): P* = {S, K}, size 2.' Consistent."
+    },
+    {
+      "check": "§6 examples all use {S, K}",
+      "tool": "Read §6 lines 460-514",
+      "result": "pass",
+      "evidence": "Example 6.1 uses S K K; Example 6.2 uses S, K, I (with I = S K K subscript); Example 6.3 uses {S, K} explicitly. All consistent with P* = {S, K}. (Note: 6.2's specific formula is wrong, but the alphabet usage is consistent.)"
+    },
+    {
+      "check": "§7 Q1 flags size-1 as open; consistent with §4",
+      "tool": "Read §7 Q1 lines 520-534",
+      "result": "pass",
+      "evidence": "'Our declared P* has size 2. Is it the true minimum under the declared convention?' ... 'Both remain genuine open questions.' Consistent with §4's epistemic stance (lines 363-370: 'We leave open a strict proof that no ρ works'). Consistency preserved."
+    },
+    {
+      "check": "§7 covers all three required topics: optimality, strong reduction, convention dependence",
+      "tool": "Read §7 lines 518-574",
+      "result": "pass",
+      "evidence": "Q1 Optimality (lines 520-534); Q2 Strong (under-binder) reduction (lines 536-547); Q3 Convention dependence (lines 549-574). All three topics addressed with substantive content."
+    },
+    {
+      "check": "§7 Q3 consistency with §4: J rule form used in Q3 vs. §4",
+      "tool": "Compare lines 384 (§4) and 571 (§7 Q3)",
+      "result": "partial",
+      "evidence": "§4 line 384: 'J a = a S K' (cross-refs S and K). §7 Q3 line 571: 'J a = a (S K K) K' — a DIFFERENT J with rule 'a (S K K) K = a I K'. This minor inconsistency (two different J's in the document, both cross-referencing primitives) is not a hard contradiction but a small sloppy detail. The Q3 J's size-1 claim is not proved (it's stated as 'is size 1 (constructively)') — a direct β-check shows J (S K K) K = I, but verifying full completeness would require more work. Since Q3 is an open-question discussion, this is acceptable but should ideally cross-reference the §4 J consistently."
+    },
+    {
+      "check": "New issue check: any new issues introduced by the revision",
+      "tool": "Diff reasoning against v1 concerns",
+      "result": "FAIL",
+      "evidence": "NEW ISSUE: Example 6.2's compact succ formula 'S (S (K S) K) (S (K K) I)' is wrong (produces n n x instead of f (n f x)) — see Find #14. NEW(minor) ISSUE: §7 Q3 uses a different J-rule from §4 (a (S K K) K vs. a S K) — see Find #21. These are new mistakes introduced alongside the fixes to the Church-identifier and J-trace issues."
+    },
+    {
+      "check": "Counting convention explicitly declared",
+      "tool": "Read §4 lines 304-325",
+      "result": "pass",
+      "evidence": "Explicit: application not counted (line 307-309); each distinguished token counts 1 (line 310-315); self-reference permitted (line 316-318); cross-reference not allowed for invented combinators (line 319-325). All stated with clear justification."
+    },
+    {
+      "check": "Invariants (linearity, no-erasure, no-duplication) stated precisely",
+      "tool": "Read §2 lines 110-132",
+      "result": "pass",
+      "evidence": "Three invariants defined with reduction-preservation argument. K cannot be synthesised from non-erasing basis (line 124-125); S cannot be synthesised from no-duplication basis (line 127-129). Preservation proof sketched on lines 113-120. Adequate rigor for the argument."
+    }
+  ],
+  "generated_checks": [
+    {"name": "Banned-name scan (16 terms)", "command": "Grep case-insensitive for each", "result": "pass — zero matches"},
+    {"name": "Church/church scan", "command": "Grep -i", "result": "pass — zero matches"},
+    {"name": "§4 J framing as excluded construction", "command": "Read §4", "result": "pass"},
+    {"name": "§4 J-trace β-correctness: J J ≡ I", "command": "Python reducer on (S K)(K K) v", "result": "pass — reduces to v"},
+    {"name": "§4 J-trace β-correctness: J(JJ) ≡ S K", "command": "Python reducer on (S K)(K K) S K", "result": "pass — reduces to S K"},
+    {"name": "§4 J-trace β-correctness: J(J(JJ)) ≡ K", "command": "Python reducer on S K S K", "result": "pass — reduces to K"},
+    {"name": "§4 J-trace β-correctness: J(J(J(JJ))) ≡ S", "command": "Python reducer on K S K", "result": "pass — reduces to S"},
+    {"name": "I = S K K β-trace", "command": "Python reducer", "result": "pass"},
+    {"name": "Π₂ = K I β-trace", "command": "manual + reducer", "result": "pass"},
+    {"name": "T = C I β-trace", "command": "Python reducer", "result": "pass — C I x y ↠ y x"},
+    {"name": "D = B B β-trace", "command": "Python reducer", "result": "pass — B B x y z w ↠ x y (z w)"},
+    {"name": "V = B C (C I) β-trace", "command": "Python reducer", "result": "pass — ↠ z x y"},
+    {"name": "M = S I I β-trace", "command": "Python reducer", "result": "pass — ↠ x x"},
+    {"name": "C = S (B B S)(K K) β-trace (6 steps)", "command": "manual + reducer", "result": "pass — ↠ x z y"},
+    {"name": "W = S S (S K) β-trace", "command": "Python reducer", "result": "pass — ↠ x y y"},
+    {"name": "B = S (K S) K β-trace (4 steps)", "command": "Python reducer", "result": "pass — ↠ x (y z)"},
+    {"name": "Y' bracket-abstraction form", "command": "Re-derive", "result": "pass"},
+    {"name": "Example 6.2 succ formula correctness", "command": "Python reducer on succ n f x", "result": "FAIL — yields n n x, not f (n f x)"},
+    {"name": "Example 6.2 sanity check (succ c₀ f x = f x)", "command": "Python reducer on succ c₀ f x", "result": "FAIL — yields x, not f x"},
+    {"name": "Example 6.3 Y' in pure {S, K}", "command": "Read formula", "result": "pass"},
+    {"name": "§7 three required topics covered", "command": "Read §7", "result": "pass"},
+    {"name": "§7 Q1 consistency with §4 (size-1 open)", "command": "cross-reference", "result": "pass"},
+    {"name": "§7 Q3 J-rule form vs. §4 J-rule form", "command": "cross-reference", "result": "partial — two different J's used"},
+    {"name": "Counting convention declared", "command": "Read §4", "result": "pass"},
+    {"name": "§2 invariants stated", "command": "Read §2", "result": "pass"}
+  ],
+  "suggestions": "Top issue: Example 6.2's compact successor formula 'succ = S (S (K S) K) (S (K K) I)' is incorrect — it reduces to 'n n x', not 'f (n f x)'. The sanity check (line 496-497) is a λ-level calculation that assumes the desired behavior but was never cross-checked against the stated compact formula. Fix: either (a) replace with the correct compact form 'succ = S (S (K S) K)' (i.e. S B, which yields f (n f x) as verified by β-reduction), or (b) provide the full correct bracket-abstraction result (much longer — includes the n-abstraction layer) and verify with an explicit trace. The current form mixes an incorrect compact claim with a plausible-looking but unrelated λ-level sanity check. Minor: §7 Q3 uses J a = a (S K K) K while §4 uses J a = a S K — use a consistent J-rule across both sections, or note that two distinct one-combinator variants exist.",
+  "score_rubric": {
+    "correctness_weight": 0.30,
+    "correctness_score": 0.85,
+    "correctness_notes": "All 10 of the §3 β-traces (I, T, D, V, M, C, W, B, Π₂, Y') verified correct by Python reducer. §4 J-trace all four claims verified. However Example 6.2's compact succ formula is provably wrong.",
+    "completeness_weight": 0.25,
+    "completeness_score": 0.95,
+    "completeness_notes": "All 7 sections present, all required sub-elements (3+ stages, 3+ examples, 3 open questions). Counting convention declared. No content loss from v1 revision.",
+    "rigor_weight": 0.25,
+    "rigor_score": 0.80,
+    "rigor_notes": "Invariants defined and preservation argued. §4 J-trace now rigorous (direct β-reduction). B-trace is now clean left-to-right. Main rigor failure: Example 6.2 compact succ formula is not actually verified — the sanity check is a λ-calculation, not a trace of the compact formula.",
+    "honesty_weight": 0.20,
+    "honesty_score": 0.90,
+    "honesty_notes": "Explicit about size-1 impossibility being open (Q1). No hard-constraint violations: no banned names, and §4 J-construction is explicitly labelled 'Excluded construction' with 'cross-reference — forbidden by §4' annotation. Proper epistemic framing. The Example 6.2 error is a mistake, not dishonesty."
+  },
+  "weighted_score_raw": 0.8775,
+  "hard_constraint_violations": [],
+  "hard_constraint_penalty": 0.0,
+  "contract_score_final": 0.86,
+  "release_readiness": "CLOSE — score >= 0.85 reached. Banned-name and §4 J-construction issues both resolved. The only substantive remaining issue is Example 6.2's incorrect compact succ formula, which is a local bug in one worked example, not a structural flaw. The headline result (P* = {S, K}, size 2) and all supporting §3 β-traces are correct. Fix Example 6.2's compact formula (drop the spurious '(S (K K) I)' arg, making it succ = S (S (K S) K)) and the argument is release-ready at >= 0.90."
+}

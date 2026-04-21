@@ -1,0 +1,203 @@
+{
+  "contract_score": 0.69,
+  "checks_passed": 11,
+  "checks_total": 15,
+  "findings": [
+    {
+      "check": "All 7 required sections present as ## §N headings",
+      "tool": "grep -n '^## §' /workspaces/task/ARGUMENT.md",
+      "result": "pass",
+      "evidence": "Lines 25, 78, 142, 299, 402, 445, 500 — §1 through §7 all present with appropriate titles"
+    },
+    {
+      "check": "No banned identifiers: SKI/SK calculus, BCKW, BCIW, Iota, Jot, Unlambda, BLC, X-combinator, Xi, Zot",
+      "tool": "grep -i for each pattern",
+      "result": "pass",
+      "evidence": "No matches found for any of these 13 banned identifiers"
+    },
+    {
+      "check": "No banned surnames: Curry, Schönfinkel, Rosser",
+      "tool": "grep -i",
+      "result": "pass",
+      "evidence": "Zero matches for Curry, Schönfinkel, Rosser"
+    },
+    {
+      "check": "No banned surname 'Church'",
+      "tool": "grep -n Church /workspaces/task/ARGUMENT.md",
+      "result": "fail",
+      "evidence": "Line 456: '### Example 6.2 — Church-numeral successor'; Line 458: 'Church numerals are c_n = λf. λx. f^n x'. The banned list includes 'Church (as surname)' and 'Church-numeral'/'Church numerals' use Church as an eponymous adjective (surname usage)."
+    },
+    {
+      "check": "No banned identifier 'Turing's universal combinator'",
+      "tool": "grep -in 'universal combinator' /workspaces/task/ARGUMENT.md",
+      "result": "pass",
+      "evidence": "No matches. Turing appears only in 'Turing-complete' (line 57, 69) and 'Turing machines' (line 57), which are generic technical terms and not on the banned list."
+    },
+    {
+      "check": "I = S K K verified by β-trace",
+      "tool": "manual trace: S K K x → K x (K x) → x",
+      "result": "pass",
+      "evidence": "Two-step reduction matches I x = x. Document line 227-228 correct."
+    },
+    {
+      "check": "Π₂ = K I verified",
+      "tool": "manual trace: (K I) x y → I y → y",
+      "result": "pass",
+      "evidence": "Document line 156 correct."
+    },
+    {
+      "check": "T = C I verified",
+      "tool": "manual trace: (C I) x y → I y x → y x",
+      "result": "pass",
+      "evidence": "Document line 163-164 correct."
+    },
+    {
+      "check": "D = B B verified",
+      "tool": "manual trace: B B x y z w → B(x y) z w → (x y)(z w) = x y (z w)",
+      "result": "pass",
+      "evidence": "Document lines 170-177. Correct."
+    },
+    {
+      "check": "V = B C (C I) verified: V x y z → z x y",
+      "tool": "manual trace",
+      "result": "pass",
+      "evidence": "B C (C I) x → C ((C I) x) → apply y, z → (C I) x z y → (I z x) y → z x y. Matches claim line 182-186."
+    },
+    {
+      "check": "M = S I I verified",
+      "tool": "manual trace: S I I x → I x (I x) → x x",
+      "result": "pass",
+      "evidence": "Document line 188-189 correct."
+    },
+    {
+      "check": "C = S (B B S)(K K) verified: C x y z → x z y",
+      "tool": "manual trace",
+      "result": "pass",
+      "evidence": "Full trace: S(BBS)(KK)x → (BBS)x((KK)x) = (BBS)x K = B(Sx)K; then apply y,z: → (Sx)(Ky)z → x z ((Ky)z) → x z y. Document §3 line 196-213 essentially correct, though presentation is verbose."
+    },
+    {
+      "check": "W = S S (S K) verified: W x y → x y y",
+      "tool": "manual trace",
+      "result": "pass",
+      "evidence": "SS(SK) x y → S x ((SK)x) y → x y ((SK)x y) → x y y. Document line 215-221 correct."
+    },
+    {
+      "check": "B = S (K S) K verified: B x y z → x (y z)",
+      "tool": "manual trace",
+      "result": "pass",
+      "evidence": "S(KS)K x → (KS)x(Kx) = S(Kx); then apply y,z: S(Kx) y z → (Kx)z(yz) → x (y z). Document lines 234-241 correct in conclusion though its intermediate rewriting step is presented slightly muddled; final answer right."
+    },
+    {
+      "check": "Y' via bracket abstraction has a verified form satisfying Y' f → f (Y' f)",
+      "tool": "bracket abstraction correctness + document's reduction trace",
+      "result": "pass",
+      "evidence": "§3 gives Y' = S ϕ ϕ with explicit ϕ. Trace at lines 271-276 invokes bracket abstraction correctness for each β-step. The fixed-point property holds by standard bracket-abstraction theorem. Not fully token-level verified, but mathematically sound."
+    },
+    {
+      "check": "§3 lists ≥3 intermediate sizes before P*",
+      "tool": "grep '^### Stage'",
+      "result": "pass",
+      "evidence": "8 stages: 13→11, 11→10, 10→9, 9→7, 7→5, 5→4, 4→3, 3→2. Seven intermediate sizes (11, 10, 9, 7, 5, 4, 3). Exceeds requirement of ≥3."
+    },
+    {
+      "check": "§4 declares counting convention explicitly",
+      "tool": "Read §4 lines 301-325",
+      "result": "pass",
+      "evidence": "Explicit counting convention: application not counted, each distinguished token counts 1, self-reference permitted, cross-reference not allowed. All stated."
+    },
+    {
+      "check": "§6 has ≥3 worked examples",
+      "tool": "grep '^### Example'",
+      "result": "pass",
+      "evidence": "Examples 6.1 (I = SKK), 6.2 (successor), 6.3 (Y' fixed point). Three full worked computations."
+    },
+    {
+      "check": "§7 addresses optimality, strong reduction, convention dependence",
+      "tool": "Read §7",
+      "result": "pass",
+      "evidence": "Q1 Optimality (line 502-516), Q2 Strong reduction (line 518-529), Q3 Convention dependence (line 531-546). All three required topics covered."
+    },
+    {
+      "check": "Internal consistency: P* = {S, K} matches syntheses",
+      "tool": "cross-referenced §3 endpoint, §4 result, §6 examples",
+      "result": "pass",
+      "evidence": "§3 ends at {S, K}, §4 declares P*={S, K}, §6 examples all use {S, K}. Consistent."
+    },
+    {
+      "check": "Honesty about size-1 impossibility — no over-claim",
+      "tool": "Read §4 lines 361-368 and §7 Q1",
+      "result": "pass",
+      "evidence": "Line 361-368 explicitly: 'This is not a fully formal impossibility for every choice of Z', 'establishes that the pair of invariants is necessary but not sufficient', 'We leave open a strict proof'. §7 Q1 confirms openness. Good epistemic honesty."
+    },
+    {
+      "check": "Honesty about size-1 attainability (variant convention) — no over-claim",
+      "tool": "manual trace of J a = a(SKK)K to check claimed identities",
+      "result": "fail",
+      "evidence": "§4 line 382-388 claims 'J J, J (J J), J (J (J J)), J (J (J (J J))) respectively produce ... terms η-equal to I, S K (= K I), K, and S.' Trace check: J a = a(SKK)K means J J reduces to J(SKK)K, then J(SKK) → (SKK)(SKK)K = I(SKK)K = (SKK)K = IK = K. So J(SKK) = K. Then J(SKK)K = KK, which is partially applied. This does not η-reduce to I as claimed. The construction is over-claimed without verification trace. Document weakly hedges with 'η-equal up to extensional equivalence' and 'sketch' but the core claim appears incorrect."
+    },
+    {
+      "check": "Cross-reference constraint for invented combinators",
+      "tool": "Read §4 variant convention",
+      "result": "fail",
+      "evidence": "Task hard constraint: invented combinators must use only variables + application + self-reference, NOT cross-reference other primitives. §4 variant's J a = a (S K K) K rule cross-references S and K. Document acknowledges this ('in this variant convention the rule itself contains the symbols S and K') but frames it as a legitimate alternative convention. Because it is labeled 'variant' and the declared headline convention forbids it, this is a borderline violation rather than outright: the document does not adopt this as its answer. However its presentation is arguably attempting to have-it-both-ways."
+    },
+    {
+      "check": "Mathematical rigor: invariants stated precisely",
+      "tool": "Read §2 lines 110-129",
+      "result": "partial",
+      "evidence": "Linearity, no-erasure, no-duplication are defined. Preservation proof is sketched but incomplete: 'multiplicity Σ(occ_i(ρ)·μ_i)' formula is correct for a single reduction step at the top level, but handling of nested redexes and of bound variables inside operand terms is left implicit. Formal statement adequate for the argument's purposes but not fully rigorous."
+    },
+    {
+      "check": "Invented combinator rule convention compliance (for main P*)",
+      "tool": "Read §3 Stage 3→2 Y' derivation",
+      "result": "pass",
+      "evidence": "The main P* = {S, K} does not introduce a new combinator; Y' is defined as a composite term in {S, K}, not a new primitive. No cross-reference violation in the declared headline result."
+    }
+  ],
+  "generated_checks": [
+    {"name": "File exists and is nontrivial", "command": "wc -l ARGUMENT.md", "result": "pass — 561 lines"},
+    {"name": "Section count", "command": "grep '^## §'", "result": "pass — 7 sections"},
+    {"name": "Banned identifier scan (13 technical names)", "command": "grep -i pattern1|pattern2|...", "result": "pass"},
+    {"name": "Banned surname scan (4 surnames + Turing)", "command": "grep -i", "result": "fail — Church used 2x"},
+    {"name": "I synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "Π₂ synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "T synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "D synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "V synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "M synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "C synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "W synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "B synthesis β-trace", "command": "manual", "result": "pass"},
+    {"name": "Y' bracket-abstraction form", "command": "standard BA theorem check", "result": "pass"},
+    {"name": "Size-1 J construction claim verification", "command": "manual trace of J J", "result": "fail — claim J J = I is incorrect"},
+    {"name": "§3 stage count ≥ 3", "command": "grep '### Stage'", "result": "pass — 7 intermediate"},
+    {"name": "§4 convention declared", "command": "Read §4", "result": "pass"},
+    {"name": "§6 example count ≥ 3", "command": "grep '### Example'", "result": "pass — 3 examples"},
+    {"name": "§7 covers all 3 required open questions", "command": "Read §7", "result": "pass"},
+    {"name": "Internal consistency P* across sections", "command": "cross-reference", "result": "pass"},
+    {"name": "Honesty about size-1 impossibility", "command": "Read §4 closing", "result": "pass — explicitly open"},
+    {"name": "Honesty about size-1 attainability under variant", "command": "trace check", "result": "fail — over-claims unverified identities"}
+  ],
+  "suggestions": "Top 5 improvements: (1) Replace 'Church numerals' with a neutral eponym-free phrasing like 'iterator-style numerals c_n = λf. λx. f^n x' — the banned-identifier list includes Church as surname, and Church-numeral is a two-line violation at 456/458. (2) The §4 'variant convention' with J a = a(SKK)K should be either removed or rigorously traced; currently the claim that J J, J(JJ), J(J(JJ)), J(J(J(JJ))) produce I, SK, K, S is unverified and my direct trace shows J J reduces to K K (partial), not I. Either fix the construction or drop it. (3) The §4 variant also cross-references S, K in its rule RHS, which violates the task's hard constraint on invented-combinator rules. Clarify that this is explicitly ruled out by the task and remove the suggestion that it is 'constructively realisable'. (4) The B synthesis trace at §3 lines 234-241 is notationally confusing in step 2 ('after pulling through y, z') — rewrite as straight left-to-right β-trace for clarity, matching the clean W and C derivations. (5) §3 Stage 3→2's Y' trace (lines 271-276) is at the λ-level. Either expand to a full token-level S/K reduction trace, or re-state it as 'correctness via bracket-abstraction theorem' and reference §5 V2 explicitly rather than asserting explicit β-steps.",
+  "score_rubric": {
+    "correctness_weight": 0.30,
+    "correctness_score": 0.85,
+    "correctness_notes": "Core syntheses (9 of the 10 key β-traces) verified correct. Size-1 variant construction incorrect. Y' trace not fully token-level.",
+    "completeness_weight": 0.25,
+    "completeness_score": 0.95,
+    "completeness_notes": "All 7 sections, all required sub-elements (3+ stages, 3+ examples, 3 open questions). Counting convention declared.",
+    "rigor_weight": 0.25,
+    "rigor_score": 0.65,
+    "rigor_notes": "Invariants defined; preservation proofs sketched but not formalized. Variant convention's J construction is a clear rigor lapse. Some traces hand-wave through intermediate steps.",
+    "honesty_weight": 0.20,
+    "honesty_score": 0.55,
+    "honesty_notes": "Explicit about size-1 impossibility being open (good). BUT over-claims size-1 attainability under variant convention with unverified J J = I etc. (bad). 'Church numerals' banned-identifier is a hard-constraint violation w.r.t. task rules."
+  },
+  "weighted_score_raw": 0.7725,
+  "hard_constraint_violations": [
+    "Banned identifier 'Church' used twice (lines 456, 458) as surname-eponym",
+    "§4 variant convention presents a J-rule that cross-references S, K — violates the task's rule convention for invented combinators (though framed as explicit alternative)"
+  ],
+  "hard_constraint_penalty": 0.08,
+  "weighted_score": 0.69
+}
