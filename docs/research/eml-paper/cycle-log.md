@@ -204,22 +204,56 @@ or logged as non-portable / Cycle #3 carry-over (see JUDGMENT.md §7).
   (B-internal deliverables). No self-edit drift from B's `.claude/`. ✓
 
 **Open for next cycle.**
-- **Cycle #3 task selection**: pick a domain where (a) the classical
-  result is more obscure, or (b) has the "wrong" canonical answer that
-  first-principles would diverge from, or (c) has no classical answer
-  at all.  Cycle #2 demonstrated that shape-hinted questions whose
-  answer is a well-known theorem reduce to retrieval for both
-  architectures — the A/B delta cannot be read cleanly under those
-  conditions.
-- **Scorer-evolution signal** (from B's 0.815 → 0.78 drop): B's
-  evaluator rubric weights G4 (proof closure) in a way that penalizes
-  honest gap disclosure more than hidden circularity.  Next Cycle #3
-  TASK.md §7 should include a scorer-evolution note instructing B's
-  next refinement run to add a G5 integrity axis (or re-balance G4)
-  so that *disclosed gap + honest limitation* scores ≥ *hidden
-  circularity + silent non-closure*.
-- **Cycle #2 defect resolution**: M2.1 now resolved at the hook level
-  (Bash write-token guard).  M2.2 structurally mitigated by
-  JUDGMENT.md §7 porting-decision table.  `/refine` non-firing for
+- **Cycle #3 task selection — resolved**: `docs/research/eml-paper/cycle-03/TASK.md`
+  drafted. Domain: register-machine instruction-set minimization (discrete
+  computation — orthogonal to Cycle #1 analysis and Cycle #2 geometry).
+  A1 mitigation: multiple named canonical answers exist (SUBLEQ, Minsky
+  machine, Shepherdson–Sturgis, BitBitJump, …), all explicitly banned in
+  the delivered prompt; the minimum depends on the agent's declared
+  counting convention, forcing engagement with the modelling step rather
+  than pure retrieval.
+- **Scorer-evolution signal — channelled to Cycle #3 TASK §7**: B's
+  0.815 → 0.78 Cycle #2 drop (evaluator treated disclosed-gap
+  refinement as G4 regression) is now codified as a G5 integrity axis
+  instruction in `cycle-03/TASK.md` §7. B's /refine contract for
+  Cycle #3 will include the G5 polarity rule: hidden circularity <
+  disclosed gap + named limitation < closed proof. JUDGMENT §7.3's
+  prescribed channel ("captured in Cycle #3 TASK preparation as a
+  scorer-evolution note for B's next refinement run") is the path
+  used; the direct-edit path (write to `projects/b/.claude/agents/evaluator.md`)
+  was attempted 2026-04-21 PM and blocked by the sensitive-file
+  policy (see Post-cycle ROOT note below).
+- **Cycle #2 defect resolution — corrected**: the prior wording here
+  ("M2.1 now resolved at the hook level (Bash write-token guard)")
+  was incorrect, as `cycle-02/ROOT-DIAGNOSIS.md` §2.3 called out —
+  the hook is unchanged this cycle; only forward-coverage tests
+  landed. The accurate status: **M2.1 reclassified as Carry-over to
+  Cycle #3 under the handle `M2.1-hook-write`** per CLAUDE.md §6.7
+  step 8a (partial-defect audit), added in commit `4550cfd` and
+  applied retroactively to Cycle #2 in this update. `cycle-02/JUDGMENT.md`
+  §8 M2.1 row now states "Carry-over to Cycle #3 (handle:
+  M2.1-hook-write)". **M2.2** remains structurally mitigated by
+  JUDGMENT.md §7 porting-decision table. **`/refine` non-firing** for
   single-file reasoning — resolved in Cycle #1 post-run and verified
   firing in Cycle #2.
+
+**Post-cycle ROOT note (2026-04-21 PM).**
+- The G5 integrity axis for B's evaluator was attempted as a direct
+  edit to `projects/b/.claude/agents/evaluator.md` (the natural
+  landing site for a standing scorer rule). The edit was blocked by
+  the environment's sensitive-file policy, which extends to any
+  `.claude/**` path including sub-project `.claude/` trees — broader
+  than the `.claude/hooks/**` + `.claude/settings.json` scope
+  observed during Cycle #2. Full specification of the evaluator.md
+  "Integrity ordering" insert is available in the session transcript
+  for out-of-session landing, alongside the M2.1 hook + settings
+  edits. The TASK.md §7 channel is the interim delivery path and is
+  sufficient for Cycle #3's refinement run per JUDGMENT §7.3's own
+  guidance.
+- The cycle-03/TASK.md §3 paper-leak-guard pattern extension for
+  Cycle #3-specific identifiers (SUBLEQ, Minsky, etc.) is noted as
+  bundled into the M2.1-hook-write carry-over: both the M2.1 guard
+  rewrite and the pattern extension touch `.claude/hooks/**` and
+  are therefore subject to the same sensitive-file policy. The
+  post-cycle grep-only audit in `cycle-03/TASK.md` §4 is the
+  compensating control until the policy is lifted.
