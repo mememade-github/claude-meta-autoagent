@@ -178,15 +178,16 @@ Constraints:
     work around the name and derive the structure yourself.
 
   - Iteration affordance (important).  If your agent configuration
-    provides an iteration / self-audit / /refine mechanism, you are
-    encouraged to use it and to persist the iteration trace to your
-    working directory at any path you choose (for example,
-    `task/attempts/attempt-01.md`, `task/.refine/`,
-    `task/iterations/iter-01.md`, `task/.eval-report.json`).  ROOT
-    will cite these paths in scoring.  If your configuration does
-    not provide such a mechanism, a single-shot argument is a
-    legitimate response and you should simply deliver it.  Do not
-    simulate iteration; if you iterate, actually iterate.
+    provides an iteration, self-audit, or refinement mechanism
+    (whatever its invocation convention), you are encouraged to use
+    it and to persist the iteration trace to your working directory
+    at any path you choose (for example, `task/attempts/attempt-01.md`,
+    `task/iterations/iter-01.md`, `task/.eval-report.json`, a
+    subdirectory under `task/`).  ROOT will cite these paths in
+    scoring.  If your configuration does not provide such a
+    mechanism, a single-shot argument is a legitimate response and
+    you should simply deliver it.  Do not simulate iteration; if you
+    iterate, actually iterate.
 ```
 
 ---
