@@ -1,0 +1,86 @@
+{
+  "verdict": "PASS",
+  "correctness": {
+    "q1_witness_correct": true,
+    "q1_cp_enumeration_complete": true,
+    "q2_strategy_correct": true,
+    "q2_size_arithmetic_correct": true,
+    "q3_infinite_sequence_correct": true,
+    "cross_implications_correct": true,
+    "notes": "Oracle re-run matches deliverable claims exactly. (1) Q1: c(0,nil) -> 0 (rho3) and c(0,nil) -> nil (rho4); both are NF (simulator confirms is_nf and reachable={self}); 0 != nil; non-joinable. Verdict correct. (2) CP enumeration: simulator reports 48 (rho_i, rho_j, p) triples, 38 non-unifiable, 10 unifiable. The 10 match the deliverable table exactly; exactly one up-to-swap (rho3,rho4,eps) is NON-JOINABLE; (rho5,rho6,eps) and (rho6,rho5,eps) are joinable via rho6 to nil. Variable-position overlaps handled by Sublemma 2.1 (left-linearity of all six rules: each var occurs at most once in every LHS -- verified: rho1 vars none; rho2 x, ys each once; rho3 x, y each once; rho4 same; rho5 x once; rho6 x once). Sublemma 2.1 proof sketch is sound though the parenthetical hedge about multiple occurrences is a tangent (minor G3). (3) Q2 strategy: 'any non-rho5 redex'. Well-definedness: every f-headed redex admits rho6 which is not rho5; len- and c-headed redexes are not rho5 redexes; so non-rho5 redex always exists on non-NF. Correct. Size deltas per row: rho1: 2->1 delta -1 correct; rho2: 2+|x|+|ys| -> 2+|ys|, delta = -|x| <= -1 correct; rho3: 1+|x|+|y| -> |x|, delta = -1-|y| <= -2 correct; rho4 symmetric correct; rho6: 1+|x| -> 1, delta = -|x| <= -1 correct. Closed-instance caveat (|sigma(v)| >= 1) is stated. All deltas verified by simulator test_per_rule_size_delta (rho1 -1, rho2 -1, rho3 -2, rho4 -2, rho6 -1). Stress test: 50/50 random terms depth 2-6 reach NF in <= 6 steps; 11 hand-crafted also succeed. (4) Q3: f(s^n(0)) -> f(s^{n+1}(0)) via rho5 at eps with sigma(x)=s^n(0). RHS of rho5 under sigma = f(s(sigma(x))) = f(s(s^n(0))) = f(s^{n+1}(0)). Induction on n shows size n+2 strictly increasing; no term repeats; no NF reached. Simulator test_q3_infinite_sequence traces 20 steps mechanically, confirming t_n = f(s^n(0)) at each n and rho5 applies at eps. Sublemma 2.3.N correctly notes that a single infinite reduction suffices to rule out SN independent of Phi choice. (5) Cross-implications: WN-not-SN (coexistence shown on f(0) in section 6.2); non-confluence -/-> non-termination (stated with a -> a as counter-example in section 4.4); confluence -> unique NFs consistent with the c(0,nil) two-NFs observation. All sound."
+  },
+  "structure": {
+    "all_required_sections_present": true,
+    "worked_examples_count": 5,
+    "worked_examples_orthogonal": true,
+    "open_questions_has_parametric_disclosure": true
+  },
+  "constraints": {
+    "banned_identifier_violations": [],
+    "no_external_citations": true
+  },
+  "gaps_for_iteration_2": [
+    {
+      "id": "G1",
+      "priority": "low",
+      "description": "Section 3.1 has a visible scratchpad-style miscount: 'Total: 6 x 6 x 2 + 6 x 6 x 1 x 4 = 72 + 144? Let me recount.' The self-correction to 48 is right, but the stray arithmetic attempt reads as an unfinished edit. A polished draft should not include the retraction.",
+      "suggested_fix": "Replace the garbled '6 x 6 x 2 + 6 x 6 x 1 x 4 = 72 + 144?' sentence with a clean derivation: sum of non-variable positions across LHSs is 2+2+1+1+1+1 = 8, times 6 inner rules = 48 triples."
+    },
+    {
+      "id": "G2",
+      "priority": "low",
+      "description": "Section 6.3 position labels for len-reduction are off-by-one. The argument is labelled at path (1.1) for rho1, but len(cons(a,nil)) inside s(s(.)) sits at path (1,1) if we count the outer 's' only once; the (1) notation for the rho2 inner step (s(len(cons(a,nil))) -> s(s(len(nil)))) is at child 1 of the outer s, consistent. The final rho1@(1.1) step: s(s(len(nil))) has len(nil) at path (1,1), so the '1.1' notation is consistent with §0's convention. Check whether the reader parses '1.1' as position (1,1) unambiguously given that the convention note says 'i.j for (i,j)' -- actually that IS stated. So this is not a bug. Leaving as a note only.",
+      "suggested_fix": "No change required; convention is declared in the preamble. If making an edit, inline-repeat '(path (1,1))' once for clarity on the first use in 6.3."
+    },
+    {
+      "id": "G3",
+      "priority": "low",
+      "description": "Sublemma 2.1's parenthetical aside about multiple-occurrence variables ('the argument also goes through when v occurs multiple times in l provided each occurrence is rewritten, which is automatic when both paths reduce the same sigma(v) instance') is imprecise and not needed for R, since every rule is left-linear. The hedge clutters an otherwise clean proof.",
+      "suggested_fix": "Delete the parenthetical and state plainly: 'All six rules of R are left-linear (each variable occurs at most once in each LHS; verified below), so v occurs exactly once in l and k >= 0 times in r.' Add a 2-line table confirming left-linearity rule by rule."
+    },
+    {
+      "id": "G4",
+      "priority": "medium",
+      "description": "Section 7.2 'strategy uniqueness' has a hand-wavy middle paragraph about 'net change over B+1 steps is <= B-1, and if this net change can be bounded by a fixed negative constant...'. The clause 'which requires more than B+1 to include a shrinkage-step of size > B' is ungrammatical / not a proof. The paragraph retreats to a 'cleaner sufficient condition' without resolving the quantitative claim.",
+      "suggested_fix": "Either drop the quantitative attempt entirely and keep only the cleaner sufficient condition, or state a precise bound: e.g., 'if every window of B+1 steps contains at least one rho3, rho4, rho6, or rho1 step with size-drop >= B+1 (which holds trivially whenever such a redex exists and lookahead sees it), termination holds.' Simplicity preference: drop the attempt."
+    },
+    {
+      "id": "G5",
+      "priority": "low",
+      "description": "Section 7.4 third bullet claims adding f(x) -> f(f(x)) would break WN because 'both alternatives grow size: one by 1, one by 2'. But the existing rho6 (f(x) -> nil) would still be present under the stated hypothesis of 'adding' a rule; so the 'shrinking escape' rho6 still exists at every f-subterm and 'avoid rho5 and avoid f->f(f)' remains a valid strategy. The claim as stated is wrong; the counterfactual the author intended is 'replace rho6 with f(x) -> f(f(x))' or 'remove rho6'.",
+      "suggested_fix": "Reword to: 'If we removed rho6 (losing the shrinking escape) and added f(x) -> f(f(x)), the avoid-rho5 strategy would fail because neither remaining f-rule shrinks size.' Or keep the intended structural upshot by stating 'removing rho6' as the counterfactual."
+    },
+    {
+      "id": "G6",
+      "priority": "low",
+      "description": "Section 4.4 (ii) implicitly uses the claim 'confluence implies unique NFs when they exist' as a definition-level consequence, but the stated proof ('confluence requires u and v to have a common reduct w; since u and v are NF, u = w = v') assumes the confluence diamond applies to the specific divergent pair u, v. This IS immediate from the confluence definition restricted to the starting term t, but the text does not spell out that u and v here are both reducts of a common ancestor t. One sentence fix.",
+      "suggested_fix": "Rephrase: 'Suppose t ->* u and t ->* v with u, v both NF. By confluence at t, there exists w with u ->* w and v ->* w. Since u is NF, u = w; since v is NF, v = w; so u = v.'"
+    },
+    {
+      "id": "G7",
+      "priority": "medium",
+      "description": "Section 7.1 rule-removal analysis for 'Remove rho3' and 'Remove rho4' claims 'confluence is restored' after checking 'any residual CPs', but the check is asserted rather than shown. In particular the reader is not told which residual CPs exist after rho3 is removed. This is a material (though low-risk) gap in the parametric disclosure.",
+      "suggested_fix": "Add a 2-line table of residual unifiable overlaps after rho3 removal (just rho1, rho2, rho4, rho5, rho6): the only remaining unifiable overlaps are trivial same-rule (rho1-rho1, rho2-rho2, rho4-rho4, rho5-rho5, rho6-rho6) plus (rho5,rho6) and (rho6,rho5) both joinable to nil. No non-joinable CP remains. Same for rho4."
+    },
+    {
+      "id": "G8",
+      "priority": "low",
+      "description": "Section 3.2's size-delta table omits rho5 (by design, since the strategy avoids it), but a single row 'rho5: +1 (which is why the strategy avoids it)' would keep the table exhaustive and make the comparison explicit, reinforcing why rho5 is the sole exclusion.",
+      "suggested_fix": "Append a final row for rho5 to the size-delta table, flagged as '(not used by S)': size 1+|sigma(x)| -> 2+|sigma(x)|, delta +1."
+    },
+    {
+      "id": "G9",
+      "priority": "low",
+      "description": "Section 7.3 uses the undefined constructor classes 'polynomial, lex product, multiset, etc.'. For a self-contained document that must avoid external citations, these should either be briefly defined or rephrased abstractly.",
+      "suggested_fix": "Replace 'polynomial, lex product, multiset, etc.' with 'any well-founded order on terms whatsoever'. The universal claim is what matters; the examples can be dropped."
+    },
+    {
+      "id": "G10",
+      "priority": "low",
+      "description": "The 'a' constructor is introduced in the preamble with a clear purpose but never used in section 6.1's canonical Q1 witness; it IS used in 6.3, 6.5, and the simulator's test suite. No issue, just a note that the preamble's justification for 'a' is fully cashed in by §6 but not by §4.",
+      "suggested_fix": "No action required."
+    }
+  ],
+  "overall_score_10": 9,
+  "score_rationale": "Oracle re-run produces output identical to output-final.txt and all claims in the deliverable trace to tool-verified evidence. Correctness: Q1 non-confluence (c(0,nil) -> {0, nil}, both NF, empty intersection of reachable sets), CP enumeration (all 48 triples, 10 unifiable, 1-up-to-swap non-joinable), Q2 size-delta arithmetic (rule-by-rule rho1..rho4,rho6 all strictly negative on closed instances; simulator confirms -1,-1,-2,-2,-1 on concrete instances), Q3 infinite rho5-sequence from f(0) with the invariant t_n = f(s^n(0)) induction -- every one of these is airtight. Structural requirements: all seven sections present, non-stub; five worked examples covering divergent-pair (6.1), WN-vs-SN from same term (6.2), deterministic len-core (6.3), infinite rho5 (6.4), and choice-through-len (6.5) -- orthogonal axes well covered. §7 has a genuine parametric disclosure in 7.1 (projection-rule pairs with distinct variable reducts always induce non-joinable CPs, parametric in arity and index pair) and 7.3 (measure-insensitivity) and 7.4 (rule-shape class generalization). Banned-identifier scan returns no violations. No external citations. Gaps are cosmetic or clarifying: one scratchpad-arithmetic retraction (G1), one imprecise sublemma hedge (G3), one ungrammatical paragraph in 7.2 (G4), one wrong counterfactual statement in 7.4 (G5, medium: the 'adding f(x)->f(f(x)) breaks WN' claim is wrong as written because rho6 would still shrink), one unsubstantiated 'residual CPs' assertion in 7.1 (G7, medium), and several minor rephrasings. None invalidate any verdict. The deliverable meets the rubric's 'at least two non-positive, at most one positive' window (Q1 negative, Q2 positive, Q3 negative). Recommend PASS with iteration-2 polish focused on G4, G5, G7 (the three non-cosmetic items) plus G1."
+}

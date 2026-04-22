@@ -1,0 +1,88 @@
+======================================================================
+SECTION A. Critical-pair enumeration
+======================================================================
+  (rho3 outer, rho4 inner, pos=()): src=c(?x_in, ?y_in)  -> ?x_in  ||  ?y_in  [distinct]
+  (rho4 outer, rho3 inner, pos=()): src=c(?x_in, ?y_in)  -> ?y_in  ||  ?x_in  [distinct]
+  (rho5 outer, rho6 inner, pos=()): src=f(?x_in)  -> f(s(?x_in))  ||  nil  [distinct]
+  (rho6 outer, rho5 inner, pos=()): src=f(?x_in)  -> nil  ||  f(s(?x_in))  [distinct]
+
+  Non-trivially-equal CP instances: 4
+
+======================================================================
+SECTION B. Q1 non-confluence witness: c(0, nil)
+======================================================================
+  t = c(0, nil)    mu(t) = 4
+  t ->rho3 0   (normal form? True)
+  t ->rho4 nil   (normal form? True)
+  u != v: True
+  VERIFIED: R is NOT confluent.
+
+  Aside: the f-critical-pair (rho5, rho6) IS joinable:
+    f(s(0)) ->rho6 nil   == nil
+
+======================================================================
+SECTION C. Q3 non-termination witness: f(0)
+======================================================================
+  step 0:  f(0)    [s-stack depth = 0]
+  step 1:  f(s(0))    [s-stack depth = 1]
+  step 2:  f(s(s(0)))    [s-stack depth = 2]
+  step 3:  f(s(s(s(0))))    [s-stack depth = 3]
+  step 4:  f(s(s(s(s(0)))))    [s-stack depth = 4]
+  step 5:  f(s(s(s(s(s(0))))))    [s-stack depth = 5]
+  step 6:  f(s(s(s(s(s(s(0)))))))    [s-stack depth = 6]
+  step 7:  f(s(s(s(s(s(s(s(0))))))))    [s-stack depth = 7]
+  step 8:  f(s(s(s(s(s(s(s(s(0)))))))))    [s-stack depth = 8]
+  step 9:  f(s(s(s(s(s(s(s(s(s(0))))))))))    [s-stack depth = 9]
+  step 10:  f(s(s(s(s(s(s(s(s(s(s(0)))))))))))    [s-stack depth = 10]
+  Pattern: after n rho5 steps the term is f(s^n(0)); height strictly
+  grows, so the sequence has no cycle and is unbounded.
+
+======================================================================
+SECTION D. Per-rule measure behaviour (mu)
+======================================================================
+  rho1: mu(LHS)-mu(RHS) over 1 samples: min=2, max=2  [decreases]
+  rho2: mu(LHS)-mu(RHS) over 49 samples: min=3, max=11  [decreases]
+  rho3: mu(LHS)-mu(RHS) over 49 samples: min=3, max=7  [decreases]
+  rho4: mu(LHS)-mu(RHS) over 49 samples: min=3, max=7  [decreases]
+  rho5: mu(LHS)-mu(RHS) over 7 samples: min=-2, max=-2  [increases]
+  rho6: mu(LHS)-mu(RHS) over 7 samples: min=2, max=10  [decreases]
+
+======================================================================
+SECTION E. Strategy S terminates on seed terms
+======================================================================
+
+  seed: c(0, nil)  mu=4
+    init                   -> c(0, nil)                                                    mu=4
+    rho3 @ ()              -> 0                                                            mu=1
+    FINAL normal form: 0  (mu decreased 4 -> 1)
+
+  seed: f(0)  mu=3
+    init                   -> f(0)                                                         mu=3
+    rho6 @ ()              -> nil                                                          mu=1
+    FINAL normal form: nil  (mu decreased 3 -> 1)
+
+  seed: c(f(0), len(cons(s(0), cons(a, nil))))  mu=18
+    init                   -> c(f(0), len(cons(s(0), cons(a, nil))))                       mu=18
+    rho3 @ ()              -> f(0)                                                         mu=3
+    rho6 @ ()              -> nil                                                          mu=1
+    FINAL normal form: nil  (mu decreased 18 -> 1)
+
+  seed: len(cons(a, cons(0, nil)))  mu=11
+    init                   -> len(cons(a, cons(0, nil)))                                   mu=11
+    rho2 @ ()              -> s(len(cons(0, nil)))                                         mu=8
+    rho2 @ (1,)            -> s(s(len(nil)))                                               mu=5
+    rho1 @ (1, 1)          -> s(s(0))                                                      mu=3
+    FINAL normal form: s(s(0))  (mu decreased 11 -> 3)
+
+  seed: f(c(0, a))  mu=9
+    init                   -> f(c(0, a))                                                   mu=9
+    rho6 @ ()              -> nil                                                          mu=1
+    FINAL normal form: nil  (mu decreased 9 -> 1)
+
+  seed: c(f(a), len(cons(0, nil)))  mu=12
+    init                   -> c(f(a), len(cons(0, nil)))                                   mu=12
+    rho3 @ ()              -> f(a)                                                         mu=3
+    rho6 @ ()              -> nil                                                          mu=1
+    FINAL normal form: nil  (mu decreased 12 -> 1)
+
+All oracle checks passed.

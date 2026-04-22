@@ -1,0 +1,73 @@
+
+=== Per-rule size deltas on closed instances ===
+  rho1: len(nil)                         -> 0                     size 2 -> 1  (delta -1)  [(no vars)]
+  rho2: len(cons(0, nil))                -> s(len(nil))           size 4 -> 3  (delta -1)  [x=0, ys=nil]
+  rho3: c(0, a)                          -> 0                     size 3 -> 1  (delta -2)  [x=0, y=a]
+  rho4: c(0, a)                          -> a                     size 3 -> 1  (delta -2)  [x=0, y=a]
+  rho5: f(0)                             -> f(s(0))               size 2 -> 3  (delta +1)  [x=0]
+  rho6: f(0)                             -> nil                   size 2 -> 1  (delta -1)  [x=0]
+
+=== Q1 witness: R is NOT confluent ===
+  t   = c(0, nil)
+  t --rho3@eps--> 0
+  t --rho4@eps--> nil
+  is_nf(0) = True;  is_nf(nil) = True
+  reachable(0) = {0}
+  reachable(nil) = {nil}
+  reachable(0) cap reachable(nil) = empty  ==> no common reduct
+
+=== Q1 critical-pair enumeration (every (rho_i, rho_j, pos)) ===
+  total (rho_i, rho_j, pos) triples: 48
+  non-unifiable (head mismatch or variable position):  38
+  unifiable:                                            10
+
+  Unifiable overlaps (details):
+    (rho1, rho1, pos=eps): <0, 0>   [trivial]
+    (rho2, rho2, pos=eps): <s(len(ys#j)), s(len(ys#j))>   [trivial]
+    (rho3, rho3, pos=eps): <x#j, x#j>   [trivial]
+    (rho3, rho4, pos=eps): <x#j, y#j>   [NON-JOINABLE]
+    (rho4, rho3, pos=eps): <y#j, x#j>   [NON-JOINABLE]
+    (rho4, rho4, pos=eps): <y#j, y#j>   [trivial]
+    (rho5, rho5, pos=eps): <f(s(x#j)), f(s(x#j))>   [trivial]
+    (rho5, rho6, pos=eps): <f(s(x#j)), nil>   [joinable -> nil]
+    (rho6, rho5, pos=eps): <nil, f(s(x#j))>   [joinable -> nil]
+    (rho6, rho6, pos=eps): <nil, nil>   [trivial]
+
+=== Q1 sanity: (rho5, rho6) at eps is joinable ===
+  f(s(0)) -->* nil via rho6;  rho6 at eps closes the CP.
+
+=== Q2 strategy 'any redex except rho5' terminates with strict size decrease ===
+  c(0, nil)  =>  0  (1 steps, size 3->1, rules: {'rho3': 1})
+  f(0)  =>  nil  (1 steps, size 2->1, rules: {'rho6': 1})
+  f(a)  =>  nil  (1 steps, size 2->1, rules: {'rho6': 1})
+  len(cons(0, cons(a, nil)))  =>  s(s(0))  (3 steps, size 6->3, rules: {'rho2': 2, 'rho1': 1})
+  f(c(0, a))  =>  nil  (1 steps, size 4->1, rules: {'rho6': 1})
+  len(c(cons(0, nil), nil))  =>  s(0)  (3 steps, size 6->2, rules: {'rho3': 1, 'rho2': 1, 'rho1': 1})
+  c(f(0), len(cons(a, nil)))  =>  nil  (2 steps, size 7->1, rules: {'rho3': 1, 'rho6': 1})
+  f(f(0))  =>  nil  (1 steps, size 3->1, rules: {'rho6': 1})
+  f(f(f(f(0))))  =>  nil  (1 steps, size 5->1, rules: {'rho6': 1})
+  c(f(f(0)), len(cons(f(a), cons(0, nil))))  =>  nil  (2 steps, size 11->1, rules: {'rho3': 1, 'rho6': 1})
+  len(cons(f(c(0, a)), cons(f(a), nil)))  =>  s(s(0))  (3 steps, size 10->3, rules: {'rho2': 2, 'rho1': 1})
+
+=== Q3 witness: infinite reduction via rho5 ===
+  t_0 = f(0)   size=2
+  t_1 = f(s(0))   size=3   via rho5@eps
+  t_2 = f(s(s(0)))   size=4   via rho5@eps
+  t_3 = f(s(s(s(0))))   size=5   via rho5@eps
+  ... (structure: f(s^n(0)); each step appends one s-layer) ...
+  t_20 = f(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(0)))))))))))))))))))))   size=22   via rho5@eps
+  t_20 confirmed at size 22; sequence is unbounded.
+
+=== Sanity: claimed NFs are irreducible ===
+  0   [NF confirmed]
+  nil   [NF confirmed]
+  a   [NF confirmed]
+  s(0)   [NF confirmed]
+  s(s(0))   [NF confirmed]
+  cons(0, nil)   [NF confirmed]
+  cons(a, cons(0, nil))   [NF confirmed]
+
+=== Q2 stress: strategy on 50 closed random terms ===
+  50/50 reached NF; max steps observed: 6
+
+=== All oracle checks passed. ===

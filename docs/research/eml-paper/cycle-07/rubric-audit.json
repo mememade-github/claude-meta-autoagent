@@ -1,0 +1,259 @@
+{
+  "auditor": "proof-auditor",
+  "cycle": 7,
+  "audit_date": "2026-04-22",
+  "rubric": "/workspaces/docs/research/eml-paper/judgment-rubric.md",
+  "incumbent_judgment": "/workspaces/docs/research/eml-paper/cycle-07/JUDGMENT.md",
+  "deliverables": {
+    "A": "/workspaces/docs/research/eml-paper/cycle-07/A-ARGUMENT.md",
+    "B": "/workspaces/docs/research/eml-paper/cycle-07/B-ARGUMENT.md"
+  },
+  "oracle_catalogue_used": [
+    "/tmp/verify_cycle07.py",
+    "/workspaces/docs/research/eml-paper/cycle-07/A-sim.py",
+    "/workspaces/docs/research/eml-paper/cycle-07/B-simulator.py",
+    "/tmp/verify_worked.py (ad-hoc worked-example verifier written at audit time)"
+  ],
+  "disclosed_circularity_scan": {
+    "A": {
+      "sections_scanned": "§1.1-1.3, §2.1-2.4 (SL-1, SL-2, SL-3), §3.1-3.3, §4.1-4.4, §5.1-5.2, §6.1-6.5, §7.1-7.5, Summary",
+      "findings": [
+        "SL-1 proof (§2.1): self-contained via `confluence gives w; normality forces u'=w=v'`; no dependency on §4. Not circular.",
+        "SL-2 claim (§2.2): discharge deferred to §3.2 per-rule polynomial table; §3.2 uses symbolic polynomial arithmetic independent of §4 verdicts. Deferred-discharge, not circular.",
+        "SL-3 (§2.3): self-contained height-monotonicity argument. Not circular.",
+        "§4.4(d) `confluence + WN ⇒ unique NFs` derived from first principles inline, not cited. Not circular.",
+        "§7.3 parametric non-existence of strictly-monotone polynomial SN measure: self-contained proof sketch. Not circular."
+      ],
+      "result": "No hidden paragraph-level internal tensions, no lemma-level circularity. R6 honesty polarity = 3 justified."
+    },
+    "B": {
+      "sections_scanned": "§1.1-1.3, §2.1-2.3 (Sublemma 2.1, 2.2, 2.3.N + left-linearity audit), §3.1-3.3, §4.1-4.4, §5, §6.1-6.5, §7.1-7.4, front-matter iteration trace",
+      "findings": [
+        "Sublemma 2.1 proved inline via σ/σ′ construction for left-linear rules; left-linearity audit verifies R is left-linear. Not circular.",
+        "Sublemma 2.2 proof inline (size well-founded + context-additive). §3.2 applies it. Not circular.",
+        "Sublemma 2.3.N proof by contradiction: infinite reduction ⇒ infinite descending Φ-chain ⇒ impossibility. Independent of confluence/WN. Not circular.",
+        "§4.4(ii) `confluence ⇒ unique NFs when they exist` derived from first principles inline (G6 closure from iteration 1). Not circular.",
+        "§7.3 parametric non-existence over any well-founded order via SL-2.3.N: self-contained. Not circular."
+      ],
+      "result": "No hidden paragraph-level internal tensions, no lemma-level circularity. R6 honesty polarity = 3 justified. B's §4.4(ii) iteration-1 G6 disclosure + iteration-2 correction is a clean closure of a potential circularity risk visible in the diff."
+    }
+  },
+  "mechanical_verifications": {
+    "q1_witness": {
+      "term": "c(0, nil)",
+      "rho3_reduct": "0",
+      "rho4_reduct": "nil",
+      "both_nf_confirmed": true,
+      "distinct": true,
+      "verifier": "/tmp/verify_cycle07.py Check 1 + A-sim.py Section B + B-simulator.py Q1 witness"
+    },
+    "q3_witness": {
+      "term_sequence": "f(0) → f(s(0)) → ... → f(s^12(0))",
+      "traced_steps": 12,
+      "size_strictly_grows": true,
+      "verifier": "/tmp/verify_cycle07.py Check 2 + A-sim.py Section C (10 steps) + B-simulator.py Q3 (20 steps)"
+    },
+    "A_polynomial_measure_per_rule_delta": {
+      "rho1": "δ=2 (decreases)",
+      "rho2": "δ≥3 over 49 samples (decreases)",
+      "rho3": "0 of 81 samples δ≤0 (decreases)",
+      "rho4": "0 of 81 samples δ≤0 (decreases)",
+      "rho5": "δ=-2 (INCREASES — excluded from strategy S)",
+      "rho6": "δ≥2 over 7 samples (decreases)",
+      "verifier": "/tmp/verify_cycle07.py Check 3 + A-sim.py Section D"
+    },
+    "B_term_size_delta_per_rule": {
+      "rho1": "-1 (shrinks)",
+      "rho2": "-|σ(x)| ≤ -1 (shrinks)",
+      "rho3": "-1-|σ(y)| ≤ -2 (shrinks)",
+      "rho4": "-1-|σ(x)| ≤ -2 (shrinks)",
+      "rho5": "+1 (GROWS — excluded from strategy)",
+      "rho6": "-|σ(x)| ≤ -1 (shrinks)",
+      "verifier": "/tmp/verify_cycle07.py Check 4 + B-simulator.py size-delta test"
+    },
+    "worked_examples": {
+      "A_§6.3_len_reduction": "len(cons(a, cons(0, nil))) →ρ2@ε →ρ2@(1) →ρ1@(1,1) s(s(0)) — VERIFIED",
+      "A_§6.4_first_trace": "c(f(0), ...) →ρ3@ε f(0) →ρ6@ε nil — VERIFIED",
+      "A_§6.4_third_trace": "c(f(0), ...) →ρ4@ε ... →ρ1@(1,1) s(s(0)) — VERIFIED (distinct NF from first trace, confirming Q1 at composite term)",
+      "B_§6.3_len_reduction": "len(cons(0, cons(a, nil))) →ρ2@ε →ρ2@(1) →ρ1@(1,1) s(s(0)) — VERIFIED",
+      "B_§6.5_choice_through_len_path_A": "len(c(cons(0, nil), nil)) →ρ3@(1) →ρ2@ε →ρ1@(1) s(0) — VERIFIED",
+      "B_§6.5_choice_through_len_path_B": "len(c(cons(0, nil), nil)) →ρ4@(1) →ρ1@ε 0 — VERIFIED (distinct NF from path A)",
+      "verifier": "/tmp/verify_worked.py"
+    },
+    "oracle_reruns": {
+      "A_sim_py": "all checks PASS; output matches A-sim_output.txt",
+      "B_simulator_py": "all checks PASS; 50/50 random terms reach NF; CP enumeration = 48 triples (38 non-unifiable + 10 unifiable), matches B's deliverable claims"
+    }
+  },
+  "scores": {
+    "A": {
+      "R1": {
+        "value": 3,
+        "method": "textual",
+        "evidence": "A §1.1-1.3: three first-principles precedents (process-algebra choice primitive for Q1; lazy-vs-eager evaluation with escape hatch for Q2; unbounded-recursion trap for Q3), each tied to specific rule-pair of R.",
+        "oracle_command": null
+      },
+      "R2": {
+        "value": 3,
+        "method": "textual + structural",
+        "evidence": "A §2 has three named sublemmas SL-1, SL-2, SL-3, each stated and separately discharged (SL-1 inline proof, SL-2 deferred to §3.2, SL-3 inline height argument). Each cited by name in §4 (§4.1→SL-1, §4.2→SL-2, §4.3→SL-3). §2.4 explicitly names shared term-algebra plumbing vs divergent argument shapes. Meets tightened R2.",
+        "oracle_command": null
+      },
+      "R3": {
+        "value": 2,
+        "method": "textual + structural",
+        "evidence": "A §3.1 has two tables: 6-row per-rule non-variable positions + 6-row overlap matrix covering (ρ1,ρ2), (ρ2,ρ1), (ρ3,ρ4), (ρ4,ρ3), (ρ5,ρ6), (ρ6,ρ5). The full unifiable support is 10 (4 non-self + 6 trivial self-overlaps (ρi, ρi, ε)). The 6 trivial self-overlaps are dispatched in a single prose bullet ('Trivial self-overlaps ... produce the identical CP ⟨RHS, RHS⟩') rather than as table rows with per-row disposition. Strict tightened-R3 reading caps at band 2: 'prose enumeration of a closeable finite set maxes at band 2'. A's table also lacks the explicit 48/38/10 triple accounting B has. CONDITIONAL on scoring convention: generous reading (6 trivial rows are mechanically uniform and collapsible) would give band 3; strict reading gives band 2.",
+        "oracle_command": null
+      },
+      "R4": {
+        "value": 3,
+        "method": "textual",
+        "evidence": "Per Cycle #7 R4 semantic (TASK §7): firm commitments on all three Q1/Q2/Q3 + rigorous discharge of each. A §4.1 commits NOT confluent + discharges via SL-1 + c(0, nil) witness; §4.2 commits WN + discharges via strategy S + SL-2 + §3.2 per-rule arithmetic; §4.3 commits NOT SN + discharges via SL-3 + f(0)→ρ5 trajectory; §4.4 derives cross-question implications from first principles.",
+        "oracle_command": null
+      },
+      "R5": {
+        "value": 3,
+        "method": "oracle",
+        "evidence": "A's polynomial measure μ per-rule δ mechanically verified: ρ1=2, ρ2≥3, ρ3≥3 (0 of 81 samples δ≤0), ρ4≥3 (0 of 81 samples δ≤0), ρ5=-2 (explicitly increases — excluded from S), ρ6≥2. Q1 witness c(0, nil) and Q3 witness f(0)→ρ5 trajectory both verified.",
+        "oracle_command": "python3 /tmp/verify_cycle07.py (Checks 1-3) + python3 A-sim.py"
+      },
+      "R6": {
+        "value": 3,
+        "method": "oracle",
+        "evidence": "A §5.1 symbolic channel + §5.2 executable oracle (A-sim.py, 11024 B, 5 sections: CP enum, Q1 witness, Q3 trace, per-rule μ-inequalities over 5-49 samples, strategy-S simulation on 6 seeds). Oracle framed as falsifier; all checks pass. Disclosed-circularity scan: no hidden paragraph-level internal tensions (see scan details). Oracle + symbolic channels agree.",
+        "oracle_command": "python3 /workspaces/docs/research/eml-paper/cycle-07/A-sim.py"
+      },
+      "R7": {
+        "value": 3,
+        "method": "textual + structural",
+        "evidence": "A §6 has 4 examples + §6.5 coverage table explicitly naming 4 distinct stress-axes: §6.1 Q1 divergent pair (both reducts NF, distinct); §6.2 WN-vs-non-SN from same seed f(0); §6.3 deterministic len-only subsystem; §6.4 interleaved c/f/len with 3 different strategies reaching 2 distinct NFs. Meets tightened R7: ≥ 4 examples.",
+        "oracle_command": null
+      },
+      "R8": {
+        "value": 3,
+        "method": "textual + structural",
+        "evidence": "A §7 has 5 sub-sections with multiple parametric disclosures: §7.1 parametric claim that every single-rule removal leaving ρ3+ρ4 in place preserves non-confluence, generalized to 'any TRS with two rules g(v̄)→xi / g(v̄)→xj'; §7.3 parametric impossibility 'no strictly-monotone polynomial interpretation over ℕ₊ can make ρ5 strictly decrease' with proof sketch; §7.4 three structural claims across rule-shape classes. Meets tightened R8: structural disclosures, not case exhibition.",
+        "oracle_command": null
+      },
+      "R9": {
+        "value": 3,
+        "method": "oracle",
+        "evidence": "Binary axis. A commits correct verdicts on all three: Q1 NOT confluent (c(0, nil) witness + CP enumeration); Q2 WN (strategy S + SL-2 + §3.2 arithmetic); Q3 NOT SN (f(0)→ρ5 trajectory + height invariant). All three mechanically verified.",
+        "oracle_command": "python3 /tmp/verify_cycle07.py"
+      },
+      "R10": {
+        "value": 0,
+        "method": "textual + structural",
+        "evidence": "A produced a single substantive write of A-ARGUMENT.md (mtime 17:39:19) with no Cycle #7 iteration artefact. attempts/ and iterations/ directories contain only stale Cycle #6 files (renamed with -stale-*.md suffixes, mtimes ≤ 16:16 pre-Cycle-#7-launch). No Cycle #7 evaluator report, no disclosed-gap disclosure file, no closure artefact. Band 0 by cleanest reading of 'one substantive write of the deliverable with no on-disk trace of deliberation between emissions'. M6.2 codification (pre-disclosed-gap audit → band 0) not even triggered because A produced no Cycle #7 audit at all.",
+        "oracle_command": null
+      }
+    },
+    "B": {
+      "R1": {
+        "value": 3,
+        "method": "textual",
+        "evidence": "B §1.1-1.3: three first-principles precedents tied to rule shapes (shared-LHS choice primitive for Q1; lazy evaluation with ρ6 as finite-answer alternative to ρ5 for Q2; self-reproducing rule without fuel parameter for Q3). Each motivation cites specific rule-pairs of R.",
+        "oracle_command": null
+      },
+      "R2": {
+        "value": 3,
+        "method": "textual + structural",
+        "evidence": "B §2 has three named sublemmas: Sublemma 2.1 (variable-overlap joins automatically for left-linear rules) with full inline σ/σ′ proof + left-linearity audit table for R's 6 rules; Sublemma 2.2 (size as progress measure) with inline well-foundedness + context-additivity proof; Sublemma 2.3.N (one infinite reduction defeats every Φ) with inline contradiction proof. Each cited by name in §3/§4 (§3.1 cites 2.1; §3.2 cites 2.2; §3.3+§4.3 cite 2.3.N). §2.1 declares scope. Meets tightened R2.",
+        "oracle_command": null
+      },
+      "R3": {
+        "value": 3,
+        "method": "textual + structural + oracle",
+        "evidence": "B §3.1 has three tables plus explicit numerical accounting: per-rule non-variable positions (6 rows); explicit 8×6=48 triple count with 38 non-unifiable + 10 unifiable partition; 10-row unifiable-overlap table covering all 10 unifiable triples (6 trivial self-overlaps + 4 non-self head-matches) with disposition per row. B's simulator.py::test_q1_cp_enumeration mechanically enumerates all 48 triples. Variable-position overlaps handled by Sublemma 2.1. Full finite tractable support tabulated with per-row disposition. Meets tightened R3.",
+        "oracle_command": "python3 B-simulator.py (CP enumeration section)"
+      },
+      "R4": {
+        "value": 3,
+        "method": "textual",
+        "evidence": "Per Cycle #7 R4 semantic: firm commitments on all three + rigorous discharge. B §4.1 NOT confluent + discharges via §3.1 + Sublemma 2.1 + c(0, nil) witness; §4.2 WN + strategy 'any non-ρ5 redex' + Sublemma 2.2 + §3.2 size-delta table; §4.3 NOT SN + f(0)→ρ5 trajectory + Sublemma 2.3.N universality; §4.4 derives cross-question implications from first principles.",
+        "oracle_command": null
+      },
+      "R5": {
+        "value": 3,
+        "method": "oracle",
+        "evidence": "B's term-size measure |t| per-rule δ mechanically verified: ρ1=1, ρ2≥1, ρ3≥2, ρ4≥2, ρ5=-1 (GROWS — excluded from strategy), ρ6≥1. Q1 witness c(0, nil) and Q3 witness f(0)→ρ5 trajectory (20 steps traced) both verified.",
+        "oracle_command": "python3 /tmp/verify_cycle07.py (Check 4) + python3 B-simulator.py"
+      },
+      "R6": {
+        "value": 3,
+        "method": "oracle",
+        "evidence": "B §5 has symbolic + executable channels: simulator.py with 7 named tests (test_q1_cp_enumeration over all 48 triples; test_per_rule_size_delta; test_q2_wn_strategy on 11 hand-crafted + test_wn_strategy_on_random_terms on 50 random; test_q3_infinite_sequence 20 steps; test_claimed_nfs on 7 NFs; test_q1_non_confluence_witness via reachable-set intersection; test_q1_rho5_rho6_overlap_joinable). Disclosed-circularity scan clean. Oracle + symbolic channels agree.",
+        "oracle_command": "python3 /workspaces/docs/research/eml-paper/cycle-07/B-simulator.py"
+      },
+      "R7": {
+        "value": 3,
+        "method": "textual + structural",
+        "evidence": "B §6 has 5 examples: §6.1 Q1 divergent pair c(0, nil); §6.2 terminating-vs-non-terminating from same seed f(0); §6.3 deterministic len 6-step reduction; §6.4 Q3 infinite reduction 20 steps traced with general pattern; §6.5 choice propagating through len — len(c(cons(0, nil), nil)) reaches distinct NFs s(0) and 0 via ρ3-first vs ρ4-first (mechanically verified). §6.5 is orthogonal to §6.1 (surface witness vs composite witness where choice is under a len wrapper). Meets tightened R7.",
+        "oracle_command": "python3 /tmp/verify_worked.py"
+      },
+      "R8": {
+        "value": 3,
+        "method": "textual + structural",
+        "evidence": "B §7 has 4 sub-sections with parametric disclosures: §7.1 6-row rule-removal disposition table + residual CP audit for R\\{ρ3} + parametric statement 'any pair of rules with shape g(v1,...,vn)→vi / g(v1,...,vn)→vj for i≠j induces a non-joinable CP ⟨vi, vj⟩'; §7.2 sufficient condition for WN-witnessing strategies; §7.3 universal-quantification-over-all-well-founded-orders via Sublemma 2.3.N (strictly broader than A's §7.3 which limits to strictly-monotone polynomials); §7.4 rule-shape class generalizations + structural upshot. Meets tightened R8.",
+        "oracle_command": null
+      },
+      "R9": {
+        "value": 3,
+        "method": "oracle",
+        "evidence": "Binary axis. B commits correct verdicts on all three: Q1 NOT confluent, Q2 WN, Q3 NOT SN. Each with rigorous concrete witness + mechanical verification via simulator.",
+        "oracle_command": "python3 /workspaces/docs/research/eml-paper/cycle-07/B-simulator.py"
+      },
+      "R10": {
+        "value": 2,
+        "method": "textual + structural",
+        "evidence": "B produced two substantive iterations: attempt-01.md (17:40:05, 29371 B) + .eval-report-01.json (17:42:19, 11591 B, 10 disclosed gaps G1-G10 with issue+severity+proposed_fix) + ARGUMENT.md (17:46:13, 29393 B, iteration-2 final claiming G1-G9 closure + G10 no-action). SHA-256 prefixes confirm distinct texts (e2e416a4edad vs 9426d5d3af63). Diff count: 702 line-level changes (non-cosmetic restructure; §3.1 grew from 5348 B with 20 pipe-rows to 10150 B with 33 pipe-rows). 9 of 10 gaps demonstrably closed by diff between drafts. Band 2 under strict M6.3 reading: B produced none of the three band-3 substitutes — no second .eval-report-*.json (would be option a), B's oracle output-final.txt runs general tests but does not per-G-id verify closure (option b not satisfied), and no committed gap-closure-check.json artefact exists separately from the deliverable (option c not satisfied). Self-attestation inside deliverable's front matter is explicitly insufficient per M6.3. CONDITIONAL: generous reading (ROOT's per-gap diff verification in the incumbent JUDGMENT could count as an equivalent closure-check) would give band 3; strict reading (the verification is 'for JUDGMENT scoring' not a 'committed artefact separate from the deliverable') gives band 2.",
+        "oracle_command": null
+      }
+    }
+  },
+  "totals": {
+    "A": 26,
+    "B": 29,
+    "delta_B_minus_A": 3
+  },
+  "agreement_matrix": [
+    {"axis": "R1-A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R2-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "3 named sublemmas (SL-1, SL-2, SL-3) each separately discharged + cited by name in §4"},
+    {"axis": "R3-A", "incumbent": 2, "auditor": 2, "agree": "CONDITIONAL", "note": "Strict tightened-R3 reading: A tabulates 6 of 10 unifiable overlaps (4 non-self + 2 'n/a' head-mismatches) but dispatches 6 trivial self-overlaps in a single prose bullet rather than as table rows with per-row disposition. Generous reading (trivial rows collapsible) would give band 3. Concur with incumbent's strict reading — consistent with Cycle #6 B's canonical 10-row table being the tightening's anchor."},
+    {"axis": "R4-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Cycle #7 R4 3-obligation semantic satisfied"},
+    {"axis": "R5-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "polynomial measure per-rule δ mechanically re-verified"},
+    {"axis": "R6-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "symbolic + executable oracle channels + no hidden circularity per independent scan"},
+    {"axis": "R7-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "4 examples + §6.5 coverage table; 4 distinct axes stressed"},
+    {"axis": "R8-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "multiple parametric disclosures (§7.1 choice-primitive structure, §7.3 no strictly-monotone-polynomial SN-witness, §7.4 three rule-shape class claims)"},
+    {"axis": "R9-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "binary; all three verdicts correct + rigorously discharged + mechanically verified"},
+    {"axis": "R10-A", "incumbent": 0, "auditor": 0, "agree": "YES", "note": "Single-shot; no Cycle #7 iteration artefact (attempts/ and iterations/ only contain stale Cycle #6 files). Cleanest band 0 — not even the M6.2 edge case applies because no Cycle #7 audit was produced."},
+    {"axis": "R1-B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R2-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "3 named sublemmas (Sublemma 2.1/2.2/2.3.N) + left-linearity audit table; each cited by name in §3/§4"},
+    {"axis": "R3-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "10-row table covers full unifiable support with per-row disposition + explicit 48/38/10 triple accounting + oracle mechanical enumeration"},
+    {"axis": "R4-B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R5-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "term-size measure mechanically verified per-rule"},
+    {"axis": "R6-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "7-test simulator + symbolic channels + no hidden circularity"},
+    {"axis": "R7-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "5 examples with §6.5 (choice-through-len) orthogonal to §6.1"},
+    {"axis": "R8-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "§7.3 universal-measure-class is broader than A's §7.3; §7.1 residual-CP audit table; §7.4 structural upshot"},
+    {"axis": "R9-B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R10-B", "incumbent": 2, "auditor": 2, "agree": "CONDITIONAL", "note": "Strict M6.3 reading: B produced none of the three band-3 substitutes (no 2nd eval report, no per-G-id oracle confirmation, no committed separate closure-check artefact). Generous reading (ROOT's per-gap diff in JUDGMENT §3 R10 table as implicit closure-check substitute) would give band 3. Concur with incumbent's strict reading — M6.3's 'committed artefact separate from the deliverable' is intentional criterion."}
+  ],
+  "agreement_summary": {
+    "total_axes": 20,
+    "yes": 18,
+    "conditional": 2,
+    "no": 0
+  },
+  "disagreement_count": 0,
+  "conditional_count": 2,
+  "conditional_axes": ["R3-A", "R10-B"],
+  "arbitration_triggered": false,
+  "arbitration_reason": null,
+  "arbitration_triggers_evaluated": {
+    "any_axis_band_diff_ge_2": false,
+    "three_or_more_axes_disagree": false,
+    "r9_disagreement": false,
+    "total_score_diff_exceeds_20_percent": "A incumbent 26 vs auditor 26 (Δ=0); B incumbent 29 vs auditor 29 (Δ=0); neither exceeds 6 pts (20% of 30)"
+  },
+  "notes": "Cycle #7 audit concurs fully with incumbent JUDGMENT: A=26/30, B=29/30, Δ=+3. Score composition: R3 contributes +1 (tightened-R3 caps A's prose-dispatch-of-trivial-self-overlaps at band 2; B's 10-row table meets band 3); R10 contributes +2 (A single-shot → 0; B two iterations with gap closure but no M6.3 substitute → 2). All R1-R9 axes tie at band 3 for both. Mechanical verifications (Q1 witness, Q3 trajectory, A's polynomial μ per-rule δ, B's |t| per-rule δ, and every worked example in A §6.3, §6.4 and B §6.3, §6.5) all pass independently via /tmp/verify_cycle07.py, A-sim.py, B-simulator.py, and the ad-hoc /tmp/verify_worked.py. Two CONDITIONAL flags (R3-A, R10-B) both rest on rubric-semantic strict-vs-generous reading boundaries that are intentional criteria of the ported tightenings (R3 band-3 threshold = 'one row per element of the support'; R10 band-3 threshold under M6.3 = 'committed artefact separate from the deliverable'). Neither CONDITIONAL triggers arbitration per the rubric's own disambiguation (incumbent's strict readings are both consistent with the pre-cycle M6.2/M6.3/R3-tightening ports). Shared-bias disclosure: R1, R2, R4, R7, R8 are textual-only; auditor and incumbent run on the same base model, so agreement on these axes is not independent evidence. Strongest audit confidence is on oracle-backed axes R3 (CP enumeration exhaustively verified by B-simulator), R5 (per-rule δ), R6 (oracle channel), R9 (all three verdicts), and R10 (filesystem mtimes + diff counts + SHA-256 distinctness). Auditor-total-A = 26, auditor-total-B = 29, arbitration_triggered = false, status can remain 'draft' with audit concurrence."
+}

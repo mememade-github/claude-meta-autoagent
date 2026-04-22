@@ -1125,3 +1125,272 @@ step).  GOAL clause 2 + GOAL clause 9 both satisfied.
 - **Cleanup forensic baseline established.**  Cycle #6 is the first
   cycle to run cleanup-sub.sh + capture forensic in cycle-log.
   Cycle #7 onward should make this part of the standard cycle close.
+
+---
+
+## Cycle 07 — 2026-04-22
+
+**TASK framing.** `cycle-07/TASK.md` — "Confluence, weak normalization,
+and strong normalization of a small term-rewriting system with choice"
+over the 6-rule TRS
+`{ρ1: len(nil) → 0, ρ2: len(cons(x, ys)) → s(len(ys)),
+ρ3: c(x, y) → x, ρ4: c(x, y) → y, ρ5: f(x) → f(s(x)),
+ρ6: f(x) → nil}`.  Three independent verdict obligations:
+**Q1 confluence (non-positive)**, Q2 weak normalization (positive),
+**Q3 strong normalization (non-positive)**.  Design intent: two
+non-positive verdicts force concrete-witness exhibition (divergent
+pair + infinite reduction sequence); positive Q2 requires a genuine
+reduction-strategy + measure argument.  34-entry banned-identifier
+list: 28 Cycle #6 inherited + 6 Cycle #7 specific (Klop, Barendregt,
+Girard, Tait, Plotkin, de Bruijn).  Expected A first-draft ceiling
+21–25/30 (≥ 2 R1–R9 axes drop to band 2 under tightened rubric).
+
+**Pre-cycle additions.**
+
+1. **Rubric R2/R3/R7/R8 band-3 tightenings** (commit `9421996`)
+   ported from `band-3-tightening-v1.md` (ROOT-owned seed).  Each
+   axis's band 3 now requires specific structural evidence:
+   R2 named sublemmas under distinct proof tools; R3 tabular form
+   for finite tractable support; R7 ≥ 4 examples OR ≥ 3 orthogonal
+   modes; R8 ≥ 1 structural / parametric disclosure.  Each
+   tightening evidence-anchored to Cycle #6 JUDGMENT §4 observation
+   rows.
+2. **R10 M6.2 + M6.3 codifications** (same commit).  M6.2:
+   pre-disclosed-gap post-hoc audit → band 0 (closes Cycle #6
+   carry-over).  M6.3: band 3 accepts one of (a) second eval
+   report, (b) oracle output mechanically confirming per-gap
+   closure, (c) committed separate closure-check artefact;
+   self-attestation in deliverable front-matter insufficient
+   (closes Cycle #6 carry-over).
+3. `cycle-07/TASK.md` committed.  `projects/a/` untouched
+   (`git diff --quiet cycle-07-pre -- projects/a/` holds).
+   `cycle-07-pre` tag at pre-cycle HEAD.
+4. `cycle-06/JUDGMENT-v2.md` retrospective re-score committed in
+   Cycle #6 scope but evaluated against Cycle #7's tightened
+   rubric.  Isolates rubric-effect from task-design-effect.
+
+**Execution.** Both sub-agents launched via
+`scripts/meta/delegate-sub.sh {a,b}` with `EFFORT=high` at
+17:31 UTC.
+
+- A: sim.py written 17:34 UTC (11 024 B, 5 verification sections);
+  ARGUMENT.md written 17:39 (42 508 B, single substantive write
+  with 3 named sublemmas SL-1/SL-2/SL-3, 4 examples, §6.5 coverage
+  table, 5 open-question sub-sections with parametric disclosures);
+  no Cycle #7 iteration / audit file; exit ~17:39 (~8 min wall-
+  clock).  **Single-shot deliverable.**  A's `attempts/` and
+  `iterations/` directories retained stale Cycle #6 files (renamed
+  with `-stale-*.md` suffixes) — not part of Cycle #7 proof path.
+- B: simulator.py 17:36 (14 380 B, 7 named tests); attempt-01.md
+  (iteration-1 draft) 17:40 (29 371 B); .eval-report-01.json
+  17:42 (11 591 B, 10 disclosed gaps G1–G10 with per-gap
+  issue+fix+severity-implicit); ARGUMENT.md (iteration-2 final)
+  17:46 (29 393 B; front-matter claims G1–G9 closure + G10
+  no-action with cited §-locations); exit ~17:46 (~15 min wall-
+  clock).  **Two distinct iterations + 1 evaluator report;
+  iteration 2's closure verifiable via 702 line-level diff
+  changes — §3.1 grew 5 348 → 10 150 bytes with 20 → 33 pipe-
+  rows.**
+
+**Leak audit.**  Both PASS on base `paper-leak-audit.sh` (eml-paper
+keyword set) AND the 34-entry Cycle #7 extended banned-identifier
+grep.  No matches in either ARGUMENT.md.
+
+**Scores (see `cycle-07/JUDGMENT.md` for per-criterion evidence).**
+
+| Criterion | A | B |
+|-----------|---|---|
+| R1 Motivation               | 3 | 3 |
+| R2 Method design            | 3 | 3 |
+| R3 Progressive minimization | **2** | 3 |
+| R4 Verdict commitment       | 3 | 3 |
+| R5 Exact form               | 3 | 3 |
+| R6 Verification strategy    | 3 | 3 |
+| R7 Constructive examples    | 3 | 3 |
+| R8 Open questions           | 3 | 3 |
+| R9 Exact answer match       | 3 | 3 |
+| R10 Iteration depth         | 0 | 2 |
+| **Total**                   | **26/30** | **29/30** |
+
+**Comparative delta: B − A = +3 on non-ceilinged rubric.**
+Composition:
+
+- **R3 contributes +1**: Cycle #7 pre-cycle tightening caps A at
+  band 2 (6-row table for non-self unifiable overlaps; the 6
+  trivial self-overlap unifiable cases collapsed in prose).  B's
+  10-row table covers all 10 unifiable triples with per-row
+  disposition, meeting the tightened threshold.
+- **R10 contributes +2**: A single-shot (no Cycle #7 iteration
+  at all; `attempts/iterations/` contain only stale Cycle #6
+  files); B 2 drafts + 1 eval report + 9 gap closures verifiable
+  by diff.  Strict M6.3 reading caps B at band 2 (no committed
+  closure-check artefact separate from deliverable).
+
+**GOAL clause 5 end-state.**  Clause 5(a) (A's R1-R9 < 27):
+**met** — A's R1-R9 = 26 (R3 dropped).  Clause 5(b) (|A − B| ≥
+3): **met** — Δ = +3 exceeds Cycles #5–#6 +2 floor.  Clause 5(c)
+fallback not invoked.
+
+**Retrospective validation (`cycle-06/JUDGMENT-v2.md`).**
+A-drop magnitude **= 4** on R2/R3/R7/R8 re-scoring Cycle #6
+deliverables under tightened rubric.  Cycle #6 Δ grows from +2
+(original) to +6 (tightened).  Cycle #7's measured +3 delta is
+LOWER than the retrospective because Cycle #7's TASK prompt
+invited exactly the patterns the tightening targets (named
+sublemmas, tabular enumeration, ≥ 4 orthogonal examples,
+parametric disclosures) — A's first draft responded to the
+prompt hints and produced them on 3 of 4 axes (R2, R7, R8 at
+band 3; only R3 at band 2 due to partial tabular completeness).
+The discriminative power of the tightening is validated by the
+retrospective; Cycle #7's measurement understates it.
+
+**Proof-auditor verdict (§6.7 step 5c, third cycle with audit
+wired).**  Independent audit produced `cycle-07/rubric-audit.json`:
+auditor totals A 26, B 29 (match incumbent), 18 YES + 2 CONDITIONAL
++ 0 NO across 20 (axis, deliverable) pairs, `arbitration_triggered:
+false`.  Mechanical verifications: Q1 witness c(0, nil) → 0 / nil
+(both NFs, distinct); Q3 witness f(0) → f(sⁿ(0)) for n=1..12
+traced valid; A's polynomial measure μ per-rule δ (ρ1=2, ρ2-ρ4 ≥
+3, **ρ5=−2 increases**, ρ6 ≥ 2); B's term-size δ per-rule (ρ1=1,
+ρ2 ≥ 1, ρ3-ρ4 ≥ 2, **ρ5=−1 grows**, ρ6 ≥ 1).  Worked-example
+traces (A §6.3, §6.4, B §6.3, §6.5) verified term-by-term.  Oracle
+reruns confirm both A-sim.py and B-simulator.py produce outputs
+identical to committed transcripts.  Disclosed-circularity scan
+clean for both deliverables.
+
+The 2 CONDITIONALs are: R3-A (strict vs generous tightened-R3
+reading on partial tabular presentation); R10-B (strict vs
+generous M6.3 reading on whether ROOT's in-JUDGMENT per-gap diff
+verification substitutes for a committed closure-check artefact).
+Both are intentional rubric-semantic criteria of the Cycle #7
+pre-cycle ports, not scoring disputes.
+
+**Cycle design-point observation (prompt-hint leakage —
+`M7.1-prompt-hint-leakage`).**  The Cycle #7 TASK prompt telegraphed
+the band-3 patterns (explicit "each tool should be stated as a
+named sublemma", "tabular presentation with one row per (ρᵢ, ρⱼ,
+position)", "exhibit AT LEAST FOUR distinct reduction scenarios",
+"if you can argue parametrically that NO single-rule removal
+restores confluence").  A responded by producing 3 named
+sublemmas, 4 examples + coverage table, multiple parametric
+disclosures — reaching band 3 on R2/R7/R8 even on a single-shot
+first draft.  The retrospective shows that without these hints
+(Cycle #6 prompt) A drops on all four tightened axes.  **Carry-
+over to Cycle #8**: Cycle #8 TASK must describe the task
+structurally without hinting at band-3 scoring patterns.
+
+**Rubric evolution (ported to main repo this cycle).**
+
+- R2 band-3 tightening (commit `9421996`): named sublemmas under
+  distinct proof tools.
+- R3 band-3 tightening (same commit): tabular form for finite
+  tractable support.
+- R7 band-3 tightening (same commit): ≥ 4 examples OR ≥ 3
+  orthogonal modes.
+- R8 band-3 tightening (same commit): ≥ 1 structural / parametric
+  disclosure.
+- R10 M6.2 codification (same commit): pre-disclosed-gap post-hoc
+  audit → band 0.
+- R10 M6.3 codification (same commit): evaluator-or-equivalent
+  verification (second eval report / oracle per-gap output /
+  committed closure-check artefact) for band 3; self-attestation
+  insufficient.
+
+**B-seed augmentation (this cycle).**
+
+- seed-15: reduction-strategy-with-progress-measure template for
+  WN proofs in TRSs with non-SN rules.  Three-condition
+  decomposition (totality + strict-decrease + well-foundedness).
+- seed-16: universal-measure-class parametric impossibility for
+  negative-SN — one concrete infinite reduction defeats every
+  well-founded Φ universally.
+
+Total seed entries: 14 → 16.
+
+**Defect-resolution status updates.**
+
+- `M5.1 / M6.1-task-ceiling-overshoot`: **Partially closed** in
+  Cycle #7 — tightened rubric + non-positive-verdict domain
+  dropped A from 27/30 to 26/30 on R1-R9 (one axis at band 2).
+  Design target of "≥ 2 R1-R9 axes drop" NOT fully hit due to
+  prompt-hint leakage (M7.1).  **Reclassified as `M7.1-prompt-
+  hint-leakage` carry-over.**
+- `M6.2-R10-band-0-1-second-edge-case`: **Closed** by Cycle #7
+  pre-cycle R10 band-0/1 codification.
+- `M6.3-R10-band-2-3-evaluator-report-substitution`: **Closed** by
+  Cycle #7 pre-cycle R10 band-2/3 codification.  M6.3 now
+  specifies three band-3 substitutes; strict reading caps Cycle
+  #7 B at band 2 because B did not produce any substitute.
+- `M7.1-prompt-hint-leakage`: **NEW CARRY-OVER TO CYCLE #8.**
+  TASK prompt language must be structurally descriptive without
+  signalling band-3 scoring patterns.
+- `M7.2-R10-band-3-closure-artefact-tooling`: **NEW CARRY-OVER TO
+  CYCLE #8.**  M6.3's band-3 substitute (c) (committed closure-
+  check artefact) has no ROOT tooling to generate it.  A
+  `scripts/meta/closure-check.sh` (or equivalent) that reads
+  `.eval-report-*.json` + final deliverable and emits
+  `gap-closure-check.json` would allow B to natively reach band 3.
+
+**Cross-cycle learning validation.**  B container at Cycle #7
+launch saw `/workspaces/agent-memory-seed/strategies.jsonl` with
+14 entries (seed-01 through seed-14 from Cycles #4–#6).  Post-
+cycle harvest added seed-15 + seed-16; Cycle #8 B launch will see
+16 entries.  Seed growth per cycle: Cycle #4 +10, Cycle #5 +2,
+Cycle #6 +2, Cycle #7 +2.  Non-flat, non-shrinking → healthy.
+The seed remains the cross-cycle persistence substrate;
+runtime `.claude/agent-memory/skills/strategies.jsonl` (gitignored,
+container-local) is wiped between cycles.
+
+**Cleanup forensic (per Cycle #7 GOAL clause 9).**
+
+After cycle close, `scripts/meta/cleanup-sub.sh` was executed
+against both A and B containers.  This is the second cycle with
+cleanup forensic (Cycle #6 established the mechanism; Cycle #7
+validates persistence).
+
+- `scripts/meta/cleanup-sub.sh a` — pre-cleanup A had
+  `/home/vscode/.claude/.credentials.json` (471 bytes, relayed
+  at 17:13 pre-launch).  Script reported `removed:
+  credentials.json`.  Post-cleanup forensic on A: credential
+  file count = 0; today's agent log count = 0.  **A relayed-
+  credential count post-cleanup: 0.**
+- `scripts/meta/cleanup-sub.sh b` — pre-cleanup B had
+  `/home/vscode/.claude/.credentials.json` (same shape).  Script
+  reported `removed: credentials.json`.  Post-cleanup forensic
+  on B: credential file count = 0; today's agent log count = 0.
+  **B relayed-credential count post-cleanup: 0.**
+
+Both containers left running (no `--stop` invocation; lifecycle
+preserved for Cycle #8 reuse).  Cleanup mechanism validated on
+consecutive cycle — persistence confirmed.
+
+**Commits referenced.**
+- `9421996` chore(cycle-07-pre): R2/R3/R7/R8 band-3 tightening + R10 M6.2/M6.3 codification + cycle-07 TASK
+- `(this commit)` feat(cycle-07): JUDGMENT A 26 vs B 29 — Δ=+3 — R3 tightening + R10 — auditor-concurred + retrospective validation
+
+**Open for next cycle (Cycle #8).**
+
+- **M7.1-prompt-hint-leakage** — design Cycle #8 TASK without
+  signalling band-3 scoring patterns.  Describe the task
+  structurally (rule set, question list, constraint list); let
+  the rubric tightenings bite on fresh deliverables.
+- **M7.2-R10-band-3-closure-artefact-tooling** — port ROOT-side
+  `scripts/meta/closure-check.sh` (or equivalent) to auto-generate
+  `gap-closure-check.json` from eval-report + final deliverable.
+  Would allow B to natively reach band 3 R10.
+- **Domain choice reserve.**  Cycle #7 exhausted the
+  confluence+WN+SN-of-small-TRS family.  Cycle #8 domain
+  candidates: type-inhabitation decidability for typed λ-calculi;
+  wrong-attractor termination with lex/multiset measure forcing;
+  proof-search with canonical termination.
+- **Proof-auditor concurrence pattern stable across 3 cycles.**
+  Cycles #5/#6/#7 all ran with proof-auditor wired; 0 arbitration
+  triggers across 60 axis-deliverable pairs; CONDITIONAL counts
+  vary (Cycle #5: 1; Cycle #6: 4; Cycle #7: 2) with each
+  CONDITIONAL tracing to a specific rubric-semantic dependency
+  documented in the cycle's defect table.  Arbitration pipeline
+  remains untested in production — which is healthy evidence of
+  rubric discipline.
+- **Cleanup forensic on consecutive cycle confirms persistence.**
+  Cycle #6 established, Cycle #7 validates.  Cycle #8 onward
+  continues as standard close-of-cycle.
