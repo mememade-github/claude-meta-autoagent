@@ -138,46 +138,102 @@ constant" that composes `exp` and `ln`?
 
 Partial credit is not allowed for R9.
 
-### R10 — Iteration depth and self-correction trace (0–3)
+### R10 — Iteration depth (0–3)
 
-Did the agent revise its argument through iteration that left a persisted,
-reason-carrying trace on the working disk?
+> **Domain-agnostic generalized form.**  R10 measures whether the
+> deliverable was produced by a single-shot generation or by a
+> multi-iteration process that made **disclosed, trace-verifiable
+> progress** between emissions.  The core criterion is
+> **"disclosed-gap closure with on-disk trace"** — applicable to any
+> reasoning domain where (a) iterations can be persisted to disk,
+> (b) some evaluator (agent or external) can produce gap reports, and
+> (c) subsequent iterations can be diffed against prior ones.
 
-R10 is structurally asymmetric by design: the A baseline has no iteration
-affordance in its configuration (no `/refine` skill, no evaluator agent,
-single-shot `claude -p` run terminates after one argument emission).  A can
-therefore score > 0 on R10 only if its single-shot run happens to produce
-multiple time-separated substantive writes to the same deliverable with
-reasoning deltas between them, captured by filesystem mtimes and byte-level
-diffs — a rare but not impossible pattern.  B inherits `/refine`, an
-evaluator agent, and cross-run agent-memory, and is structurally capable of
-R10 = 3.  The asymmetry is the point: R10 measures whether the evolvable
-architecture uses its iteration affordance during the task, which R1–R9
-could not see because by Cycles #2 and #3 both architectures produced
-full-quality first drafts.
+#### What it measures
+
+The axis is architecture-sensitive: a configuration with no iteration
+affordance cannot score > 0; a configuration that iterates but produces
+no reasoning delta cannot score > 1.  The axis rewards iteration that
+**closes specific prior gaps** with **on-disk evidence**.
+
+R10 is structurally asymmetric by design in this project: the A baseline
+has no iteration affordance (no `/refine` skill, no evaluator agent,
+single-shot `claude -p` run terminates after one argument emission).
+A can therefore score > 0 on R10 only if its single-shot run happens to
+produce multiple time-separated substantive writes to the same
+deliverable with reasoning deltas between them, captured by filesystem
+mtimes and byte-level diffs — a rare but not impossible pattern.  B
+inherits `/refine`, an evaluator agent, and cross-run agent-memory, and
+is structurally capable of R10 = 3.
+
+#### Band definitions
 
 | Score | Evidence |
 |---|---|
-| 0 | Single-shot: one substantive write of `task/ARGUMENT.md`, no on-disk trace of deliberation between emissions, no other iteration artefacts (no `attempts/`, no `.refine/`, no `.eval-report*.json`, no multi-step evaluator invocation). |
-| 1 | Superficial iteration: re-reads with spot fixes (typo, word-order, prose) and no structural change to the argument. Trace present but content-deltas are cosmetic. |
-| 2 | One substantive iteration: at least one reasoning-level change between emissions (an added case, a closed gap, a re-derivation, a retraction) with on-disk trace — either a multi-write ARGUMENT.md mtime sequence with byte-diff > ~1 KB on reasoning sections, or one `.refine/` / `attempts/` / `.eval-report.json` artefact. |
-| 3 | Two or more substantive iterations with on-disk traces, each showing a distinct reasoning delta, AND a citable path to each trace artefact that ROOT can name in JUDGMENT.md (e.g. `projects/b/task/.refine/attempt-01.jsonl`, `projects/b/task/.eval-report.json`, `projects/b/task/ARGUMENT.md @ mtime t1,t2,t3`). The progression itself must be visible in the final document (strengthened section, resolved tension, added verification) — scored together with R6 polarity. |
+| 0 | **Single-shot.** One substantive write of the deliverable.  No on-disk trace of deliberation between emissions.  No `attempts/`, no `.eval-report*`, no numbered drafts.  mtime-adjacent polish edits (spell-fix, comment-tuning) count as part of the single shot, not as iteration. |
+| 1 | **Cosmetic iteration.** Two or more drafts exist on disk, but the reasoning delta between them is cosmetic: re-wording, re-formatting, reordering without content change.  No disclosed-gap closure. |
+| 2 | **One substantive iteration with gap closure.** Two drafts with at least one evaluator report showing ≥1 disclosed gap in draft-N that draft-(N+1) addresses.  The closure is verifiable by diff between drafts AND the evaluator report confirms the gap no longer appears. |
+| 3 | **Two or more substantive iterations with reasoning delta and citable trace.**  Requires ALL of: (a) at least two iterations with on-disk drafts, (b) evaluator reports per iteration with `hard_constraint_violations` or equivalent disclosed gaps, (c) each iteration's deltas close ≥1 prior-iteration gap *without introducing new gaps of the same severity*, (d) the final deliverable reflects the progression, (e) the JUDGMENT can cite each trace artifact by path. |
 
-**Evidence discipline.** Unlike R1–R9, R10 evidence is off-document: the
-JUDGMENT.md must name the on-disk paths (and, where useful, mtimes and
-byte sizes) that support the score.  Citing only ARGUMENT.md line numbers
-for R10 is insufficient.  If the trace artefacts are gitignored and will
-be cleaned up with the next cycle (as they are in this project's current
-configuration), the JUDGMENT.md must snapshot the evidence inline (mtimes
-/ sizes / a representative diff extract) at grading time before the
+#### Non-inflation guard
+
+Iteration count alone does NOT elevate the band.  If an iteration
+produces no closure (no disclosed gap named in iteration-(N+1)'s
+evaluator report is resolved in iteration-(N+2)), that iteration scores
+at most the previous band.  R10 and R6 are scored independently, but
+an iteration that mechanically re-generates output without resolving
+any R6 issue does not earn R10 ≥ 2 even if the file-system trace is
+long.
+
+#### Evidence required in JUDGMENT
+
+For any R10 > 0 score, the JUDGMENT MUST include:
+
+1. **Iteration trace table** — one row per on-disk draft / report, with
+   path, mtime, byte size, and content-hash (at minimum SHA256 prefix).
+2. **Reasoning-delta enumeration** — one entry per disclosed gap
+   closed, citing (a) the evaluator-report field where the gap was
+   named, and (b) the iteration where the gap was closed (with
+   byte-range or §-reference in the new draft).
+3. **Non-inflation check** — statement that iterations did NOT
+   introduce new gaps of the same severity.  If they did, the band is
+   capped.
+
+Citing only ARGUMENT.md line numbers for R10 is insufficient.  If the
+trace artefacts are gitignored and will be cleaned up with the next
+cycle, the JUDGMENT.md must snapshot the evidence inline (mtimes /
+sizes / a representative diff extract) at grading time before the
 artefacts disappear.
 
-**Non-inflation guard.** R10 and R6 are scored independently.  An
-iteration that mechanically re-generates output without resolving any R6
-issue does not earn R10 ≥ 2 even if the file-system trace is long.  The
-grader checks: does iteration k+1 close a gap that iteration k disclosed,
-or resolve a tension, or extend a verification?  If the answer is no on
-every iteration, the trace is cosmetic (R10 = 1) regardless of size.
+#### Example bands — Cycle #5 (confluence-proof domain)
+
+| Band | Example |
+|------|---------|
+| 0 | `task/ARGUMENT.md` written in one pass; no `attempts/` directory; no `.eval-report*.json` |
+| 1 | Two `attempts/attempt-0N.md` drafts with the same proof structure, only variable renames / prose polish |
+| 2 | One `.eval-report*.json` names a missed critical-pair case in a confluence argument; next iteration's `attempt-02.md` adds that case and the evaluator report confirms it as closed |
+| 3 | ≥ 2 `.eval-report*.json` each name proof gaps (e.g., missed critical pair, unchecked reduction order, absent strong-normalization sub-argument); subsequent iterations close each with oracle-verified β-traces; JUDGMENT cites each `attempts/attempt-NN.md` and `.eval-report-NN.json` path |
+
+When R10 does NOT apply (no evaluator, or the deliverable is itself an
+oracle output with no draft), drop the axis for that cycle.
+
+#### Relation to `/refine` skill
+
+When the executing architecture has `/refine`, an R10 = 3 score should
+correspond to a `/refine` run with `contract_score` improving across
+iterations and `.claude/agent-memory/refinement/attempts/refine-*.jsonl`
+entries reflecting KEEP transitions.  Manual-iteration substitutes
+(attempts/ + .eval-report*.json maintained by the executor without
+`/refine` firing) still qualify for R10 = 3 provided the non-inflation
+guard holds.
+
+#### When to evolve this axis text
+
+Edit this section when a cycle surfaces a gap in band definitions or a
+new domain's example-bands row is validated.  Do not edit to
+accommodate a specific cycle's peculiar outcome — those belong in that
+cycle's JUDGMENT.md.  Changes flow: this file → next cycle's pre-cycle
+rubric review.
 
 ## Disqualification rules (Leak)
 

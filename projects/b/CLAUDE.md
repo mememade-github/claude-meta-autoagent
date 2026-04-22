@@ -217,3 +217,26 @@ from first principles using the local working directory only.
 **Rules** (`.claude/rules/`): `devcontainer-patterns.md`.
 
 **Skills** (`.claude/skills/`): `refine/`, `status/`, `verify/`, `wiki/`.
+
+## 8. Cross-cycle advisory seed — `/workspaces/agent-memory-seed/`
+
+At container startup, B's mount exposes the ROOT-tracked path
+`projects/b/agent-memory-seed/` as `/workspaces/agent-memory-seed/`.
+The directory contains:
+
+- `strategies.jsonl` — one JSON object per line, each a prior-cycle
+  KEEP-class strategy with `id`, `domain`, `strategy`, `rationale`,
+  and `evidence` fields.
+- `README.md` — lifecycle description.
+
+Entries are **advisory, not mandatory**.  `/refine` may consult this
+path as a read-only reference alongside `.claude/agent-memory/skills/`;
+individual entries may be loaded, adapted, or ignored per task.  Runtime
+writes during a cycle go to `.claude/agent-memory/skills/` (gitignored,
+container-local) — not to this seed.  ROOT harvests novel KEEP-class
+entries from the runtime into the seed between cycles; the seed
+accumulates across cycles, the runtime resets each cycle.
+
+Treat the seed as "prior-cycle hints that were useful on
+similar-but-different problems" — do not assume any entry is correct
+for the present task.

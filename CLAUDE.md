@@ -408,6 +408,65 @@ Steps are written in §1.4 form (`N. [Action] → verify: [check]`).
      if not-portable → rationale; if deferred → carry-over cycle
      number.  Step 6 then operationalises each "ported" decision
      as an actual commit.
+   - **5c. Independent proof-auditor audit (post-draft gate).**
+     After the ROOT-authored JUDGMENT.md draft is complete (R1–R10
+     + §5a + §5b filled in), invoke the `proof-auditor` agent
+     (defined in `.claude/agents/proof-auditor.md`) with: the
+     cycle's A-ARGUMENT.md and B-ARGUMENT.md paths, the
+     `docs/research/eml-paper/judgment-rubric.md` rubric path, the
+     draft JUDGMENT.md path as incumbent reference, and the
+     **oracle catalogue** — an advisory list of executable oracles
+     under `scripts/meta/oracles/` that can mechanically verify
+     axes the rubric references (e.g., a β-reducer for combinator
+     domains, a type-checker for typed-calculus domains).  The
+     auditor writes its verdict to
+     `docs/research/eml-paper/cycle-NN/rubric-audit.json` per the
+     proof-auditor's JSON schema — one audit.json with per-axis
+     agreement-matrix entries for **both** A and B.  The JUDGMENT.md
+     front-matter MUST then carry a `status` field derived from the
+     audit:
+       * `status: draft` — auditor produced but
+         `arbitration_triggered = false` on both A and B axes, and
+         the cycle is proceeding with the incumbent verdict with
+         audit backing.  (Cycle proceeds to step 6 normally.  A
+         "Audit concurrence" section is appended to JUDGMENT.md
+         summarizing agreement-matrix.)
+       * `status: arbitration-pending` — `arbitration_triggered = true`
+         on any axis (triggers: ≥1 axis with `|incumbent − auditor|
+         ≥ 2`, OR ≥3 axes with any band difference, OR any binary
+         axis disagreement, OR total score difference > 20 % of
+         rubric max).  Cycle-close freezes: no step 6 commit until
+         arbitration resolves.  L1 Human-delegate is notified with
+         the disputed-axes diff (via the JUDGMENT.md + audit.json
+         pair committed with `status: arbitration-pending`).  If
+         L1 is not reachable within the cycle's budget, a second
+         proof-auditor instance runs independently; majority-of-3
+         among (incumbent, auditor, second-auditor) is the
+         arbitrated band per axis.
+       * `status: arbitrated` — arbitration completed; the
+         JUDGMENT.md has been updated with per-disputed-axis
+         arbitrated bands, an "Arbitration record" section listing
+         (original incumbent, original auditor, L1 / second-auditor
+         band, final value, arbiter identity), and the cycle
+         proceeds from arbitrated values.
+     `CONDITIONAL` agreements (auditor concurs under a named
+     rubric-semantic dependency such as R4/R6 decoupling) are
+     logged as rubric-dependency notes, not arbitration triggers.
+     The audit JSON and its status transition are appended to the
+     cycle's `cycle-log.md` entry in step 9.  → verify: (i)
+     `cycle-NN/rubric-audit.json` exists and parses as valid JSON;
+     (ii) JUDGMENT.md front-matter has one of the three `status:`
+     values; (iii) if `arbitration-pending`, a freeze-note and
+     concrete arbitration plan appear in JUDGMENT.md; if
+     `arbitrated`, an "Arbitration record" section exists.
+     Oracle-catalogue pointer: `scripts/meta/oracles/` is the
+     repo-committed directory ROOT populates with domain-specific
+     verifiers; ROOT selects per-cycle which oracles are relevant
+     and passes the subset to `proof-auditor` in the invocation
+     payload.  (Derivation: Cycle #4 JUDGMENT established that
+     R6-via-executable-oracle is load-bearing for combinator
+     domains; Cycle #5 pre-cycle extends this by making the
+     auditor layer itself falsifiable.)
 6. **Improve ROOT** — commit any ROOT `.claude/` or `CLAUDE.md` change
    that addresses a weakness surfaced by the comparison, including
    every "ported" decision from step 5b.
