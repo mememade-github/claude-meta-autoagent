@@ -1,0 +1,50 @@
+{
+  "gaps": [
+    {
+      "id": "G1",
+      "description": "Worked example 6.1 is numerically wrong. The draft states phi values 22->18->14->4->1 (outermost) and 22->18->4->1 (innermost). The simulator-verified traces are 22->13->10->7->4->1 (5 rewrites outermost) and 22->10->4->1 (innermost). The draft also presents 4 rewrite arrows outermost when the actual outermost sequence needs 5. The embedded correction paragraph ('Wait -- that was wrong') still leaves stale/erroneous phi annotations below it.",
+      "fix": "Recompute phi at each intermediate term using [app](x,y)=2x+y+1 and [cons](x,y)=x+y+2; replace the phi lists with 22,13,10,7,4,1 and 22,10,4,1 respectively, and verify the stated reduction arrows match the simulator trace."
+    },
+    {
+      "id": "G2",
+      "description": "Worked example 6.2 phi trace is wrong: draft says 11->10->7->6->3->2 but actual values are 11->9->6->5->3->2. Since 6.2 is the showcase interleaving example, numerical errors undermine its role as sanity check.",
+      "fix": "Replace the phi sequence in 6.2 with 11,9,6,5,3,2; add a single inline verification line (e.g., phi(len(cons(0,cons(s(0),nil))))=6)."
+    },
+    {
+      "id": "G3",
+      "description": "Section 3.1's enumeration omits explicit treatment of root self-overlaps for each rule (e.g., rho1 with rho1 at root, rho3 with rho3 at root) and of root overlaps between distinct same-root rules (e.g., (rho3,rho4), (rho3,rho5), (rho4,rho5)). These are dismissed only implicitly under 'first arguments do not unify' or 'trivial root self-overlap which always closes'. A reader needs to trust the enumeration is exhaustive; a tabular listing of all ordered-pair x position combinations with disposition (unify-fails / variable-position / trivial / joinable-CP) would close this.",
+      "fix": "Add a comprehensive table enumerating each (rho_i, rho_j, position) triple with outcome 'no unifier / variable pos / trivial MGU / non-trivial CP', covering all 25 ordered pairs and all non-variable positions, matching the three identified non-trivial CPs."
+    },
+    {
+      "id": "G4",
+      "description": "Section 4.3's well-founded induction is presented informally and has a presentational gap at the 'common reduct s for u' and 'common reduct s for v' step: the induction hypothesis is applied at t1, t2, and then again at s, but the proof does not justify that s is strictly smaller than t in the 'proper reduct' order when s=t1 or s=t2 (it is, because t->t1 gives t1 as a proper reduct, and s is a reduct of t1, hence of t). More importantly, the argument silently requires that ->> preserves well-foundedness (i.e., if the one-step relation is terminating on all reducts of t then so is the transitive closure), which is immediate but should be cited.",
+      "fix": "Rephrase the induction to state explicitly 'induct on t under the well-founded order <-induced-by-one-step-rewriting, which §3.2 proved well-founded on closed terms'; then justify that s is a proper reduct of t by 't ->> s via t -> t1 ->> s uses >=1 step'."
+    },
+    {
+      "id": "G5",
+      "description": "Section 7.1 analyses the extension but stops short of either a proof or a counterexample: it exhibits three failing linear measures and then conjectures termination holds under a heavier measure. The section leaves an open question without even attempting a product/lexicographic ordering sketch, which would be low-cost given the rest of the document. Also: the claim that plain linear polynomials cannot discharge rho5, rho7, rho8 simultaneously is exhibited via three case trials but not proved; a dimension-argument (three rules impose three linear constraints on a fixed number of coefficients) would close it cleanly.",
+      "fix": "Either sketch a lexicographic measure (lex pair: polynomial dominating rho5 and rho7, with len-depth as tiebreaker for rho8) showing why it succeeds, or prove a non-existence lemma via coefficient constraints; at minimum, name the dimension obstruction explicitly."
+    },
+    {
+      "id": "G6",
+      "description": "The strict monotonicity claim (§2.2 and §3.2) is asserted from 'strictly positive coefficient on each argument' but the draft does not spell out why that suffices over N for polynomials of degree 1 with non-negative integer coefficients. For linear polynomials this is immediate, but the draft's language ('each interpretation is a polynomial with non-negative integer coefficients and strictly positive coefficient on each argument ... every interpretation is strictly monotone') mixes two conditions and does not cite a single-line proof (a<b implies c*a+... < c*b+... for c>=1).",
+      "fix": "Add one sentence after the interpretation table: 'For each f, writing [f] as a sum of monomials, any argument x_i appears in at least one monomial with positive coefficient and no monomial is subtracted, so a<b at x_i yields [f](...,a,...) < [f](...,b,...).'"
+    },
+    {
+      "id": "G7",
+      "description": "Variable-overlap dischargeability (§2.1 bullet 1) is asserted rather than proved. The claim 'in left-linear rules, this case never forces divergence' is the whole content of the variable-critical-pair sublemma; giving a one-paragraph argument (the alternative reduction can be performed at the other occurrence, which is fine because left-linearity means there is at most one occurrence of each variable in the LHS) would close it.",
+      "fix": "Insert a short lemma: for left-linear R, if t -> t_1 at pos p inside a variable position of another rule's match, the same rule that produced t_1 can be applied to t -> t_2 at the higher position, and the two one-step reductions commute to a common reduct, because the variable in the outer LHS occurs only once."
+    }
+  ],
+  "scores": {
+    "R1": {"score": 3, "justification": "Motivation is thorough, cleanly separated into plausibility-for-confluence and plausibility-for-termination with a pre-argument intuition for the 2x+y+1 weighting."},
+    "R2": {"score": 3, "justification": "Method design identifies both obligations, distinguishes them, and correctly previews variable overlap vs critical pair and polynomial interpretation."},
+    "R3": {"score": 2, "justification": "Critical-pair enumeration identifies all three non-trivial CPs correctly and polynomial decrease per rule is arithmetically verified, but enumeration completeness is narrated rather than tabulated and strict-monotonicity is asserted without a one-line proof (G3, G6)."},
+    "R4": {"score": 2, "justification": "Q1 and Q2 verdicts are stated correctly and §4.3 derives the joint implication from first principles, but the induction framing has presentation gaps (G4)."},
+    "R5": {"score": 3, "justification": "Simulator runs and output-run1.txt confirm CP joinability on ground instances, reduction-order independence on 5 test terms, and 142-step phi-decrease. Caveats about falsifier-vs-prover are correctly stated."},
+    "R6": {"score": 1, "justification": "Examples 6.1 and 6.2 contain numerically wrong phi traces that disagree with the simulator's actual values; 6.1 also has an embedded mid-example correction leaving stale text (G1, G2). Examples illustrate the right phenomena but fail on arithmetic integrity, which is load-bearing."},
+    "R7": {"score": 2, "justification": "All four required subquestions are addressed; 7.1 correctly identifies the linear-measure obstruction but leaves the extended-system termination as pure conjecture without even a product-ordering sketch (G5)."},
+    "R8": {"score": 2, "justification": "Section 7.5 discloses four genuine limitations (non-machine enumeration, confluence-depends-on-termination, 7.1 openness, ground-only simulator), satisfying the >=1 disclosed-gap criterion, but does not disclose the variable-overlap sublemma being unproved (G7) nor the arithmetic errors in 6.1/6.2."}
+  },
+  "overall_recommendation": "One refinement pass away from 3/3. The mathematical content is correct (confluence and termination verdicts match the simulator; critical-pair enumeration is complete; polynomial measure is valid). The blocking issues are arithmetic errors in two worked examples (G1, G2), a narrative rather than tabular CP enumeration (G3), a slightly underspecified induction in §4.3 (G4), and a weakly-treated 7.1 extension (G5). All are localised edits; none requires restructuring. A single iteration fixing G1, G2, G3, G4 and one of G5/G6 should lift R3, R4, R6 to 3 and discharge the rubric fully."
+}

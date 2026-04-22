@@ -1,0 +1,113 @@
+
+====================================================================
+SECTION 1 -- critical-pair enumeration
+====================================================================
+total CPs found: 3
+
+CP#1  (outer rho5 overlaps inner rho3 at pos (1,))
+  source : app(app(nil, ys_i), zs_o)
+  reduct1: app(nil, app(ys_i, zs_o))
+  reduct2: app(ys_i, zs_o)
+  ground source -> app(app(nil, cons(0, nil)), cons(0, nil))
+  nf(reduct1) = cons(0, cons(0, nil))
+  nf(reduct2) = cons(0, cons(0, nil))
+  joinable    = True
+
+CP#2  (outer rho5 overlaps inner rho4 at pos (1,))
+  source : app(app(cons(x_i, xs_i), ys_i), zs_o)
+  reduct1: app(cons(x_i, xs_i), app(ys_i, zs_o))
+  reduct2: app(cons(x_i, app(xs_i, ys_i)), zs_o)
+  ground source -> app(app(cons(cons(0, nil), cons(0, nil)), cons(0, nil)), cons(0, nil))
+  nf(reduct1) = cons(cons(0, nil), cons(0, cons(0, cons(0, nil))))
+  nf(reduct2) = cons(cons(0, nil), cons(0, cons(0, cons(0, nil))))
+  joinable    = True
+
+CP#3  (outer rho5 overlaps inner rho5 at pos (1,))
+  source : app(app(app(xs_i, ys_i), zs_i), zs_o)
+  reduct1: app(app(xs_i, ys_i), app(zs_i, zs_o))
+  reduct2: app(app(xs_i, app(ys_i, zs_i)), zs_o)
+  ground source -> app(app(app(cons(0, nil), cons(0, nil)), cons(0, nil)), cons(0, nil))
+  nf(reduct1) = cons(0, cons(0, cons(0, cons(0, nil))))
+  nf(reduct2) = cons(0, cons(0, cons(0, cons(0, nil))))
+  joinable    = True
+
+====================================================================
+SECTION 2 -- polynomial interpretation, per-rule check
+====================================================================
+rho1    [LHS]-[RHS] over witnesses: min=1 max=1  (must be > 0)
+rho2    [LHS]-[RHS] over witnesses: min=3 max=13  (must be > 0)
+rho3    [LHS]-[RHS] over witnesses: min=2 max=2  (must be > 0)
+rho4    [LHS]-[RHS] over witnesses: min=2 max=7  (must be > 0)
+rho5    [LHS]-[RHS] over witnesses: min=2 max=12  (must be > 0)
+
+====================================================================
+SECTION 3 -- exhaustive reduction graphs (closed terms)
+====================================================================
+  len(nil)                       |reach|=  2  nf=0                                       [t0]=  2  stepsLE=1
+  len(cons(0,cons(s0,nil)))      |reach|=  4  nf=s(s(0))                                 [t0]= 12  stepsLE=11
+  app(nil, L2)                   |reach|=  2  nf=cons(s(0), nil)                         [t0]=  6  stepsLE=5
+  app(L1, L2)                    |reach|=  3  nf=cons(0, cons(s(0), nil))                [t0]= 10  stepsLE=9
+  app(app(nil, L1), L2)          |reach|=  7  nf=cons(0, cons(s(0), nil))                [t0]= 14  stepsLE=13
+  left((L1,L2,L3))               |reach|= 13  nf=cons(0, cons(s(0), cons(0, cons(s(0), nil))))  [t0]= 26  stepsLE=25
+  left((nil,nil,nil,nil))        |reach|=  9  nf=nil                                     [t0]= 15  stepsLE=14
+  len(app(L1,L3))                |reach|=  8  nf=s(s(s(0)))                              [t0]= 24  stepsLE=23
+  len(left(L1,L2,L3))            |reach|= 25  nf=s(s(s(s(0))))                           [t0]= 52  stepsLE=51
+  right(L1,L2,L3)                |reach|=  9  nf=cons(0, cons(s(0), cons(0, cons(s(0), nil))))  [t0]= 20  stepsLE=19
+  left(L1,L2,L3,L2,L1)           |reach|=515  nf=cons(0, cons(s(0), cons(0, cons(s(0), cons(s(0), cons(0, nil))))))  [t0]=115  stepsLE=114
+
+====================================================================
+SECTION 4 -- worked traces with measure per step
+====================================================================
+
+[leftmost-outermost, ((L1@L2)@L3)]  start=app(app(cons(0, nil), cons(s(0), nil)), cons(0, nil))  [t0]=23
+   1  rho5  @()         -> app(cons(0, nil), app(cons(s(0), nil), cons(0, nil)))  [.]=17
+   2  rho4  @()         -> cons(0, app(nil, app(cons(s(0), nil), cons(0, nil))))  [.]=15
+   3  rho3  @(2,)       -> cons(0, app(cons(s(0), nil), cons(0, nil)))  [.]=13
+   4  rho4  @(2,)       -> cons(0, cons(s(0), app(nil, cons(0, nil))))  [.]=10
+   5  rho3  @(2, 2)     -> cons(0, cons(s(0), cons(0, nil)))  [.]=8
+  (NF at step 5: cons(0, cons(s(0), cons(0, nil))))
+
+[rightmost-innermost, ((L1@L2)@L3)]  start=app(app(cons(0, nil), cons(s(0), nil)), cons(0, nil))  [t0]=23
+   1  rho4  @(1,)       -> app(cons(0, app(nil, cons(s(0), nil))), cons(0, nil))  [.]=19
+   2  rho3  @(1, 2)     -> app(cons(0, cons(s(0), nil)), cons(0, nil))  [.]=15
+   3  rho4  @()         -> cons(0, app(cons(s(0), nil), cons(0, nil)))  [.]=13
+   4  rho4  @(2,)       -> cons(0, cons(s(0), app(nil, cons(0, nil))))  [.]=10
+   5  rho3  @(2, 2)     -> cons(0, cons(s(0), cons(0, nil)))  [.]=8
+  (NF at step 5: cons(0, cons(s(0), cons(0, nil))))
+  converge? True to cons(0, cons(s(0), cons(0, nil)))
+
+[len/app interleave A]  start=len(app(cons(0, nil), cons(s(0), nil)))  [t0]=20
+   1  rho4  @(1,)       -> len(cons(0, app(nil, cons(s(0), nil))))  [.]=16
+   2  rho2  @()         -> s(len(app(nil, cons(s(0), nil))))  [.]=13
+   3  rho3  @(1, 1)     -> s(len(cons(s(0), nil)))  [.]=9
+   4  rho2  @(1,)       -> s(s(len(nil)))  [.]=4
+   5  rho1  @(1, 1)     -> s(s(0))  [.]=3
+  (NF at step 5: s(s(0)))
+
+[len/app interleave B]  start=len(app(cons(0, nil), cons(s(0), nil)))  [t0]=20
+   1  rho4  @(1,)       -> len(cons(0, app(nil, cons(s(0), nil))))  [.]=16
+   2  rho3  @(1, 2)     -> len(cons(0, cons(s(0), nil)))  [.]=12
+   3  rho2  @()         -> s(len(cons(s(0), nil)))  [.]=9
+   4  rho2  @(1,)       -> s(s(len(nil)))  [.]=4
+   5  rho1  @(1, 1)     -> s(s(0))  [.]=3
+  (NF at step 5: s(s(0)))
+  converge? True to s(s(0))
+
+[rho5-first on (((nil@nil)@nil)@nil)]  start=app(app(app(nil, nil), nil), nil)  [t0]=15
+   1  rho5  @()         -> app(app(nil, nil), app(nil, nil))  [.]=9
+   2  rho5  @()         -> app(nil, app(nil, app(nil, nil)))  [.]=7
+   3  rho3  @()         -> app(nil, app(nil, nil))  [.]=5
+   4  rho3  @()         -> app(nil, nil)  [.]=3
+   5  rho3  @()         -> nil  [.]=1
+  (NF at step 5: nil)
+
+[rho3-first on (((nil@nil)@nil)@nil)]  start=app(app(app(nil, nil), nil), nil)  [t0]=15
+   1  rho3  @(1, 1)     -> app(app(nil, nil), nil)  [.]=7
+   2  rho3  @(1,)       -> app(nil, nil)  [.]=3
+   3  rho3  @()         -> nil  [.]=1
+  (NF at step 3: nil)
+  converge? True to nil
+
+====================================================================
+DONE
+====================================================================

@@ -1,0 +1,61 @@
+
+--- Ex 6.1: app(app(app(nil,nil),nil),nil) ---
+t = app(app(app(nil,nil),nil),nil)   phi = 22
+  LMO trace (5 steps):
+    phi: [22, 13, 10, 7, 4, 1]
+    ('rho5', ())  -> phi=13
+    ('rho5', ())  -> phi=10
+    ('rho3', ())  -> phi=7
+    ('rho3', ())  -> phi=4
+    ('rho3', ())  -> phi=1
+  RMI trace (3 steps):
+    phi: [22, 10, 4, 1]
+    ('rho3', (0, 0))  -> phi=10
+    ('rho3', (0,))  -> phi=4
+    ('rho3', ())  -> phi=1
+
+--- Ex 6.2: len(app(cons(0,nil), cons(s(0),nil))) ---
+t = len(app(cons(0,nil),cons(s(0),nil)))   phi = 11
+  LMO trace (5 steps):
+    phi: [11, 9, 8, 5, 3, 2]
+    ('rho4', (0,))  -> phi=9
+    ('rho2', ())  -> phi=8
+    ('rho3', (0, 0))  -> phi=5
+    ('rho2', (0,))  -> phi=3
+    ('rho1', (0, 0))  -> phi=2
+  RMI trace (5 steps):
+    phi: [11, 9, 6, 5, 3, 2]
+    ('rho4', (0,))  -> phi=9
+    ('rho3', (0, 1))  -> phi=6
+    ('rho2', ())  -> phi=5
+    ('rho2', (0,))  -> phi=3
+    ('rho1', (0, 0))  -> phi=2
+
+--- Ex 6.3: app(cons(0,nil), cons(s(0),nil)) ---
+t = app(cons(0,nil),cons(s(0),nil))   phi = 11
+  LMO trace (2 steps):
+    phi: [11, 9, 6]
+    ('rho4', ())  -> phi=9
+    ('rho3', (1,))  -> phi=6
+  RMI trace (2 steps):
+    phi: [11, 9, 6]
+    ('rho4', ())  -> phi=9
+    ('rho3', (1,))  -> phi=6
+
+--- Ex 6.4: app(app(app(nil, cons(0,nil)), nil), cons(s(0),nil)) ---
+t = app(app(app(nil,cons(0,nil)),nil),cons(s(0),nil))   phi = 33
+  LMO trace (6 steps):
+    phi: [33, 20, 17, 14, 12, 9, 6]
+    ('rho5', ())  -> phi=20
+    ('rho5', ())  -> phi=17
+    ('rho3', ())  -> phi=14
+    ('rho4', ())  -> phi=12
+    ('rho3', (1,))  -> phi=9
+    ('rho3', (1,))  -> phi=6
+  RMI trace (5 steps):
+    phi: [33, 21, 17, 11, 9, 6]
+    ('rho3', (0, 0))  -> phi=21
+    ('rho4', (0,))  -> phi=17
+    ('rho3', (0, 1))  -> phi=11
+    ('rho4', ())  -> phi=9
+    ('rho3', (1,))  -> phi=6

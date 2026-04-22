@@ -1,0 +1,141 @@
+{
+  "auditor": "proof-auditor",
+  "deliverable_A": "/workspaces/docs/research/eml-paper/cycle-06/A-ARGUMENT.md",
+  "deliverable_B": "/workspaces/docs/research/eml-paper/cycle-06/B-ARGUMENT.md",
+  "rubric": "/workspaces/docs/research/eml-paper/judgment-rubric.md",
+  "incumbent_judgment": "/workspaces/docs/research/eml-paper/cycle-06/JUDGMENT.md",
+  "audit_date": "2026-04-22T17:00:00Z",
+  "cycle": 6,
+  "oracle_catalogue": [
+    "/workspaces/scripts/meta/oracles/combinator-reducer.py: NOT applicable to Cycle #6 (different signature — combinator TRS vs list/length TRS). Used /tmp/verify_a.py, /tmp/verify_b.py, /tmp/verify_examples.py for polynomial-interpretation and worked-trace arithmetic."
+  ],
+  "scores": {
+    "R1-A": {"value": 3, "method": "textual", "evidence": "A-ARGUMENT.md §1.1 (confluence plausibility structural-feature analysis), §1.2 (termination intuition with 'material moved left-to-right' precedent + functional-program recursion analog), §1.3 (5-row structural-features table). Three precedents cited structurally (pattern-matching functional programs, structural induction on inductive types, equational reasoning on algebraic data types). First-principles derivation; no cited names.", "oracle_command": null},
+    "R1-B": {"value": 3, "method": "textual", "evidence": "B-ARGUMENT.md §1.1 (three structural features a/b/c), §1.2 (termination plausibility with explicit algebraic coefficient derivation: φ(app)(x,y) = a·x+b·y+c forcing a>1 and a>b), §1.3 (independence of obligations). B's §1.2 goes algebraically further than A's §1.2 (explicit quadratic-form coefficient derivation); both reach band 3.", "oracle_command": null},
+    "R2-A": {"value": 3, "method": "textual", "evidence": "A §2.1 three-step confluence procedure (identify/discharge/lift) with explicit 3-way case analysis (parallel/variable/critical-pair). §2.2 three-step termination procedure (measure/strict-decrease/well-founded conclusion). §2.3 method independence with toy counter-examples (a→b,a→c; f(x)→f(s(x))).", "oracle_command": null},
+    "R2-B": {"value": 3, "method": "textual", "evidence": "B §2.1 confluence method with explicit variable-overlap sublemma + proof (left-linearity ⇒ variable overlaps join). §2.2 termination method with explicit monotonicity sublemma + proof. §2.3 what-the-methods-share-and-what-they-do-not. B has two explicitly stated-and-proved sublemmas where A relies on in-line prose; both reach band 3.", "oracle_command": null},
+    "R3-A": {"value": 3, "method": "textual", "evidence": "A §3.1 position table (5 rules × non-var positions), overlap audit identifying exactly 3 critical pairs (CP#1 ρ3@ρ5, CP#2 ρ4@ρ5, CP#3 ρ5@ρ5) with explicit closing sequences. §3.2 6-row interpretation table + 5-row decrease table with LHS−RHS arithmetic. Prose enumeration is complete but not tabular for the ρ_i×ρ_j grid.", "oracle_command": null},
+    "R3-B": {"value": 3, "method": "textual", "evidence": "B §3.1 exhaustive 25×2 = 50-cell ordered-pair × non-variable-position table, each cell annotated (⊥ with reason / trivial / non-trivial CP). Same three non-trivial CPs identified with closing sequences. §3.2 6-row interpretation table + 5-row decrease table. B's tabular presentation is preferred under R3 grader note (rubric R3 ported from Cycle #5 §6.5 — tabular form more auditable).", "oracle_command": null},
+    "R4-A": {"value": 3, "method": "textual", "evidence": "A §4.1 commits 'R is confluent' + discharges via §3.1 + local-confluence-to-full-confluence derivation from first principles (well-founded induction, no named result invoked). §4.2 commits 'R terminates' + discharges via measure. §4.3 joint implication derived (Q2⇒Q1-via-LC-lift; Q1⇏Q2). Per TASK §7 Cycle #6 R4 semantic adjustment: band 3 = 'firm commitments on both Q1 and Q2 with rigorous discharge of each, identifiable as separate arguments'. Met.", "oracle_command": null},
+    "R4-B": {"value": 3, "method": "textual", "evidence": "B §4.1 'R is confluent' + discharge (50-cell audit + variable-overlap sublemma + 3 joinable CPs). §4.2 'R terminates' + discharge via §3.2 strict decrease + context-monotonicity. §4.3 local-confluence+termination⇒confluence derivation from first principles (case α / case β split, three IH applications — explicitly cited at s<t, t1<t, t2<t). Per Cycle #6 R4 semantic adjustment: met.", "oracle_command": null},
+    "R5-A": {"value": 3, "method": "oracle", "evidence": "A's interpretation: [0]=1, [nil]=1, [s](x)=x+1, [cons](x,y)=x+y+1, [len](x)=2x, [app](x,y)=2x+y. Mechanically verified per-rule strict decrease: ρ1=1, ρ2=2x+1, ρ3=2, ρ4=x+1, ρ5=2xs. Caveat: ρ5's difference (2xs) equals 0 when xs=0, but A uses the positive-integer convention (every ground term maps to ≥ 1, stated in A §3.2). Under this convention, xs ≥ 1 ⇒ 2xs ≥ 2 > 0. Strict decrease holds. CP closings in §3.1 explicit and correct.", "oracle_command": "python3 /tmp/verify_a.py"},
+    "R5-B": {"value": 3, "method": "oracle", "evidence": "B's interpretation: [0]=0, [nil]=1, [s](x)=x+1, [cons](x,y)=x+y+2, [len](x)=x, [app](x,y)=2x+y+1. Mechanically verified per-rule strict decrease: ρ1=1, ρ2=x+1, ρ3=3, ρ4=x+2, ρ5=2xs+1. ALL decreases hold uniformly on ℕ (no positive-integer convention needed since ρ5's diff has constant term +1). CP closings in §3.1 explicit and correct.", "oracle_command": "python3 /tmp/verify_b.py"},
+    "R6-A": {"value": 3, "method": "oracle", "evidence": "A §5.1 symbolic channel (the §3+§4 arguments). §5.2 executable oracle task/sim.py (14198 B): mechanical unification → 3 CPs found; witness-grid interpretation check (up to 5³=125 combos per rule); exhaustive BFS reduction-graph on 11 closed test terms (largest: 515 reachable states); two-strategy traces with measure annotation; falsifier framing. Worked-example §6.1 φ trace mechanically verified (23→17→15→13→10→8 confirmed). Disclosed-circularity scan: A §4.3 notes Q1 depends on Q2 for the LC-lift step (declared dependency); §7.1 measure non-extension explicitly disclosed; §7.2 LHS-linearity dependence explicitly disclosed. No hidden circularity detected.", "oracle_command": "python3 /tmp/verify_examples.py"},
+    "R6-B": {"value": 3, "method": "oracle", "evidence": "B §5 symbolic + executable oracle task/sim/simulator.py (10644 B): 4 channels (ground-instance CP closure, per-step φ-decrease verification with exception on violation, reduction-order independence on samples, 142-step φ-audit across pool). Worked-example §6.1 φ trace mechanically verified (22→13→10→7→4→1 confirmed). Disclosed-circularity scan: B §8 D2 explicitly discloses §4.3's dependency on §3.2's termination; D5 discloses §2.1 sublemma's left-linearity assumption. No hidden circularity detected.", "oracle_command": "python3 /tmp/verify_examples.py"},
+    "R7-A": {"value": 3, "method": "textual", "evidence": "A §6 three worked examples in distinct categories: (a) §6.1 app-associativity ρ5 in both LMO+RMI orders, converging to cons(0,cons(s(0),cons(0,nil))) with strictly decreasing φ; (b) §6.2 len/app interleaving, both strategies converge to s(s(0)); (c) §6.3 termination on same-size rule ρ5 with measure decreasing by 2·[xs] per firing. Covers associativity + interleaved-defined + same-size-rule termination.", "oracle_command": null},
+    "R7-B": {"value": 3, "method": "textual", "evidence": "B §6 four worked examples: §6.1 ρ5 LMO+RMI (22→13→10→7→4→1 and 22→10→4→1 — mechanically verified); §6.2 len/app interleaving (11→9→6→5→3→2); §6.3 ρ4 with raw size 8→9→6 (grows!) but φ 11→9→6 (strictly drops — load-bearing measure-vs-size demonstration); §6.4 CP3 ground-witness closure with dual-path tracking to common reduct cons(0,cons(s(0),nil)). Four categories covered; one more than A.", "oracle_command": null},
+    "R8-A": {"value": 3, "method": "textual", "evidence": "A §7 has 4 subsections: §7.1 augmented system with add + ρ6/ρ7/ρ8 — exhibits that forced [add]=2x+y gives ρ8 diff = 0 (measure non-extension); §7.2 left-linearity + RHS-linearity dependence analysis with toy counterexample (dup(x,x)→x destroys confluence); §7.3 directional analysis of Q1⇔Q2 for R; §7.4 nature of the measure (linear polynomial, tightness-vs-generality). All four substantive.", "oracle_command": null},
+    "R8-B": {"value": 3, "method": "textual", "evidence": "B §7 has 4 subsections + §8 disclosed-gaps list (D1-D6). §7.1 derives an explicit linear-coefficient contradiction for augmented system (ρ6⇒B≥1, ρ8⇒B<1, no linear measure works) — strictly stronger than A's §7.1 which exhibits one failing case. §7.1 also sketches a lex-pair (k,φ) workaround. §7.2 extension-analysis (re-checks CPs for ρ8); §7.3 termination-vs-confluence; §7.4 measure nature. §8 has 6 explicit disclosed gaps (D1-D6).", "oracle_command": null},
+    "R9-A": {"value": 3, "method": "textual", "evidence": "R9 binary for Cycle #6 per TASK §2.3: 3 iff both Q1 (confluent) and Q2 (terminating) correctly verdicted with rigorous discharge. A §4.1 commits confluent + discharges; A §4.2 commits terminating + discharges. Both verdicts correct (matches ideal answer in TASK §2); both rigorously discharged (§3.1 CP closure, §3.2 polynomial interpretation). R9=3.", "oracle_command": null},
+    "R9-B": {"value": 3, "method": "textual", "evidence": "R9 binary. B §4.1 confluent + discharge (50-cell audit + variable-overlap sublemma). B §4.2 terminating + discharge (polynomial interpretation with uniform-on-ℕ strict decrease). Both correct; both rigorously discharged. R9=3.", "oracle_command": null},
+    "R10-A": {"value": 0, "method": "textual", "evidence": "A's on-disk artefacts: A-ARGUMENT.md (single substantive write at 16:14:18, 36188 B); A-attempt-01.md (derivation log at 16:16:32, 3014 B — a meta-log of the process, NOT a draft of the deliverable); A-iter-01-audit.md (self-audit at 16:16:07, 8180 B — names 3 gaps F1/F2/F3 which the audit itself acknowledges as ALREADY DISCLOSED in §7 of the single ARGUMENT.md). A's audit conclusion: 'No further iteration needed; the deliverable at task/ARGUMENT.md stands. Iteration closed.' Closure count of disclosed-gaps-in-draft-N-that-draft-(N+1)-addresses = 0 (no draft N+1 exists; F1→§7.1, F2→§4.1+§7.2, F3→§7.4 are pre-disclosed). Per R10 band-boundary rule's load-bearing criterion ('whether iteration closed disclosed gaps, not whether the agent performed the ritual of auditing'): closure count 0 ⇒ band 0. Note: this is a CONDITIONAL edge case — the vacuous-audit sub-case (audit names zero gaps) was resolved in the Cycle #6 pre-cycle port, but the case 'single draft + post-hoc audit naming gaps already disclosed in single shot' is not definitively resolved. Strict reading: band 0. Generous reading: band 1 (audit names gaps, so not vacuous). The incumbent scored 0 under strict reading; auditor concurs under the load-bearing closure-count criterion but flags this as CONDITIONAL on the strict vs generous disambiguation.", "oracle_command": null},
+    "R10-B": {"value": 2, "method": "textual", "evidence": "B's on-disk iteration trace: B-attempt-01.md (35681 B, 16:11:37) vs B-ARGUMENT.md (40527 B, 16:21:18) — distinct SHAs, 4846-byte addition; B-eval-01.json (8475 B, 16:14:15) names 7 gaps G1-G7 with per-gap description+fix+per-axis scores. ARGUMENT.md front matter explicitly claims G1-G7 closure. Per-gap diff verification (ROOT performed, JUDGMENT.md §3 R10 section): G1 φ arithmetic (22→13→10→7→4→1 — mechanically re-verified, see /tmp/verify_examples.py output), G2 φ arithmetic (11→9→6→5→3→2 verified), G3 tabular completeness (§3.1 has full 50-cell table), G4 induction framing (§4.3 case α/β split with s<t justification), G5 extended-measure sketch (§7.1 contradiction proof + lex-pair workaround), G6 monotonicity sublemma (§2.2 stated+proved), G7 variable-overlap sublemma (§2.1 stated+proved). All 7 gaps closed via diff. Band 2 criteria: two drafts ✓, ≥1 disclosed gap ✓, closure verifiable by diff ✓ — met. Band 3 strict reading requires 'evaluator reports per iteration'; B has one evaluator report (iteration 1). Iteration 2's closure is attested by front matter, not by a second evaluator report. CONDITIONAL: incumbent scored 2 under strict reading; auditor concurs under strict reading but flags this as a rubric-semantic dependency on whether the deliverable's self-attested closure substitutes for a second evaluator report. (This is the identified Cycle #7 carry-over M6.3-R10-band-2-3-evaluator-report-substitution.)", "oracle_command": null}
+  },
+  "totals": {
+    "auditor_total_A": 27,
+    "auditor_total_B": 29,
+    "incumbent_total_A": 27,
+    "incumbent_total_B": 29,
+    "A_delta": 0,
+    "B_delta": 0
+  },
+  "agreement_matrix": [
+    {"axis": "R1-A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R1-B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R2-A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R2-B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R3-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Both concur; tabular vs prose presentation does not change band (rubric R3 grader note is a scorer-lean, not a threshold change)."},
+    {"axis": "R3-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "50-cell tabular form aligns with ported §6.5 grader-note preference."},
+    {"axis": "R4-A", "incumbent": 3, "auditor": 3, "agree": "CONDITIONAL", "note": "Concurrence holds under the Cycle #6 R4 semantic adjustment stated in TASK §7 (both verdicts committed + rigorous discharge + identifiable separate arguments). Without that adjustment, the generic rubric band-3 criterion is domain-single-answer; Cycle #6's two-obligation framing requires the explicit decoupling rule. Auditor notes this rubric-semantic dependency."},
+    {"axis": "R4-B", "incumbent": 3, "auditor": 3, "agree": "CONDITIONAL", "note": "Same rubric-semantic dependency as R4-A: concurrence holds under the Cycle #6 R4 semantic adjustment."},
+    {"axis": "R5-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Polynomial-interpretation arithmetic mechanically verified (/tmp/verify_a.py). A's rho5 diff = 2·xs requires positive-integer convention (xs ≥ 1); A explicitly uses this convention in §3.2."},
+    {"axis": "R5-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Polynomial-interpretation arithmetic mechanically verified (/tmp/verify_b.py). B's per-rule diffs are strictly positive uniformly on ℕ (rho5 diff = 2xs+1 ≥ 1). Slightly cleaner than A's."},
+    {"axis": "R6-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Disclosed-circularity scan: no hidden circularity. A's §4.3 Q1-depends-on-Q2 is declared dependency (disclosed at §4.3 explicitly + iter-01-audit F2). §5.2 executable oracle counts as R6=3 indicator per rubric."},
+    {"axis": "R6-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Disclosed-circularity scan: no hidden circularity. B's §4.3 Q1-depends-on-Q2 is declared dependency (disclosed at §8 D2 explicitly). §5 executable oracle counts as R6=3 indicator."},
+    {"axis": "R7-A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R7-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "B has 4 examples vs A's 3; both satisfy ≥3 distinct categories."},
+    {"axis": "R8-A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R8-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "B's §7.1 non-existence proof is stronger than A's §7.1 one-failing-case; B §8 adds 6 explicit disclosed-gap entries. Both at band 3 (R8 does not have a band 4)."},
+    {"axis": "R9-A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Binary axis. Both Q1 and Q2 verdicts correct with rigorous discharge."},
+    {"axis": "R9-B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Binary axis. Both Q1 and Q2 verdicts correct with rigorous discharge."},
+    {"axis": "R10-A", "incumbent": 0, "auditor": 0, "agree": "CONDITIONAL", "note": "Auditor concurs with incumbent's band-0 under the load-bearing closure-count criterion (disclosed gaps closed by a subsequent draft = 0). CONDITIONAL on the rubric-semantic disambiguation of the 'single-shot + post-hoc audit naming pre-disclosed gaps' edge case. The Cycle #6 pre-cycle rubric port resolved the vacuous-audit (zero-gaps-named) sub-case but did NOT fully close the 'audit names gaps already disclosed in the single shot' sub-case. Strict reading (closure count = 0): band 0. Generous reading (audit names ≥ 1 gap): band 1. Incumbent explicitly chose strict reading and flagged this as the Cycle #7 carry-over M6.2-R10-band-0-1-second-edge-case. Auditor agrees with this disposition. NOT an arbitration trigger because the rubric-semantic disambiguation is an acknowledged rubric-evolution candidate, not a per-axis incumbent-vs-auditor band dispute."},
+    {"axis": "R10-B", "incumbent": 2, "auditor": 2, "agree": "CONDITIONAL", "note": "Auditor concurs with incumbent's band-2 under strict reading of 'evaluator reports per iteration' (B has one evaluator report for iteration 1; iteration 2's closure is attested by front matter + verifiable by ROOT diff, not by a second evaluator report). CONDITIONAL on the rubric-semantic question of whether a deliverable's self-attested gap-closure can substitute for a second evaluator report. Strict reading: band 2. Generous reading: band 3. Incumbent explicitly chose strict reading and flagged this as the Cycle #7 carry-over M6.3-R10-band-2-3-evaluator-report-substitution. Auditor agrees with this disposition. NOT an arbitration trigger — same rubric-evolution-candidate rationale as R10-A."}
+  ],
+  "disagreement_count": 0,
+  "conditional_count": 4,
+  "arbitration_triggered": false,
+  "arbitration_reason": null,
+  "arbitration_trigger_checks": {
+    "axis_diff_ge_2": false,
+    "axis_diff_ge_2_detail": "No axis has |incumbent − auditor| ≥ 2.",
+    "axes_with_any_diff_ge_3": false,
+    "axes_with_any_diff_ge_3_detail": "0 axes have agree=NO; 4 axes have agree=CONDITIONAL (R4-A, R4-B, R10-A, R10-B); conditional does not trigger arbitration per proof-auditor schema §disagreement protocol.",
+    "binary_axis_disagreement": false,
+    "binary_axis_disagreement_detail": "R9-A and R9-B both YES (3/3 incumbent + 3/3 auditor).",
+    "total_diff_gt_20pct_max": false,
+    "total_diff_gt_20pct_max_detail": "Rubric max = 30; 20% = 6. A totals: 27 vs 27 (diff=0). B totals: 29 vs 29 (diff=0). No trigger."
+  },
+  "disclosed_circularity_scan": {
+    "A": {
+      "sections_scanned": "§1.1, §1.2, §1.3, §2.1, §2.2, §2.3, §3.1, §3.2, §4.1, §4.2, §4.3, §5.1, §5.2, §6.1, §6.2, §6.3, §7.1, §7.2, §7.3, §7.4, Summary",
+      "findings": [
+        "§4.1 case (b) variable-overlap argument depends on RHS-linearity (each LHS variable appears ≤1 time in RHS). A discloses this in iter-01-audit.md F2 and §7.2. Disclosed dependency, not hidden circularity.",
+        "§4.3 Q1 uses §3.2's termination for well-founded induction. A explicitly notes 'removing termination would stop at locally confluent'. Declared dependency, not hidden circularity.",
+        "§7.1 measure non-extension to ρ8 explicitly disclosed.",
+        "§7.2 LHS-linearity dependence explicitly disclosed with toy counterexample."
+      ],
+      "verdict": "No hidden circularity. All dependencies are declared. R6=3 justified."
+    },
+    "B": {
+      "sections_scanned": "§1.1, §1.2, §1.3, §2.1, §2.2, §2.3, §3.1, §3.2, §4.1, §4.2, §4.3, §5, §6.1, §6.2, §6.3, §6.4, §7.1, §7.2, §7.3, §7.4, §8",
+      "findings": [
+        "§4.3 Q1 depends on §3.2 termination for well-founded order. Disclosed in §8 D2. Declared dependency.",
+        "§2.1 variable-overlap sublemma assumes left-linearity. Disclosed in §8 D5.",
+        "§7.1 extended-system termination left open (lex-pair workaround sketched not verified). Disclosed in §8 D3.",
+        "§4.3 three-IH-application step justifies s<t explicitly ('s is a reduct of t1, hence of t via t→t1↠s with ≥1 step'). G4 from iteration 1 addressed."
+      ],
+      "verdict": "No hidden circularity. All dependencies are declared. R6=3 justified."
+    }
+  },
+  "mechanical_verifications_performed": [
+    {
+      "target": "A's polynomial interpretation per-rule strict decrease",
+      "command": "python3 /tmp/verify_a.py",
+      "result": "PASS (rho1=1, rho2=2x+1, rho3=2, rho4=x+1, rho5=2xs with positive-integer convention)",
+      "caveat": "A's ρ5 diff = 2·xs requires xs ≥ 1; A's §3.2 explicitly states positive-integer convention. Under that convention, all rules strictly decrease."
+    },
+    {
+      "target": "B's polynomial interpretation per-rule strict decrease",
+      "command": "python3 /tmp/verify_b.py",
+      "result": "PASS (rho1=1, rho2=x+1, rho3=3, rho4=x+2, rho5=2xs+1, all ≥ 1 uniformly on ℕ)",
+      "caveat": "None. B's interpretation strict-decreases without requiring positive-integer convention."
+    },
+    {
+      "target": "A's §6.1 LMO worked-example trace",
+      "command": "python3 /tmp/verify_examples.py",
+      "result": "PASS (23→17→15→13→10→8 matches A's claimed φ values exactly)"
+    },
+    {
+      "target": "B's §6.1 LMO worked-example trace",
+      "command": "python3 /tmp/verify_examples.py",
+      "result": "PASS (22→13→10→7→4→1 matches B's claimed φ values exactly — G1 gap closure verified)"
+    }
+  ],
+  "r10_scrutiny": {
+    "R10-A": {
+      "incumbent_score": 0,
+      "auditor_score": 0,
+      "agree": "CONDITIONAL",
+      "reasoning": "The incumbent's band-0 choice is defensible under the rubric's load-bearing criterion ('closure of disclosed gaps' not 'ritual of auditing'). A's audit explicitly concludes 'Iteration closed; deliverable stands' without revising ARGUMENT.md; the three named gaps (F1/F2/F3) were already disclosed in ARGUMENT.md §7 before the audit was written (audit was post-hoc confirmation). Closure count = 0 ⇒ band 0 under strict reading. Generous reading (band 1 because audit names ≥1 gap) is defensible only if one reads band 1's 'cosmetic iteration with named gaps' as including single-shot+audit configurations where no second draft exists; the band-1 definition actually requires 'two or more drafts exist on disk'. Since only one ARGUMENT.md draft exists, band 1 is not structurally available. Band 0 is the correct reading. The auditor affirms incumbent's band 0. The CONDITIONAL flag is a rubric-semantic-ambiguity marker (the M6.2 carry-over), not a disagreement.",
+      "defensibility": "Band 0 strictly more defensible than band 1 given: (a) no second draft of ARGUMENT.md on disk; (b) audit's own 'no further iteration needed' conclusion; (c) F1/F2/F3 already disclosed in ARGUMENT.md §7.1/§4.1+§7.2/§7.4 before audit was written."
+    },
+    "R10-B": {
+      "incumbent_score": 2,
+      "auditor_score": 2,
+      "agree": "CONDITIONAL",
+      "reasoning": "B meets every band-2 criterion (two drafts, ≥1 disclosed gap in iteration-1 evaluator report, closure verifiable by diff). Band 3 strict reading requires 'evaluator reports per iteration' — B has one evaluator report (iteration 1 .eval-report-01.json with 7 gaps). Iteration 2's closure is attested via ARGUMENT.md front matter + verifiable by ROOT-performed diff, but no .eval-report-final.json exists. Under strict reading: band 2 (one evaluator report ≠ 'reports per iteration'). Under generous reading: band 3 (if deliverable's self-attested closure + ROOT's diff verification substitute for a second evaluator report). The incumbent chose strict reading and logged M6.3 as Cycle #7 rubric-refinement candidate. Auditor concurs with strict reading.",
+      "defensibility": "Band 2 strictly more defensible than band 3 given: (a) rubric text literally specifies 'evaluator reports per iteration' (plural, one per iteration); (b) non-inflation guard is satisfied but does not upgrade the band; (c) closure-verification-by-ROOT is a judging activity, not an in-agent iteration artefact. Generous reading has weight on grounds of preserving the 'closure happened, with trace' spirit of the band definition, hence the rubric-refinement carry-over is warranted."
+    }
+  },
+  "notes": "Auditor agrees with incumbent on all 20 axis-deliverable pairs (10 axes × 2 deliverables). 16 YES agreements, 4 CONDITIONAL (R4-A, R4-B, R10-A, R10-B). The R4 CONDITIONAL is a rubric-semantic dependency on the Cycle #6 TASK-§7 R4 adjustment (two-obligation band semantics); this is a stable, documented semantic extension and does not destabilize the verdict. The R10 CONDITIONAL pair surfaces two acknowledged rubric-refinement candidates (M6.2 band-0/1 second edge case, M6.3 band-2/3 evaluator-report substitution) that the incumbent has explicitly flagged as Cycle #7 carry-overs; auditor concurs with both the band choices under strict rubric reading AND the rubric-refinement trajectory. Shared-bias disclosure: subjective axes R1, R2, R7, R8 are scored textually by both the incumbent and the auditor running on the same base model. Agreement on these axes does not constitute independent evidence — they may reflect shared blind spots in what counts as 'meaningful open direction' or 'adequate method design'. The strongest audit confidence is on oracle-backed axes (R5, R6, R9), where mechanical verification of polynomial-interpretation arithmetic, worked-trace φ values, and binary verdict discharge was performed. Arithmetic for both A and B is correct; both reach the correct verdicts (confluent + terminating) with rigorous discharge. The R10 agreement is not a shared-bias concern because the disagreement is structural (on-disk artefact count) not subjective (narrative quality). No arbitration triggered. JUDGMENT.md front-matter should transition from status: draft to status: draft with Audit-concurrence section appended."
+}

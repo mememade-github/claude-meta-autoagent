@@ -1,0 +1,55 @@
+============================================================
+Critical-pair joinability (ground instances)
+============================================================
+
+CP1 (rho3, rho5) at pos 1
+  origin:  app(app(nil,cons(0,nil)),cons(s(0),nil))   phi=17
+  path a:  app(cons(0,nil),cons(s(0),nil))   phi=11
+  path b:  app(nil,app(cons(0,nil),cons(s(0),nil)))   phi=14
+  common reduct: cons(0,cons(s(0),nil))   phi=6
+
+CP2 (rho4, rho5) at pos 1
+  origin:  app(app(cons(0,nil),cons(s(0),nil)),nil)   phi=24
+  path a:  app(cons(0,app(nil,cons(s(0),nil))),nil)   phi=20
+  path b:  app(cons(0,nil),app(cons(s(0),nil),nil))   phi=17
+  common reduct: cons(0,cons(s(0),nil))   phi=6
+
+CP3 (rho5, rho5) at pos 1
+  origin:  app(app(app(nil,cons(0,nil)),nil),cons(s(0),nil))   phi=33
+  path a:  app(app(nil,app(cons(0,nil),nil)),cons(s(0),nil))   phi=27
+  path b:  app(app(nil,cons(0,nil)),app(nil,cons(s(0),nil)))   phi=20
+  common reduct: cons(0,cons(s(0),nil))   phi=6
+
+============================================================
+Reduction-order independence on sample terms
+============================================================
+
+  t = app(app(app(nil,nil),nil),nil)   phi=22
+    leftmost-outermost:   5 steps,  nf = nil  phi=1
+    rightmost-innermost:  3 steps,  nf = nil  phi=1
+    phi strictly decreases along both traces: OK
+
+  t = app(app(cons(0,nil),cons(s(0),nil)),cons(0,nil))   phi=26
+    leftmost-outermost:   5 steps,  nf = cons(0,cons(s(0),cons(0,nil)))  phi=8
+    rightmost-innermost:  5 steps,  nf = cons(0,cons(s(0),cons(0,nil)))  phi=8
+    phi strictly decreases along both traces: OK
+
+  t = len(app(cons(0,nil),cons(s(0),nil)))   phi=11
+    leftmost-outermost:   5 steps,  nf = s(s(0))  phi=2
+    rightmost-innermost:  5 steps,  nf = s(s(0))  phi=2
+    phi strictly decreases along both traces: OK
+
+  t = len(app(app(cons(0,cons(s(0),nil)),cons(0,nil)),cons(s(s(0)),nil)))   phi=38
+    leftmost-outermost:  11 steps,  nf = s(s(s(s(0))))  phi=4
+    rightmost-innermost: 12 steps,  nf = s(s(s(s(0))))  phi=4
+    phi strictly decreases along both traces: OK
+
+  t = app(app(cons(0,nil),nil),cons(s(0),nil))   phi=21
+    leftmost-outermost:   4 steps,  nf = cons(0,cons(s(0),nil))  phi=6
+    rightmost-innermost:  4 steps,  nf = cons(0,cons(s(0),nil))  phi=6
+    phi strictly decreases along both traces: OK
+
+============================================================
+All rule applications on sample pool cross-checked for phi-decrease
+============================================================
+  142 rewrite steps across reachable pool: phi strictly decreases on every step.
