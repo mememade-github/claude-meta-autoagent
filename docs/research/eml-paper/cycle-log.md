@@ -715,3 +715,185 @@ description.
   over.  If a future cycle's /refine again produces different
   behavior (architectural blockage lifts, or substitute
   pattern fails), re-open.
+
+---
+
+## Cycle 05 — 2026-04-22
+
+**TASK framing.** `cycle-05/TASK.md` — "Confluence of a bounded
+applicative-reduction system" over the 13-rule combinator baseline
+from Cycle #4 `{I, K, S, B, C, W, M, Y, T, V, D, Π₁, Π₂}`.  Structural
+hint: "Is the full baseline's reduction relation confluent? If not,
+where is the largest confluent subset, and is there a minimal
+non-confluent extension?"  Expected A-first-draft ceiling 17-20 on
+R1-R9 (band-2-to-3 iteration-pays regime).  20-entry banned-identifier
+list: 14 Cycle #4 base + 6 new (Church-Rosser, Tait-Martin-Löf,
+Takahashi, Newman's lemma, Knuth-Bendix, Hindley-Rosen).
+
+**Pre-cycle additions.**
+
+1. R10 axis rewritten as **domain-agnostic generalized form** in
+   `judgment-rubric.md`, with Cycle #5 example-bands row (confluence-
+   proof domain).
+2. CLAUDE.md §6.7 **step 5c** added: after ROOT draft JUDGMENT,
+   invoke `proof-auditor` agent; write `rubric-audit.json`; transition
+   front-matter status to `draft | arbitration-pending | arbitrated`
+   based on `arbitration_triggered`.  Arbitration protocol explicit
+   (≥ 1 axis ±2 bands, ≥ 3 axes any-band differences, binary axis
+   disagreement, total > 20 % of rubric max).  Oracle catalogue
+   pointer: `scripts/meta/oracles/`.
+3. `scripts/meta/oracles/combinator-reducer.py` — ROOT-side weak-head
+   leftmost-outermost β-reducer, 15/15 `--selftest` passing.
+   Proof-auditor accessible; NOT mounted into A or B.
+4. `projects/b/CLAUDE.md` §8: explicit agent-memory-seed reference
+   clause (advisory, not mandatory, lifecycle description).  Net
+   `projects/b/.frozen` diff = 0 (unfreeze-edit-refreeze pattern).
+5. `projects/a/` untouched (`git diff --quiet cycle-05-pre -- projects/a/`
+   holds).  `cycle-05-pre` tag at pre-cycle HEAD.
+
+**Execution.** Both sub-agents launched via `scripts/meta/delegate-sub.sh
+{a,b}` with `EFFORT=high` at 05:17:44 / 05:17:45 UTC.
+
+- A: ARGUMENT.md written 14:24 (33962 B); iter-01-audit.md written
+  14:26 (4957 B, stress-test of triangle proof, found 0 issues,
+  recommended no revision); sim.py + sim_output.txt at 14:21; exited
+  ~14:26 (~9 min).  **Single draft + post-hoc audit that confirmed
+  the draft.**
+- B: attempt-01.md at 14:26 (45466 B, weighted_score 0.867, 7 gaps);
+  eval-01.json at 14:28; simulator.py at 14:28; final ARGUMENT.md at
+  14:33 (46444 B, weighted_score 1.0, 7 gaps CLOSED); eval-final.json
+  at 14:36; exited ~14:36 (~19 min).  **Two drafts + two evaluator
+  reports + 7 gap closures.**
+
+**Leak audit.** Both PASS on base `paper-leak-audit.sh` (eml-paper
+keyword set) AND the 20-entry Cycle #5 banned-identifier grep.  B's
+own evaluator additionally ran an independent banned-identifier grep
+at run-time (eval-final.json banned_identifier_scan.result: no
+matches).
+
+**Scores (see `cycle-05/JUDGMENT.md` for per-criterion evidence).**
+
+| Criterion | A | B |
+|-----------|---|---|
+| R1 Motivation               | 3 | 3 |
+| R2 Method design            | 3 | 3 |
+| R3 Progressive minimization | 3 | 3 |
+| R4 Verdict commitment       | 3 | 3 |
+| R5 Exact form               | 3 | 3 |
+| R6 Verification strategy    | 3 | 3 |
+| R7 Constructive examples    | 3 | 3 |
+| R8 Open questions           | 3 | 3 |
+| R9 Exact answer match       | 3 | 3 |
+| R10 Iteration depth         | 1 | 3 |
+| **Total**                   | **28/30** | **30/30** |
+
+**Comparative delta: B − A = +2 on non-ceilinged rubric.**
+Composition: R10 = +2 (A single-shot + zero-gap audit; B two
+iterations + 7 gap closures).  R1-R9 at ceiling for both.
+
+**Proof-auditor verdict (§6.7 step 5c, first cycle with audit
+wired).**  Independent audit produced `cycle-05/rubric-audit.json`:
+A total 28, B total 30 (match incumbent), 19 YES + 1 CONDITIONAL
++ 0 NO across 20 (axis, agent) pairs, `arbitration_triggered:
+false`.  8 oracle invocations (15/15 selftest + 7 worked-example
+traces from both deliverables); every oracle-checkable claim
+survives independent β-reduction.  JUDGMENT front-matter status:
+`draft`.  The audit is the first real exercise of the disagreement
+protocol specified in `/tmp/disagreement-seed.md`'s port to §6.7;
+the single `CONDITIONAL` marks a rubric-text refinement candidate
+for Cycle #6 pre-cycle (the R10 edge case where a deliverable
+has on-disk deliberation trace but only one draft and zero gap
+closure).
+
+**Cycle design-point miss.**  Expected A-first-draft R1-R9
+ceiling 17-20; actual 27/27.  A's karpathy-skills configuration
+produced a full parallel-reduction-diamond proof from first
+principles on the first pass, stronger than anticipated.  Both
+architectures near-ceiling on this domain means R10 is doing
+almost all the delta work; R6 polarity (Cycle #4's +2 contributor)
+is inactive in Cycle #5 because neither A nor B has disclosed
+circularity.
+
+**Rubric evolution (ported to main repo this cycle).**
+- R10 section rewritten as domain-agnostic generalized form with
+  example-bands row template (Cycle #5 commit `d1217e7`).
+- R3 presentation-level grader note: "prefer tabular format for
+  finite sub-case enumerations; scorer bias toward band 3 when
+  deliverable uses tables" (commit `00f41ac`, port from Cycle #5
+  §6.5 B-ARGUMENT §3.1/§3.2 + A-ARGUMENT §1.3).
+
+**B-seed augmentation (this cycle).**
+- seed-11: iterative critical-pair closure procedure for
+  confluence in non-orthogonal systems (commit `e725a01`).
+- seed-12: evaluator-report schema with priority-numbered gap
+  tracking + §-location-on-closure (generalizes Cycle #4
+  seed-09 hard-constraint pattern; commit `e725a01`).
+
+**M5.1-task-ceiling-overshoot — OPEN / CARRY-OVER TO CYCLE #6.**
+Tracking handle: `M5.1-task-ceiling-overshoot`.  Both A and B
+hit R1-R9 = 27/27 on Cycle #5's confluence domain.  Cycle #5
+TASK design aimed at 17-22 first-draft for A and failed to
+achieve the intended "iteration pays" regime on R1-R9 (only R10
+delivered the architectural delta).  Cycle #6 TASK design must
+aim at:
+- A domain where first-draft A's R1-R9 ceiling is genuinely
+  sub-3 on ≥ 3 axes (e.g., proof domains where wrong-attractor
+  first-draft patterns are common, or counter-example-finding
+  tasks where subtle cases must be discovered rather than
+  positive results proved).  Concrete candidates: ground-term
+  confluence of *non-orthogonal* rewriting systems (the
+  iterative closure schema in B seed-11 becomes the central
+  technique, and first drafts routinely fall into
+  Newman-via-SN-without-SN traps); termination proofs for
+  bounded rewriting (first drafts typically miss
+  lexicographic-path-ordering counterexamples); or
+  type-inhabitation decidability for typed combinators
+  (first drafts often miss uninhabited types under specific
+  base-type schemes).
+- Alternative: raise the task difficulty to force R6-polarity
+  pressure (cycle-04 +2 R6 contribution when A reached for a
+  target it couldn't discharge).  A's Cycle #5 work was
+  rigorous because A did not over-reach; if the task pushes
+  beyond A's architectural ceiling, the hidden-circularity
+  pattern from Cycle #4 may re-emerge.
+
+**R10 rubric-text refinement candidate (from auditor CONDITIONAL).**
+Add a band-0/band-1 sub-distinction to the R10 generalized form
+covering the single-draft + post-hoc audit + zero-gap-closure
+pattern.  Cycle #6 pre-cycle rubric review should codify this
+explicitly (current text leaves it between bands 0 and 1, with
+both incumbent and auditor settling on 1 by judgment).
+
+**Cross-cycle learning validation.**  B container at Cycle #5
+launch showed `/workspaces/agent-memory-seed/` with 10 entries
+(seed-01 through seed-10 from Cycle #4).  Post-cycle harvest
+added seed-11 and seed-12; Cycle #6 B launch will see 12 entries.
+Seed growth per cycle so far: Cycle #4 +10 (initial seeding);
+Cycle #5 +2.  Non-flat, non-shrinking → healthy.
+
+**Commits referenced.**
+- `d1217e7` chore(cycle-05-pre): task prep + R10 generalized +
+  §6.7 step 5c + oracle port
+- `119b4e1` feat(cycle-05): JUDGMENT B 30 vs A 28 — Δ=+2 from R10
+- `00f41ac` feat(rubric R3): tabular-presentation grader note
+- `e725a01` feat(cycle-05 B-seed): seed-11 + seed-12
+- (this commit) chore(cycle-05): cycle-log append + partial-defect
+  audit pass
+
+**Open for next cycle (Cycle #6).**
+- **M5.1-task-ceiling-overshoot** — design Cycle #6 TASK at a
+  domain where first-draft A R1-R9 is genuinely sub-3 on ≥ 3
+  axes (see above).
+- **R10 rubric text refinement** — codify the single-draft +
+  post-hoc audit + zero-gap-closure edge case in the bands
+  0/1 boundary (from auditor CONDITIONAL).
+- **Proof-auditor first-cycle baseline established.**  Cycle #5
+  is the first cycle with proof-auditor wired; agreement rate
+  was 19/20 YES.  Cycle #6 should re-validate: does agreement
+  rate stay high?  Does arbitration ever fire?  One-cycle
+  sample is insufficient to trend.
+- **Oracle catalogue extensibility.**  `scripts/meta/oracles/`
+  now holds `combinator-reducer.py`.  Cycle #6 domain choice
+  may require a new oracle (type-checker, termination order
+  checker, rewriting simulator).  If added, follow the same
+  pattern: ROOT-side only, selftest, proof-auditor-accessible.
