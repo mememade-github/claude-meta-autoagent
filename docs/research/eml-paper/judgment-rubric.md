@@ -46,6 +46,24 @@ Does the argument propose a systematic, verifiable search/reduction procedure?
 | 2 | Systematic search proposed but the verification step is hand-waved. |
 | 3 | Explicit procedure with verification — e.g. iterative ablation combined with a numeric substitution sieve (evaluate candidate and target at algebraically independent transcendental inputs, compare), or an equivalent scheme that can distinguish true identities from coincidence. |
 
+**Band-3 tightening (ported from `band-3-tightening-v1.md`, Cycle #7 pre-cycle).**
+When the deliverable uses **distinct proof tools** (e.g., confluence and
+termination argued by different machinery; well-definedness and
+decidability argued by different machinery), band 3 additionally
+requires that each tool be isolated as a **named sublemma stated and
+discharged separately** from the main argument.  Conflated proofs
+(distinct machinery argued in intermixed prose) max at band 2.  Band 3
+also requires the deliverable to state its **scope**: which axes of
+correctness the method covers and which it does not.  Evidence anchor
+(Cycle #6 JUDGMENT §4): B §2.1 isolated the variable-overlap handling
+as a named sublemma reusable across the CP table; A §2 combined all
+reasoning in a single 3-step procedure without a named sublemma.  The
+tightening is about structural information content (reusable, citable,
+independently-verifiable sublemmas), not prose style.  The tightening
+applies **only when** the deliverable's method employs distinct proof
+tools; tasks where a single tool discharges the whole obligation remain
+unchanged.
+
 ### R3 — Progressive minimization (0–3)
 
 Does the argument exhibit a sequence of progressively smaller sufficient configurations,
@@ -78,6 +96,26 @@ overlap table with disposition per cell) is a third canonical
 example, validating that the pattern recurs across at least two
 independent rewriting-system domains (combinator confluence +
 list-rewriting confluence-plus-termination).
+
+**Band-3 tightening (ported from `band-3-tightening-v1.md`, Cycle #7
+pre-cycle).**  The scorer-lean above is promoted to a **band threshold**
+in the specific case of enumeration over a finite, tractable support
+(critical pairs of a finite TRS, rules of a small signature, overlaps
+between a bounded rule set, sub-cases closeable by finite inspection).
+In that case, band 3 requires the deliverable to present the
+enumeration in **auditable tabular form** — one row per element of
+the support, disposition column explicit per row.  Prose enumeration
+of a closeable finite set maxes at band 2.  Evidence anchor (Cycle #6
+JUDGMENT §4): B §3.1 50-cell overlap table vs A §3 prose enumeration
+of the same 25 × 2 support.  Tightening rationale: a tabular format
+with per-row disposition is mechanically auditable by the grader and
+the proof-auditor's schema; the equivalent prose form requires the
+grader to re-project the enumeration into an implicit grid, which is
+the subjective-axis shared-bias risk flagged in every cycle's audit
+`notes`.  The band-3 lift reduces that risk.  Domains whose
+enumeration has genuinely infinite or intractable support are
+unchanged (the tightening's precondition — "finite, tractable
+support" — is explicit).
 
 ### R4 — Final basis structure (0–3)
 
@@ -136,6 +174,22 @@ Does the argument demonstrate the basis by reconstructing original primitives?
 | 2 | 2–3 examples, possibly all of one type. |
 | 3 | ≥ 3 examples spanning distinct categories — arithmetic (e.g. multiplication), transcendental (e.g. logarithm), and a derived constant (e.g. e or π). Each example uses only the proposed basis. |
 
+**Band-3 tightening (ported from `band-3-tightening-v1.md`, Cycle #7
+pre-cycle).**  Band 3 additionally requires ≥ 4 examples, OR ≥ 3
+examples that span **orthogonal failure / success modes** — each
+example stress-tests a distinct axis of the deliverable's claim that
+the others do not.  Two examples are orthogonal if removing one does
+not reduce the total claim-coverage set; example sets of 3 that
+overlap in success / failure mode max at band 2.  Evidence anchor
+(Cycle #6 JUDGMENT §4): B had 4 examples where two were deliberately
+orthogonal — CP3 ground witness (§6.4) stressed the critical-pair
+closure claim; size-grows-but-φ-drops (§6.3) stressed the
+measure-decrease-under-growth claim — removing either reduces
+coverage of a distinct axis.  A had 3 examples all positive, all
+overlapping in their "reduction converges" success mode.  When the
+domain makes orthogonality hard to construct (e.g., a pure-existence
+question), the ≥ 4 example count path is the available one.
+
 ### R8 — Open questions (0–3)
 
 Does the argument end with meaningful limits and open directions?
@@ -146,6 +200,22 @@ Does the argument end with meaningful limits and open directions?
 | 1 | Trivial observations only. |
 | 2 | Some genuine open directions proposed. |
 | 3 | High-quality open problems in the neighborhood of the result — e.g. whether a pure-real-domain Sheffer operator exists; whether a ternary variant can eliminate the distinguished constant entirely; dependence of the result on the specific constant choice; implementation subtleties across branch-cut choices. |
+
+**Band-3 tightening (ported from `band-3-tightening-v1.md`, Cycle #7
+pre-cycle).**  Band 3 additionally requires that at least one
+disclosure be **structural** — a parametric impossibility, coefficient
+contradiction, dimensional argument, or similar move showing *no*
+construction in a named family can solve the problem — rather than
+case-exhibition of a single failing instance.  All-case-exhibition
+open-question sections max at band 2.  Evidence anchor (Cycle #6
+JUDGMENT §4): B §7.1 proved "no linear [add] interpretation discharges
+ρ6, ρ7, ρ8 simultaneously" by coefficient-intersection-empty
+(parametric impossibility); A §7.1 exhibited one specific failing
+linear candidate (one data point).  Structural disclosures scale; case
+exhibitions do not.  Domains where parametric impossibility is
+genuinely unavailable (e.g., purely empirical open questions) may
+substitute a well-specified negative conjecture with named candidate
+refutation paths, still scaled beyond single-instance exhibition.
 
 ### R9 — Exact answer match (0 or 3)
 
@@ -211,6 +281,86 @@ Rationale: R10's purpose is to measure whether iteration *closed
 disclosed gaps*, not whether the agent *performed the ritual of
 auditing*.  A vacuous audit has nothing to close and contributes no
 reasoning delta, so it is equivalent to a single-shot for R10's purpose.
+
+#### Band boundary: pre-disclosed-gap audit (M6.2 codification — Cycle #7 pre-cycle port)
+
+Cycle #6 R10-A surfaced a second edge case: A produced a single
+ARGUMENT.md draft that already disclosed its own gaps in §7, then
+wrote a post-hoc `iter-01-audit.md` naming F1/F2/F3 — where F1/F2/F3
+were **already** disclosed in the same single-shot draft's §7.  No
+second draft.  Audit concluded "Iteration closed; deliverable stands".
+
+Under the preceding band text this could be read as band 1 ("audit
+names ≥ 1 gap, no closure").  Structurally it is a single-shot: the
+audit confirms what the deliverable already disclosed, not what a
+second draft closed.  No reasoning delta was produced.
+
+**Resolution.**  Band 1 requires the disclosed gap to be named in an
+iteration-separate artefact — an evaluator / audit report whose
+contents are not already present in the deliverable's own
+disclosure section.  If the audit names only gaps already disclosed
+in the deliverable itself, no *new* disclosure happened; the
+post-hoc audit is a ritual confirmation of self-disclosure, and the
+pattern scores **band 0**.
+
+Strict test: *is there any gap named in the audit that is NOT
+already named in the deliverable's own open-questions / limitations
+section at the time of the audit?*  If no → band 0
+(post-hoc confirmation of self-disclosure).  If yes → band 1 or
+above depending on closure.
+
+Applied retrospectively: Cycle #6 A-R10 was scored 0 under the
+load-bearing closure-count criterion with this edge case flagged as
+`M6.2-R10-band-0-1-second-edge-case`.  Under this codification,
+Cycle #6 A-R10 = 0 is now closed (not CONDITIONAL): audit-names-only-
+pre-disclosed-gaps ≡ band 0.
+
+#### Band boundary: evaluator-report-substitution (M6.3 codification — Cycle #7 pre-cycle port)
+
+Cycle #6 R10-B surfaced a third edge case: B produced iteration 1
+(`attempt-01.md` + `.eval-report-01.json` with 7 gaps), iteration 2
+(final `ARGUMENT.md` closing all 7), but **no second evaluator
+report**.  Closure was verified by ROOT's diff between drafts +
+ARGUMENT.md's own front-matter "7 gaps closed at §-locations X,Y,Z"
+attestation, not by a `.eval-report-02.json`.
+
+Under strict reading of band 3 ("evaluator reports per iteration" —
+plural), B has only one evaluator report and tops at band 2.  Under
+generous reading (ROOT diff + self-attested closure substitutes for
+a second evaluator report), B reaches band 3.
+
+**Resolution.**  Band 3 requires evaluator-or-equivalent verification
+**per iteration beyond the first**, where "equivalent" is one of:
+
+- a subsequent `.eval-report-*.json` or named audit artefact from the
+  evaluator, OR
+- an independent oracle output (e.g., a simulator run, a type-checker
+  pass) that mechanically confirms the closure of each named gap, OR
+- a **committed diff artefact, separate from the deliverable, that
+  mechanically shows per-gap closure** — for example a
+  `gap-closure-check.json` written by ROOT (or by a closure-check
+  script reading the prior `.eval-report-01.json` and the final
+  ARGUMENT.md).  The verifier (ROOT) must be independent of the
+  iterator (B); the attestation must live outside the deliverable.
+
+Self-attestation inside the deliverable's own front matter is **not**
+sufficient for band 3 (the attester and the asserter are the same
+entity).  ROOT-performed diff verification is sufficient if recorded
+as a structured artefact committed alongside (e.g., a
+`gap-closure-check.json`), because the verifier (ROOT) is
+independent of the iterator (B).
+
+If B produces iteration 2 without any of the three substitutes, the
+configuration tops at band 2.
+
+Applied retrospectively: Cycle #6 B-R10 was scored 2 under strict
+reading.  Under this codification, if ROOT had additionally
+committed a `cycle-06/gap-closure-check.json` (structured
+per-gap-per-§-location verification), B-R10 could have reached 3.
+It did not, so band 2 remains the correct retrospective score; the
+codification is forward-looking.  `M6.3-R10-band-2-3-evaluator-
+report-substitution` is closed: the rubric now specifies the three
+allowable substitutes.
 
 #### Non-inflation guard
 
