@@ -72,7 +72,12 @@ presents the enumeration as a table, the grader should lean toward
 band 3 on evidence-quality grounds.  Cycle #5 B-ARGUMENT.md §3.1
 (13×13 overlap matrix) and §3.2 (per-rule RHS audit table) are
 canonical examples; Cycle #5 A-ARGUMENT.md §1.3 (13-row primitive
-LHS shape table) is another.
+LHS shape table) is another.  Cycle #6 B-ARGUMENT.md §3.1
+(25 ordered-pair × 2 non-variable-position = 50-cell exhaustive
+overlap table with disposition per cell) is a third canonical
+example, validating that the pattern recurs across at least two
+independent rewriting-system domains (combinator confluence +
+list-rewriting confluence-plus-termination).
 
 ### R4 — Final basis structure (0–3)
 
