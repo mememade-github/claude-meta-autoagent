@@ -58,6 +58,22 @@ each justified?
 | 2 | 3+ steps with brief justification. |
 | 3 | A coherent reduction sequence with each step motivated — e.g. dropping negation/reciprocal once a non-commutative operator provides inversion; collapsing named constants into functions; moving from lower to higher hyperoperation ranks. |
 
+**Presentation-level grader note (ported from Cycle #5 §6.5).**  When
+the axis's discharge requires enumerating a finite set of sub-cases
+(e.g., a per-rule overlap audit, a per-primitive synthesis table, a
+per-rule residual analysis), a **tabular** presentation is more
+auditable than prose and should be preferred.  A tabular format
+where each row names the sub-case, the discharge method, and any
+disclosed gap is mechanically verifiable; the equivalent prose form
+requires the grader to manually track the enumeration.  This is a
+scorer-level bias, not a band threshold change: a prose discharge of
+≥ 3 sub-cases can still earn band 3, but when the deliverable
+presents the enumeration as a table, the grader should lean toward
+band 3 on evidence-quality grounds.  Cycle #5 B-ARGUMENT.md §3.1
+(13×13 overlap matrix) and §3.2 (per-rule RHS audit table) are
+canonical examples; Cycle #5 A-ARGUMENT.md §1.3 (13-row primitive
+LHS shape table) is another.
+
 ### R4 — Final basis structure (0–3)
 
 Does the argument converge on a correctly-shaped minimal basis?
