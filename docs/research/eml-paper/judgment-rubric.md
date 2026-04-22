@@ -186,10 +186,26 @@ is structurally capable of R10 = 3.
 
 | Score | Evidence |
 |---|---|
-| 0 | **Single-shot.** One substantive write of the deliverable.  No on-disk trace of deliberation between emissions.  No `attempts/`, no `.eval-report*`, no numbered drafts.  mtime-adjacent polish edits (spell-fix, comment-tuning) count as part of the single shot, not as iteration. |
-| 1 | **Cosmetic iteration.** Two or more drafts exist on disk, but the reasoning delta between them is cosmetic: re-wording, re-formatting, reordering without content change.  No disclosed-gap closure. |
+| 0 | **Single-shot *or* vacuous audit.** (a) One substantive write of the deliverable with no on-disk trace of deliberation between emissions; OR (b) an audit / evaluator report exists but names zero disclosed gaps (e.g. "no issues found", empty `hard_constraint_violations`, empty `gaps` array).  A vacuous audit is vacuous iteration: `closure-of-disclosed-gaps` is the load-bearing criterion, and nothing disclosed means nothing to close.  No `attempts/`, no `.eval-report*` with named gaps, no numbered drafts.  mtime-adjacent polish edits (spell-fix, comment-tuning) count as part of the single shot, not as iteration. |
+| 1 | **Cosmetic iteration with named gaps.** At least one evaluator / audit report names ≥ 1 disclosed gap (so the case is not vacuous), AND two or more drafts exist on disk, BUT the reasoning delta between drafts is cosmetic (re-wording, re-formatting, reordering) and the named gap is NOT closed by the next draft.  The gap is disclosed but unresolved; iteration happened but closure did not. |
 | 2 | **One substantive iteration with gap closure.** Two drafts with at least one evaluator report showing ≥1 disclosed gap in draft-N that draft-(N+1) addresses.  The closure is verifiable by diff between drafts AND the evaluator report confirms the gap no longer appears. |
 | 3 | **Two or more substantive iterations with reasoning delta and citable trace.**  Requires ALL of: (a) at least two iterations with on-disk drafts, (b) evaluator reports per iteration with `hard_constraint_violations` or equivalent disclosed gaps, (c) each iteration's deltas close ≥1 prior-iteration gap *without introducing new gaps of the same severity*, (d) the final deliverable reflects the progression, (e) the JUDGMENT can cite each trace artifact by path. |
+
+#### Band boundary: audit-found-nothing vs cosmetic
+
+This boundary was surfaced by Cycle #5's proof-auditor CONDITIONAL on
+R10-A (agent produced `A-iter-01-audit.md` with zero gaps named).
+Strict reading: band 0 (no closure possible).  Generous reading: band 1
+(audit artefact exists).  The grid above resolves this with a single
+load-bearing criterion: **band 1 requires ≥ 1 disclosed gap regardless
+of closure; band 0 covers every case where no gap was ever disclosed**.
+An audit that concludes "no issues found" without naming anything
+scores 0, not 1.
+
+Rationale: R10's purpose is to measure whether iteration *closed
+disclosed gaps*, not whether the agent *performed the ritual of
+auditing*.  A vacuous audit has nothing to close and contributes no
+reasoning delta, so it is equivalent to a single-shot for R10's purpose.
 
 #### Non-inflation guard
 
@@ -225,10 +241,19 @@ artefacts disappear.
 
 | Band | Example |
 |------|---------|
-| 0 | `task/ARGUMENT.md` written in one pass; no `attempts/` directory; no `.eval-report*.json` |
-| 1 | Two `attempts/attempt-0N.md` drafts with the same proof structure, only variable renames / prose polish |
+| 0 | `task/ARGUMENT.md` written in one pass; no `attempts/` directory; no `.eval-report*.json`.  Also: `task/audit.md` written but naming zero gaps ("no issues found" with empty finding list). |
+| 1 | Two `attempts/attempt-0N.md` drafts AND an evaluator report naming ≥ 1 gap, but the named gap is unresolved in the next draft (prose polish only). |
 | 2 | One `.eval-report*.json` names a missed critical-pair case in a confluence argument; next iteration's `attempt-02.md` adds that case and the evaluator report confirms it as closed |
 | 3 | ≥ 2 `.eval-report*.json` each name proof gaps (e.g., missed critical pair, unchecked reduction order, absent strong-normalization sub-argument); subsequent iterations close each with oracle-verified β-traces; JUDGMENT cites each `attempts/attempt-NN.md` and `.eval-report-NN.json` path |
+
+#### Example bands — Cycle #6 (rewriting-system confluence + termination domain)
+
+| Band | Example |
+|------|---------|
+| 0 | `task/ARGUMENT.md` written in one pass with no `attempts/` or `.eval-report*`.  Also: agent produces a `self-audit.md` whose "findings" list is empty and deliverable is not revised — vacuous audit, band 0 per the band-boundary rule above. |
+| 1 | Two drafts AND an evaluator report naming a gap (e.g., "measure not shown to decrease on rule ρ₃" or "critical pair at ⟨ρ₁, ρ₂⟩ not enumerated"), but the next draft only re-words around the named gap without discharging it. |
+| 2 | One `.eval-report*.json` names a specific obligation — a missed critical-pair closure for Q1 (confluence) OR a missed monotonicity check for Q2 (termination) — and the next iteration's draft + re-evaluation confirms the obligation discharged (matrix row added; measure argument extended to cover the missing rule). |
+| 3 | ≥ 2 `.eval-report*.json` each naming distinct obligations across both Q1 and Q2 (e.g., iter-1 names "ρ₁/ρ₂ critical pair unchecked" + "ρ₃ decrease of measure not argued"; iter-2 closes both with specific table rows + extended measure proof; iter-3's evaluator confirms closure and introduces no new same-severity gaps); JUDGMENT cites each draft + evaluator path. |
 
 When R10 does NOT apply (no evaluator, or the deliverable is itself an
 oracle output with no draft), drop the axis for that cycle.

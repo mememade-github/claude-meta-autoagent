@@ -95,4 +95,17 @@ echo -e "${YELLOW}Forwarding to delegate-goal.sh${NC} ($SUB_KEY)."
 # Forward all behaviour (role-declaration header, effort level, audit log,
 # container liveness check, docker exec launch) to delegate-goal.sh.  That
 # script already reads EFFORT from the environment.
-exec bash "$GENERIC" "$SUB_KEY" "$GOAL"
+bash "$GENERIC" "$SUB_KEY" "$GOAL"
+LAUNCH_STATUS=$?
+
+# Post-launch cleanup hint (L2→L3 boundary): delegate-sub.sh relays an OAuth
+# credential file into the sub-container so `claude -p` can authenticate.
+# That credential should be removed from the sub-container between cycles;
+# cleanup-sub.sh mirrors the L1→L2 pattern for this layer.
+if [ $LAUNCH_STATUS -eq 0 ]; then
+  echo
+  echo -e "${YELLOW}Cleanup hint${NC} (run after the sub-agent exits and artefacts have been archived):"
+  echo "  scripts/meta/cleanup-sub.sh $SUB_KEY          # remove relayed credential + today's agent log"
+  echo "  scripts/meta/cleanup-sub.sh $SUB_KEY --stop   # plus docker stop the container"
+fi
+exit $LAUNCH_STATUS
