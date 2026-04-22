@@ -897,3 +897,231 @@ Cycle #5 +2.  Non-flat, non-shrinking → healthy.
   may require a new oracle (type-checker, termination order
   checker, rewriting simulator).  If added, follow the same
   pattern: ROOT-side only, selftest, proof-auditor-accessible.
+
+---
+
+## Cycle 06 — 2026-04-22
+
+**TASK framing.** `cycle-06/TASK.md` — "Joint confluence + termination of
+a small list/length rewriting system" over the 5-rule TRS
+`{ρ1: len(nil) → 0, ρ2: len(cons(x, ys)) → s(len(ys)),
+ρ3: app(nil, ys) → ys, ρ4: app(cons(x, xs), ys) → cons(x, app(xs, ys)),
+ρ5: app(app(xs, ys), zs) → app(xs, app(ys, zs))}`.  Two independent
+verdict obligations: Q1 confluence and Q2 termination.  Expected
+A-first-draft ceiling 21-25 / 30 (R1-R9 sub-3 on ≥ 2 axes).
+28-entry banned-identifier list: 20 Cycle #5 base + 8 termination-
+specific (Dershowitz, Manna-Ness, RPO, LPO, MPO, dependency pairs,
+Kamin-Lévy, Huet).
+
+**Pre-cycle additions.**
+
+1. R10 axis updated in `judgment-rubric.md` per Cycle #5 auditor
+   CONDITIONAL: vacuous-audit case explicitly classified as band 0
+   (load-bearing criterion: closure-of-disclosed-gaps; vacuous audit
+   has nothing to close).  Cycle #6 example-bands row added for the
+   rewriting-system (confluence + termination) domain.
+2. `scripts/meta/cleanup-sub.sh` (new): L2→L3 session-scoped cleanup
+   for A or B sub-project containers.  Mirrors L1→L2 cleanup pattern
+   one layer down.
+3. `scripts/meta/delegate-sub.sh` updated: prints cleanup hint on
+   stdout after each successful launch.
+4. `cycle-06/TASK.md` committed.  `projects/a/` untouched
+   (`git diff --quiet cycle-06-pre -- projects/a/` holds).
+   `cycle-06-pre` tag at pre-cycle HEAD.
+
+**Execution.** Both sub-agents launched via `scripts/meta/delegate-sub.sh
+{a,b}` with `EFFORT=high` at 07:03:51 UTC.
+
+- A: sim.py written 16:10:14; ARGUMENT.md written 16:14:18 (36188 B,
+  single substantive write); attempt-01.md derivation log 16:16:32
+  (3014 B); iter-01-audit.md self-audit 16:16:07 (8180 B, names
+  F1/F2/F3 disclosed gaps); exit ~16:17 (~13 min).  **Single ARGUMENT.md
+  draft + post-hoc derivation log + post-hoc self-audit naming gaps
+  that were already disclosed in the single shot.**
+- B: simulator.py 16:07:45; attempt-01.md (iteration-1 draft) 16:11:37
+  (35681 B); .eval-report-01.json 16:14:15 (8475 B, 7 disclosed gaps
+  G1-G7 with priority); trace_check.py + output 16:15:50-16:15:53
+  (intermediate G1/G2 fix verification); ARGUMENT.md (iteration-2 final)
+  16:21:18 (40527 B, claims G1-G7 closure with cited §-locations);
+  output-final.txt 16:21:24 (byte-identical to output-run1.txt — system-
+  view unchanged, iteration improvement was at the proof level); exit
+  ~16:22 (~19 min).  **Two distinct iterations + 1 evaluator report;
+  iteration 2 closes all 7 gaps verifiable by ROOT diff.**
+
+**Leak audit.** Both PASS on base `paper-leak-audit.sh` (eml-paper
+keyword set) AND the 28-entry Cycle #6 banned-identifier grep.  No
+matches in either ARGUMENT.md.
+
+**Scores (see `cycle-06/JUDGMENT.md` for per-criterion evidence).**
+
+| Criterion | A | B |
+|-----------|---|---|
+| R1 Motivation               | 3 | 3 |
+| R2 Method design            | 3 | 3 |
+| R3 Progressive minimization | 3 | 3 |
+| R4 Verdict commitment       | 3 | 3 |
+| R5 Exact form               | 3 | 3 |
+| R6 Verification strategy    | 3 | 3 |
+| R7 Constructive examples    | 3 | 3 |
+| R8 Open questions           | 3 | 3 |
+| R9 Exact answer match       | 3 | 3 |
+| R10 Iteration depth         | 0 | 2 |
+| **Total**                   | **27/30** | **29/30** |
+
+**Comparative delta: B − A = +2 on non-ceilinged rubric.** Composition:
+R10 = +2 (A single-shot + post-hoc audit naming gaps already
+disclosed in the single shot, closure count = 0 → band 0 under
+updated boundary; B two drafts + 1 evaluator report + 7 gap closures
+verifiable by diff → band 2 under strict reading).  R1-R9 at ceiling
+for both — same outcome as Cycle #5; the two-obligation task framing
+did NOT force a structural drop on either A or B.
+
+**Proof-auditor verdict (§6.7 step 5c, second cycle with audit
+wired).**  Independent audit produced `cycle-06/rubric-audit.json`:
+auditor totals A 27, B 29 (match incumbent), 16 YES + 4 CONDITIONAL
++ 0 NO across 20 (axis, agent) pairs, `arbitration_triggered: false`.
+Mechanical verifications: A's polynomial interpretation rule-decrease
+arithmetic (5/5 strict positive), B's polynomial interpretation
+rule-decrease arithmetic (5/5 uniformly strict positive on ℕ),
+A §6.1 and B §6.1 LMO traces both verified step-by-step.
+Disclosed-circularity scan independently confirmed: no hidden
+circularity in either deliverable; both declare the Q1-depends-on-Q2
+dependency explicitly.
+
+The 4 CONDITIONALs are: R4-A and R4-B (concurrence under Cycle #6 R4
+semantic adjustment from TASK §7); R10-A and R10-B (concurrence
+flagging Cycle #7 carry-over edge cases M6.2 and M6.3).
+
+**Cycle design-point miss (recurrence).**  Cycle #5's
+`M5.1-task-ceiling-overshoot` recurs in Cycle #6 as
+`M6.1-task-ceiling-overshoot-recurrence`: both A and B again reached
+R1-R9 = 27/27 on a domain (5-rule TRS, two obligations) that was
+expected to drop ≥ 2 axes sub-3.  Diagnosis: the TRS is small and
+clean enough that even a single-shot agent can derive complete
+proofs for both Q1 (CP enumeration + closure) and Q2 (polynomial
+interpretation construction + arithmetic verification) on first
+principles.  The two-obligation framing did NOT force a structural
+drop because each obligation is independently tractable.
+
+**Rubric evolution (ported to main repo this cycle).**
+- R10 band-0 / band-1 boundary text rewritten to absorb the
+  vacuous-audit case (Cycle #6 pre-cycle commit `2ab6126`).
+- R10 example-bands row for the rewriting-system (confluence +
+  termination) domain added (same commit).
+- R3 grader note evidence-pointer: Cycle #6 B-ARGUMENT.md §3.1 50-cell
+  exhaustive overlap table added as third canonical example to the
+  tabular-presentation note (commit `0d9ad94`).
+
+**B-seed augmentation (this cycle).**
+- seed-13: variable-overlap sublemma for left-linear TRS confluence
+  (commit `4c199b0`).
+- seed-14: polynomial-interpretation coefficient derivation by
+  inequality solving + non-existence proof via empty intersection
+  (same commit).
+
+Total seed entries: 12 → 14.
+
+**M6.1-task-ceiling-overshoot-recurrence — OPEN / CARRY-OVER TO CYCLE #7.**
+Tracking handle: `M6.1-task-ceiling-overshoot-recurrence`.  Both A and
+B hit R1-R9 = 27/27 again on Cycle #6's domain.  Cycle #7 TASK design
+must aim at a domain where first-draft A's R1-R9 ceiling is genuinely
+sub-3 on ≥ 3 axes.  Concrete candidates:
+- Non-orthogonal rewriting where iterative critical-pair closure
+  schema (B seed-11) is load-bearing on the first draft (first drafts
+  fall into local-confluence-via-Newman-style-SN traps).
+- A non-confluent + terminating system where the agent must construct
+  the divergent pair (counter-example finding rather than positive-
+  result proving — Cycle #4 produced its R6 polarity delta when A
+  reached for an unprovable target).
+- A non-terminating + confluent system requiring explicit
+  non-termination proof construction.
+- Type-inhabitation decidability for typed combinator calculi where
+  first drafts often miss uninhabited types under specific base-type
+  schemes.
+
+**M6.2-R10-band-0-1-second-edge-case — NEW CARRY-OVER TO CYCLE #7.**
+Tracking handle: `M6.2-R10-band-0-1-second-edge-case`.  Cycle #6's
+pre-cycle R10 boundary port resolved the *vacuous-audit* sub-case
+(audit names zero gaps → band 0).  But Cycle #6 surfaced a new edge
+case: *single-shot deliverable + post-hoc audit naming gaps that are
+already disclosed in the single shot* (A-R10 in Cycle #6).  The new
+boundary text addresses one half of the edge; the other half (single-
+draft + named-gap-audit-without-second-draft) remains semantically
+ambiguous between band 0 and band 1.  Both incumbent and auditor
+settled on band 0 by the load-bearing closure-of-disclosed-gaps
+criterion (closure count = 0); rubric-text refinement candidate for
+Cycle #7 pre-cycle.
+
+**M6.3-R10-band-2-3-evaluator-report-substitution — NEW CARRY-OVER TO
+CYCLE #7.** Tracking handle: `M6.3-R10-band-2-3-evaluator-report-
+substitution`.  The strict reading of band 3 ("evaluator reports per
+iteration") penalises B for not producing a second `.eval-report-final.json`.
+Generous reading would substitute the deliverable's own self-attested
+closure for a second evaluator report.  Cycle #6 used the strict
+reading (B = R10 = 2).  Cycle #7 pre-cycle decision: codify whether
+the deliverable's own closure attestation suffices for iteration N+1's
+"evaluator report" requirement when N ≥ 2 drafts exist.
+
+**Cross-cycle learning validation.**  B container at Cycle #6 launch
+showed `/workspaces/agent-memory-seed/` with 12 entries (seed-01
+through seed-12 from Cycles #4-#5).  Post-cycle harvest added seed-13
+and seed-14; Cycle #7 B launch will see 14 entries.  Seed growth per
+cycle: Cycle #4 +10 (initial seeding); Cycle #5 +2; Cycle #6 +2.
+Non-flat, non-shrinking → healthy.  The seed remains the cross-cycle
+persistence substrate; B's runtime `.claude/agent-memory/skills/
+strategies.jsonl` (gitignored, container-local) is wiped between
+cycles.  Cycle #7 B container at launch will consume the 14-entry
+seed via the existing mount path (B-side `projects/b/CLAUDE.md` §8
+documents the consumption protocol; no change this cycle).
+
+**Cleanup forensic (per Cycle #6 GOAL clause 9).**
+
+After cycle close, `scripts/meta/cleanup-sub.sh` was executed against
+both A and B containers.  Forensic verification of session-scoped
+artefact removal:
+
+- `scripts/meta/cleanup-sub.sh a` — pre-cleanup A had
+  `/home/vscode/.claude/.credentials.json` (471 bytes, mtime
+  2026-04-22 15:50, mode 0600).  Script reported `removed:
+  credentials.json`.  Post-cleanup forensic on A:
+  `docker exec claude-meta-autoagent-a ls /home/vscode/.claude/
+  .credentials.json | wc -l` = 0.  Today's agent log file count = 0.
+  **A relayed-credential count post-cleanup: 0.**
+- `scripts/meta/cleanup-sub.sh b` — pre-cleanup B had
+  `/home/vscode/.claude/.credentials.json` (same shape).  Script
+  reported `removed: credentials.json`.  Post-cleanup forensic on B:
+  credential file count = 0; today's agent log count = 0.
+  **B relayed-credential count post-cleanup: 0.**
+
+Both containers left running (no `--stop` invocation; lifecycle
+preserved for Cycle #7 reuse).  The cleanup mechanism worked
+end-to-end as designed (script existence + executable permission
+proven at pre-cycle commit; actual operation proven at this forensic
+step).  GOAL clause 2 + GOAL clause 9 both satisfied.
+
+**Commits referenced.**
+- `2ab6126` chore(cycle-06-pre): R10 band-0/1 port + cleanup-sub.sh + cycle-06 TASK
+- `13a671b` feat(cycle-06): JUDGMENT B 29 vs A 27 — Δ=+2 from R10 — auditor-concurred
+- `0d9ad94` feat(rubric R3): Cycle #6 50-cell overlap table evidence-pointer port
+- `4c199b0` feat(cycle-06 B-seed): seed-13 variable-overlap + seed-14 polynomial-coefficient-derivation
+- (this commit) chore(cycle-06): cycle-log append + cleanup forensic + partial-defect audit pass
+
+**Open for next cycle (Cycle #7).**
+- **M6.1-task-ceiling-overshoot-recurrence** — design Cycle #7 TASK at
+  a domain where first-draft A R1-R9 is genuinely sub-3 on ≥ 3 axes
+  (see candidate list above).
+- **M6.2-R10-band-0-1-second-edge-case** — codify the single-shot +
+  post-hoc audit naming pre-disclosed gaps case in the R10 band-0/1
+  boundary text.
+- **M6.3-R10-band-2-3-evaluator-report-substitution** — codify
+  whether deliverable self-attested closure substitutes for an
+  iteration N+1 evaluator report when N ≥ 2 drafts exist.
+- **Proof-auditor concurrence pattern stable.**  Cycles #5 and #6
+  both ran with proof-auditor wired and produced 0 disagreements
+  (Cycle #5: 19 YES + 1 CONDITIONAL; Cycle #6: 16 YES + 4
+  CONDITIONAL).  CONDITIONAL count rose this cycle due to the
+  concentrated R4 + R10 rubric-semantic dependencies; arbitration
+  pipeline remains untested in production.
+- **Cleanup forensic baseline established.**  Cycle #6 is the first
+  cycle to run cleanup-sub.sh + capture forensic in cycle-log.
+  Cycle #7 onward should make this part of the standard cycle close.
