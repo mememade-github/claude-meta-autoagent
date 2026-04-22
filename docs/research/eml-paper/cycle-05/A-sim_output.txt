@@ -1,0 +1,147 @@
+
+========================================================================
+Example 5: critical-pair / overlap audit
+========================================================================
+Each rule's LHS pattern is headed by a distinct primitive symbol.
+LHS shapes (as spine head, arity):
+  I: head=I, arity=1
+  K: head=K, arity=2
+  S: head=S, arity=3
+  B: head=B, arity=3
+  C: head=C, arity=3
+  W: head=W, arity=2
+  M: head=M, arity=1
+  Y: head=Y, arity=1
+  T: head=T, arity=2
+  V: head=V, arity=3
+  D: head=D, arity=4
+  P1: head=P1, arity=2
+  P2: head=P2, arity=2
+
+Two rules can produce a critical pair only when one rule's LHS
+unifies with a non-variable subterm of another's LHS.  Each LHS
+here is (PrimitiveSymbol  v1  ...  vk) where v_i are placeholder
+metavariables.  The only non-variable subterms are the primitive
+itself and the partial applications (Primitive v1), (Primitive v1 v2),
+etc.  These all begin with the same primitive symbol; two distinct
+primitives cannot unify.  Self-overlap reduces to root-overlap
+(the trivial case).  Therefore: 0 non-trivial critical pairs.
+
+========================================================================
+Example 1: S (K a b) (I c) (I d) -- multiple reduction orders
+========================================================================
+term: S (K a b) (I c) (I d)
+redex positions: [(), ('f', 'f', 'a'), ('f', 'a'), ('a',)]
+one-step reducts:
+   K a b (I d) (I c (I d))
+   S a (I c) (I d)
+   S (K a b) c (I d)
+   S (K a b) (I c) d
+
+-- trace A: leftmost-outermost --
+
+[A] start: S (K a b) (I c) (I d)
+  step 1 @(): K a b (I d) (I c (I d))
+  step 2 @(): a (I d) (I c (I d))
+  step 3 @('f', 'a'): a d (I c (I d))
+  step 4 @('a',): a d (c (I d))
+  step 5 @('a', 'a'): a d (c d)
+  normal form after 5 steps: a d (c d)
+
+-- trace B: rightmost-innermost --
+
+[B] start: S (K a b) (I c) (I d)
+  step 1 @('a',): S (K a b) (I c) d
+  step 2 @('f', 'a'): S (K a b) c d
+  step 3 @('f', 'f', 'a'): S a c d
+  step 4 @(): a d (c d)
+  normal form after 4 steps: a d (c d)
+
+common reduct of A and B reachable: a d (c d)
+bounded confluence over depth-4 reducts: OK; 0 failures
+
+========================================================================
+Example 2: Y f -- non-terminating; bounded-depth confluence
+========================================================================
+term: Y f
+reduct sequence:
+  0: Y f
+  1: f (Y f)
+  2: f (f (Y f))
+  3: f (f (f (Y f)))
+common reduct of f(Yf) and f(f(Yf)): f (f (f (f (Y f))))
+  (expected: f (f (Y f)) is itself reachable from f (Y f))
+star(Y f) = f (Y f)
+star(star(Y f)) = f (f (Y f))
+
+========================================================================
+Example 3: B (W I) (K a) c -- strategy independence of normal form
+========================================================================
+term: B (W I) (K a) c
+
+[leftmost] start: B (W I) (K a) c
+  step 1 @(): W I (K a c)
+  step 2 @(): I (K a c) (K a c)
+  step 3 @(): K a c (K a c)
+  step 4 @(): a (K a c)
+  step 5 @('a',): a a
+  normal form after 5 steps: a a
+
+[rightmost] start: B (W I) (K a) c
+  step 1 @(): W I (K a c)
+  step 2 @('a',): W I a
+  step 3 @(): I a a
+  step 4 @('f',): a a
+  normal form after 4 steps: a a
+
+A-normal: a a
+B-normal: a a
+equal? True
+bounded confluence over depth-6 reducts: OK; 0 failures
+
+========================================================================
+Example 4: M M -- self-replicating; confluence under bounded steps
+========================================================================
+step 0: M M, |reducts|=1
+step 1: M M, |reducts|=1
+step 2: M M, |reducts|=1
+step 3: M M, |reducts|=1
+step 4: M M, |reducts|=1
+Note: M M is its own unique one-step reduct.
+
+========================================================================
+Example 7: diamond closure via complete development (star)
+========================================================================
+S(Kab)(Ic)(Id): star = a d (c d)
+  reduct K a b (I d) (I c (I d)) reaches star? YES via a d (c d)
+  reduct S a (I c) (I d) reaches star? YES via a d (c d)
+  reduct S (K a b) c (I d) reaches star? YES via a d (c d)
+Y f: star = f (Y f)
+  reduct f (Y f) reaches star? YES via f (f (f (f (f (Y f)))))
+M(Ia): star = a a
+  reduct I a (I a) reaches star? YES via a a
+  reduct M a reaches star? YES via a a
+W(Ka)b: star = K a b b
+  reduct K a b b reaches star? YES via K a b b
+D(Ka)bcd: star = K a b (c d)
+  reduct K a b (c d) reaches star? YES via K a b (c d)
+V(Ia)bc: star = c a b
+  reduct c (I a) b reaches star? YES via c a b
+  reduct V a b c reaches star? YES via c a b
+
+========================================================================
+Example 6: progressive subsets -- mechanical bounded confluence
+========================================================================
+primitives = ['I']: confluence verified on 13/13 probes
+primitives = ['I', 'K']: confluence verified on 13/13 probes
+primitives = ['I', 'K', 'S']: confluence verified on 13/13 probes
+primitives = ['B', 'I', 'K', 'S']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'I', 'K', 'S']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'I', 'K', 'S', 'W']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'I', 'K', 'M', 'S', 'W']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'I', 'K', 'M', 'S', 'W', 'Y']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'I', 'K', 'M', 'S', 'T', 'W', 'Y']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'I', 'K', 'M', 'S', 'T', 'V', 'W', 'Y']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'D', 'I', 'K', 'M', 'S', 'T', 'V', 'W', 'Y']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'D', 'I', 'K', 'M', 'P1', 'S', 'T', 'V', 'W', 'Y']: confluence verified on 13/13 probes
+primitives = ['B', 'C', 'D', 'I', 'K', 'M', 'P1', 'P2', 'S', 'T', 'V', 'W', 'Y']: confluence verified on 13/13 probes

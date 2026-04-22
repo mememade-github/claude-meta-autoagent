@@ -1,0 +1,82 @@
+{
+  "hard_constraint_violations": [],
+  "banned_identifier_scan": {
+    "tool": "grep -i -E 'SKI|SK calculus|BCKW|BCIW|Iota|ι-combinator|Jot|Unlambda|BLC|Binary Lambda|X-combinator|Xi-combinator|Zot|Turing|Curry|Schönfinkel|Rosser|Church|Tait|Martin-Löf|Takahashi|Newman|Knuth-Bendix|Hindley' /workspaces/task/ARGUMENT.md",
+    "result": "no matches"
+  },
+  "scores": {
+    "R1": {
+      "score": 3,
+      "justification": "§1.1 derives the three structural preconditions (non-interference of redex sites, opaque arguments, no termination dependency) from first principles and §1.2 gives three derived precedents P1-P3 without naming any external result."
+    },
+    "R2": {
+      "score": 3,
+      "justification": "§2.2 defines ⇒ inductively; Lemma 2.2.1 is proved by full structural induction (including a P-rule case that handles non-linearity explicitly), Lemma 2.2.2-2.2.3 bridge →/⇒/↠; §2.3 treats Φ well-definedness including the Y-redex subtlety; Triangle Lemma 2.3.1 is proved by induction on ⇒-derivation with all three clauses discharged; §2.4 records non-termination-independence."
+    },
+    "R3": {
+      "score": 3,
+      "justification": "All 13 stages are exhibited with a uniform claim/method/gap template; §3.1 provides an explicit 13×13 overlap table with diagonal ε(=) entries; §3.2 gives a per-rule RHS-audit table addressing straddling including the Y-template case."
+    },
+    "R4": {
+      "score": 3,
+      "justification": "Theorem 4.1 with a cited proof chain; §4.1 restates counting conventions; §4.2 cleanly separates Q4.2.1 (largest subset = whole baseline, with a structural reason) and Q4.2.2 (minimal non-confluent extension K°: K I x → x with critical pair ⟨I, x⟩ shown non-joinable); §4.3 disambiguates maximal-subset vs maximal-extension."
+    },
+    "R5": {
+      "score": 3,
+      "justification": "§5 names both strategy (b) parallel-reduction diamond and strategy (d) executable oracle; /workspaces/task/sim/simulator.py (257 lines) and /workspaces/task/sim/output-final.txt (7 test terms with joinability verdicts) are present and cited; limitations disclosed."
+    },
+    "R6": {
+      "score": 3,
+      "justification": "§§6.1-6.6 give six worked examples with explicit step-by-step reduction traces under two orders each, and each closes with a common reduct."
+    },
+    "R7": {
+      "score": 3,
+      "justification": "§7.1 addresses strong reduction under binders with parallel-substitution requirements named, §7.2 confluence vs normalization with the WN-uniqueness corollary proved, §7.3 strategy dependence with leftmost/rightmost illustrated on K a (Y f), §7.4 non-orthogonal extensions including an iterative-closure schema (steps 1-4) and multiple worked critical-pair cases."
+    },
+    "R8": {
+      "score": 3,
+      "justification": "Gaps are explicitly named: §3.2 (straddling audit), §5.2 (oracle depth/size caps), §7.4.4 (1-rule extension space unenumerated), and a dedicated §8 'Disclosed gaps' list enumerating four items."
+    },
+    "R9": {
+      "score": 3,
+      "justification": "The document opens with a 'Counting conventions' block defining term, occurrence, redex, one-step rewrite, overlap, critical pair, parallel step, residual, and confluence; §4.1 restates them at the verdict."
+    },
+    "R10": {
+      "score": 3,
+      "justification": "On-disk trace: iterations/attempt-01.md (45466 B), .eval-report-01.json logging 7 gaps, sim/output-run1.txt and output-final.txt. The final differs from attempt-01 (different file sizes and contents) and materially addresses the logged gaps: G1 (substitution lemma tightened with full non-linear case), G2 (§4.2/4.3 explicit separation), G3 (§2.3 Φ well-definedness on Y discussed), G4 (§7.4.3 iterative closure schema + new examples), G5 (13×13 table now present), G7 (RHS audit tabulated)."
+    }
+  },
+  "weighted_score": 1.0,
+  "gap_closure_vs_iteration_1": {
+    "G1_substitution_lemma_tightening": "CLOSED — Lemma 2.2.1 now proved by structural induction with P-refl/P-app/P-rule cases; non-linearity explicitly handled.",
+    "G2_largest_vs_maximal": "CLOSED — §4.2 splits into Q4.2.1 and Q4.2.2; §4.3 restates the distinction.",
+    "G3_phi_wellformed_on_Y": "CLOSED — §2.3 'Φ well-definedness remarks' discusses Y f explicitly and shows the recursion is on syntactic size, not descendants.",
+    "G4_iterative_closure": "CLOSED — §7.4.3 adds a three-rule scenario and §7.4.4 + step-1..4 closure schema.",
+    "G5_overlap_table": "CLOSED — §3.1 gives an explicit 13×13 matrix with reading notes.",
+    "G6_notation_reconciliation": "CLOSED — output-final.txt uses Π₁/Π₂ matching the document.",
+    "G7_RHS_audit_tabulation": "CLOSED — §3.2 is now a formal table, not prose."
+  },
+  "findings": [
+    {"check": "banned identifier grep against full banned list", "tool": "Grep -i", "result": "pass", "evidence": "No matches for SKI/SK/BCKW/BCIW/Iota/Jot/Unlambda/BLC/Binary Lambda/X-combinator/Xi/Zot/Turing/Curry/Schönfinkel/Rosser/Church/Tait/Martin-Löf/Takahashi/Newman/Knuth-Bendix/Hindley"},
+    {"check": "iteration trace artifacts exist", "tool": "ls -la iterations/ sim/", "result": "pass", "evidence": "iterations/attempt-01.md (45466 B), sim/simulator.py (9350 B), sim/output-final.txt, sim/output-run1.txt, sim/output-run2.txt, .eval-report-01.json"},
+    {"check": "attempt-01 and ARGUMENT.md differ materially", "tool": "diff + wc", "result": "pass", "evidence": "46444 vs 45466 bytes; diff reports files differ; grep term counts differ (47 vs 38 for Φ/Triangle/overlap/closure keywords)"},
+    {"check": "simulator output notation consistent with task primitives", "tool": "Read /workspaces/task/sim/output-final.txt", "result": "pass", "evidence": "example (f) uses 'Π₁ a b' and 'Π₂ c d' in the output matching the task statement"},
+    {"check": "13×13 overlap table present", "tool": "Read ARGUMENT.md §3.1", "result": "pass", "evidence": "Explicit matrix with rows/columns for all 13 primitives and ε(=)/— entries"},
+    {"check": "counting conventions declared upfront", "tool": "Read ARGUMENT.md lines 11-47", "result": "pass", "evidence": "'Counting conventions (declared up front)' section defines term, occurrence/position, redex, →, ↠, overlap, critical pair, parallel step, residual, confluence"},
+    {"check": "executable oracle present and runnable-shaped", "tool": "Read sim/simulator.py", "result": "pass", "evidence": "257 lines of Python encoding 13 primitives (PRIMITIVES dict), reduce_at_root dispatcher, bounded BFS joinability test"},
+    {"check": "six worked examples with traces", "tool": "Grep §6 subsections", "result": "pass", "evidence": "§6.1-6.6 each gives two orders and a common reduct line"},
+    {"check": "minimal non-confluent extension exhibited", "tool": "Read §4.2.2", "result": "pass", "evidence": "K°: K I x → x with critical pair ⟨I, x⟩ shown non-joinable (both are normal forms distinct as terms)"},
+    {"check": "disclosed gap list in conclusion", "tool": "Read §8", "result": "pass", "evidence": "Four-item 'Disclosed gaps' list explicitly naming substitution under binders, leftmost-outermost normalization sketch, oracle bounds, and 1-rule extension enumeration"}
+  ],
+  "generated_checks": [
+    {"name": "banned-identifier scan", "command": "Grep -i -E '<banned>' ARGUMENT.md", "result": "pass"},
+    {"name": "structural presence of §§1-7 + verdict", "command": "Read full document", "result": "pass"},
+    {"name": "iteration delta audit", "command": "diff + wc + keyword grep counts", "result": "pass"},
+    {"name": "oracle output alignment", "command": "Read sim/output-final.txt", "result": "pass"},
+    {"name": "addressed-gap check against prior eval report", "command": "Read .eval-report-01.json + cross-ref ARGUMENT.md", "result": "pass"}
+  ],
+  "suggestions": "Document is at or near ceiling; only minor polish possible (e.g., a worked iterative-closure example that genuinely generates new critical pairs across multiple rounds rather than terminating at depth 0). No structural defects detected.",
+  "checks_passed": 10,
+  "checks_total": 10,
+  "contract_score": 1.0
+}

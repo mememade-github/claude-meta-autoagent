@@ -1,0 +1,197 @@
+{
+  "auditor": "proof-auditor",
+  "deliverables": {
+    "A": "/workspaces/docs/research/eml-paper/cycle-05/A-ARGUMENT.md",
+    "B": "/workspaces/docs/research/eml-paper/cycle-05/B-ARGUMENT.md"
+  },
+  "rubric": "/workspaces/docs/research/eml-paper/judgment-rubric.md",
+  "incumbent_judgment": "/workspaces/docs/research/eml-paper/cycle-05/JUDGMENT.md",
+  "audit_date": "2026-04-22T05:48:09Z",
+  "cycle_r4_semantic": "verdict-commitment (per cycle-05/TASK.md §7)",
+
+  "scores_A": {
+    "R1": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §1.1-1.3 derives confluence corollaries (unique NF, strategy irrelevance), enumerates three failure modes (overlap, non-left-linearity, duplication), and tables all 13 LHS shapes establishing (P1) disjoint heads + (P2) left-linearity as structural preconditions. Three structural precedents from first principles, no named theorems.",
+      "oracle_command": null
+    },
+    "R2": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §2 lays out three branches: §2.1 overlap audit via unification, §2.2 parallel-reduction diamond with explicit containment conditions ⇒⊆→* and →⊆⇒, §2.3 explicit treatment of non-SN independence. Procedure maps directly to §4 discharge steps.",
+      "oracle_command": null
+    },
+    "R3": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §3 walks all 13 stages (I→+K→+S→...→+Π₂) with uniform Claim/Method/Disclosed-gap template per stage. Each duplicating stage (S, W, M, Y) notes the parallel-reduction handling; non-duplicating stages are brief.",
+      "oracle_command": null
+    },
+    "R4": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "Per Cycle #5 R4 semantic (verdict commitment): A §4 opens with unhedged verdict 'the full 13-primitive baseline is confluent' and discharges via §§4.2-4.8 (critical pair audit, ⇒ definition, M*, M⇒M*, triangle, diamond, lift). §4.9 declares counting conventions. Firm commitment with full proof chain. Band 3.",
+      "oracle_command": null
+    },
+    "R5": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §4.3 defines ⇒ with three clauses (refl, app, rule_c); §4.4 defines M* by structural recursion; §4.5 proves M⇒M* by induction on M; §4.6 triangle case analysis over refl/app/rule_c with the left-linearity role explicit; §4.7 diamond on ⇒; §4.8 tile lift. All inductive variables bound, no hand-waves.",
+      "oracle_command": null
+    },
+    "R6": {
+      "value": 3,
+      "method": "oracle+textual",
+      "evidence": "A §5.1 analytic parallel-reduction proof + §5.2 independent executable oracle at A-sim.py with captured output. Oracle-verified worked example: A §6.1 claims S (K a b) (I c) (I d) →* a d (c d). Oracle trace matches in 5 steps: [0] (S (K a b) (I c) (I d)) → [5] (a d (c d)). A §6.3 claim B (W I) (K a) c →* a a oracle-confirmed in 5 steps. No disclosed circularity: M* is structurally recursive on term syntax, not on reduction or on ⇒ (checked §4.4); the triangle §4.6 case-analysis uses only distinct-head-primitive (P1) and left-linearity (P2). No lemma invokes the theorem it's meant to establish.",
+      "oracle_command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(S (K a b) (I c) (I d))'  AND  '(B (W I) (K a) c)'"
+    },
+    "R7": {
+      "value": 3,
+      "method": "oracle+textual",
+      "evidence": "A §6 presents 3 distinct categories: (6.1) duplicated-argument S-redex with nested K/I — oracle confirms 5-step reduction to a d (c d); (6.2) Y-induced non-terminating divergence with f(Yf) vs f(f(Yf)) reconciled at f(f(f(f(Y f)))) — oracle confirms Y unfolding pattern; (6.3) multi-strategy convergence on B(W I)(K a)c — oracle confirms normal form a a.",
+      "oracle_command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(S (K a b) (I c) (I d))' etc."
+    },
+    "R8": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §7 has four sub-sections: §7.1 strong reduction under λ-binders (parallel-substitution requirement explicit, β non-overlap with primitives argued), §7.2 confluence vs normalization (all four implication directions discussed), §7.3 strategy independence (leftmost vs rightmost on erasing-vs-diverging cases), §7.4 non-orthogonal extensions (J rule + K-prime overlap example with closure demonstrated).",
+      "oracle_command": null
+    },
+    "R9": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §4 opening: 'Verdict: the full 13-primitive baseline is confluent.' Unhedged. Proof chain §§4.2-4.8 explicitly discharged with each named lemma. Binary axis: REACHED.",
+      "oracle_command": null
+    },
+    "R10": {
+      "value": 1,
+      "method": "textual",
+      "evidence": "A has ONE substantive ARGUMENT.md draft (33962 B, mtime 14:24:56) plus a separate on-disk deliberation artefact A-iter-01-audit.md (4957 B, mtime 14:26:34) written 98 s AFTER ARGUMENT.md. The audit's conclusion: 'No issues found. No further iteration needed; the deliverable stands.' Zero gap closure: no disclosed gap from audit is reflected in a revised ARGUMENT.md. Against R10 bands: not strict band-0 (audit trace exists on disk), not band-2 (zero gap closure). Rubric's non-inflation guard says 'iteration that mechanically re-generates output without resolving any R6 issue does not earn R10 ≥ 2'. Band 1 is the correct generous reading: on-disk deliberation trace present but no reasoning delta in the deliverable. Independently concur with incumbent's judgment-call at 1 (documenting the dilemma explicitly). Strict reading would give 0; rubric allows 1 as the on-disk-trace band.",
+      "oracle_command": null
+    }
+  },
+
+  "scores_B": {
+    "R1": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §1.1 derives three structural features (non-interference, opaque arguments, no termination dependency) explicitly mapping to orthogonality + non-SN robustness. §1.2 gives three derived precedents (P1 deterministic models, P2 disjoint-union local determinism, P3 opaque-argument pure functions) without named theorems.",
+      "oracle_command": null
+    },
+    "R2": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §2.1 Phase A with A1-A4 checks (left-linearity, cross-rule overlap, self-overlap, RHS-straddling). §2.2 Phase B defines ⇒ with three clauses, proves Lemma 2.2.1 (parallel-substitution) by full structural induction on R including non-linearity handling, Lemmas 2.2.2-2.2.3 bridging →/⇒/↠. §2.3 complete-development Φ with well-definedness proof including Y subtlety; Lemma 2.3.1 Triangle by induction on ⇒-derivation. §2.4 notes non-SN-independence.",
+      "oracle_command": null
+    },
+    "R3": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §3 walks all 13 stages uniformly. §3.1 adds explicit 13×13 overlap matrix (making §3 claim mechanically auditable — matrix present at lines 396-410). §3.2 adds formal per-rule RHS audit table (lines 435-448). Both tables are additions closing attempt-01's G5 and G7.",
+      "oracle_command": null
+    },
+    "R4": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "Per Cycle #5 R4 semantic: B §4 Theorem 4.1 with unhedged verdict 'The reduction relation → of the extended calculator ... is confluent.' Discharged via §§2-3 chain. Additionally §4.2 cleanly separates Q4.2.1 (largest confluent subset = full baseline) and Q4.2.2 (minimal non-confluent extension K°: K I x → x with critical pair ⟨I, x⟩ both NF). §4.3 disambiguates subset vs extension framings. Strictly more thorough than A on sub-questions but both reach band 3.",
+      "oracle_command": null
+    },
+    "R5": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §2.2 explicit ⇒ (3 clauses: P-refl, P-app, P-rule). §2.3 explicit Φ with Case 1/2/3 + Y well-definedness remarks. Lemma 2.2.1 proved with P-refl/P-app/P-rule cases, non-linearity handling spelled out. Lemma 2.3.1 discharged over all three clause subcases + the Case 3 Φ subcase for root redex. All inductive variables named, no hand-waves.",
+      "oracle_command": null
+    },
+    "R6": {
+      "value": 3,
+      "method": "oracle+textual",
+      "evidence": "B §5.1 structural proof chain + §5.2 executable oracle at B-simulator.py with 7 test terms (outputs captured across 3 runs showing iterative refinement). Oracle cross-check: B §6.1 claim S (K I a) (I b) (I c) →* c (b c); oracle trace confirms in 6 steps. B §6.5 M (I a) →* a a confirmed in 3 steps. B §6.6 D (K a) b (I c) d →* a (c d) confirmed in 3 steps. Disclosed-circularity scan: §2.3 Φ defined by structural recursion on syntactic size — no dependence on Triangle (which is proved later); §2.2.1 parallel-substitution uses induction on R body, no self-reference; §3.1 overlap table justified by head-primitive distinction + arity mismatch, no use of confluence; §4.2.2 K° non-joinability argues forward from normal-form definitions. §7.4 iterative-closure schema explicitly disclosed as sketch + bounded-search assumption — this is disclosed-gap, not hidden circularity. No paragraph-level tensions found.",
+      "oracle_command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(S (K I a) (I b) (I c))' etc."
+    },
+    "R7": {
+      "value": 3,
+      "method": "oracle+textual",
+      "evidence": "B §6 gives 6 worked examples spanning categories: (6.1) S with internal K/I — oracle confirms c (b c); (6.2) Y f divergence with cycle on Y I explicitly worked; (6.3) W(K a)(I b) leftmost vs rightmost both → a b — oracle confirms a b in 3 steps; (6.4) S A (I b) c duplication coherence; (6.5) M(I a) non-right-linearity — oracle confirms a a; (6.6) D with nested redex — oracle confirms a (c d). Exceeds A's 3 examples; same three categorical distinctions cleared.",
+      "oracle_command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(W (K a) (I b))' AND '(M (I a))' AND '(D (K a) b (I c) d)'"
+    },
+    "R8": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §7 has 6 sub-sections (7.1 strong binders with parallel-substitution requirements; 7.2 confluence vs normalization with WN-uniqueness corollary proved as forward lemma; 7.3 strategy dependence with K a (Y f) concrete example; 7.4 non-orthogonal extensions with three sub-examples + iterative-closure schema; 7.5 weak/strong distinction; 7.6 dependence on 13-primitive choice). Richer than A's 4 sub-sections.",
+      "oracle_command": null
+    },
+    "R9": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §4 Theorem 4.1: 'The reduction relation → ... is confluent.' Discharged via §2-3 proof chain. Additionally provides constructive counter-example (§4.2.2 K° extension) demonstrating understanding of the failure boundary — not required for R9 but orthogonal evidence of rigor. Binary axis: REACHED.",
+      "oracle_command": null
+    },
+    "R10": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B has TWO substantive drafts with persisted trace: B-attempt-01.md (45466 B, mtime 14:26:36) and B-ARGUMENT.md (46444 B, mtime 14:33:53), distinct by SHA-256 prefix. Two evaluator reports: B-eval-01.json logs 7 gaps (G1-G7 with priorities); B-eval-final.json records gap_closure_vs_iteration_1 with all 7 marked CLOSED and cited §-locations. Spot-check: grep of B-attempt-01.md shows only 1 match for 'overlap table' (prose) while B-ARGUMENT.md has the full 13×13 matrix — G5 closure confirmed by diff. G3 'recurses on syntactic size' not present in attempt-01 but explicitly added to B-ARGUMENT §2.3 — G3 closure confirmed. Non-inflation: eval-final.hard_constraint_violations=[], checks_passed=10/10, no new gaps of equivalent severity introduced. All R10 band-3 criteria (a)(b)(c)(d)(e) met with citable trace artifacts.",
+      "oracle_command": null
+    }
+  },
+
+  "total_A": 28,
+  "total_B": 30,
+  "incumbent_total_A": 28,
+  "incumbent_total_B": 30,
+
+  "agreement_matrix": [
+    {"axis": "R1", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R2", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R3", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R4", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Cycle #5 R4 semantic (verdict commitment): A firmly commits + discharges"},
+    {"axis": "R5", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R6", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Oracle cross-verified worked examples; disclosed-circularity scan confirms no hidden circularity in A §4.3-4.8"},
+    {"axis": "R7", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R8", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R9", "agent": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R10", "agent": "A", "incumbent": 1, "auditor": 1, "agree": "CONDITIONAL", "note": "Incumbent and auditor agree at 1 but both acknowledge the ambiguity: band-0 (strict non-inflation guard: zero gap closure) vs band-1 (generous: on-disk deliberation trace exists). Neither band is unambiguously correct under R10's current text for an 'audit-found-nothing' pattern. Conditional agreement: holds under the generous reading; would flip to 0 under the strict reading."},
+
+    {"axis": "R1", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R2", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R3", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R4", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Verdict commitment + sub-question disambiguation in §4.2-4.3"},
+    {"axis": "R5", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R6", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Oracle cross-verified §6.1, §6.5, §6.6; disclosed-circularity scan confirms §2.3 Φ structural-recursion on syntactic size is well-founded independent of Triangle"},
+    {"axis": "R7", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R8", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R9", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R10", "agent": "B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "All 5 R10 band-3 criteria met with citable artifacts; 7 gaps closed with diff-verifiable deltas (G3 and G5 spot-checked)"}
+  ],
+
+  "disagreement_count": 0,
+  "conditional_count": 1,
+  "arbitration_triggered": false,
+  "arbitration_reason": null,
+
+  "oracle_invocations": [
+    {"command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --selftest", "result": "15/15 passed"},
+    {"command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(S (K a b) (I c) (I d))'", "result": "5 steps → (a d (c d)) — matches A §6.1 final normal form"},
+    {"command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(B (W I) (K a) c)'", "result": "5 steps → (a a) — matches A §6.3 leftmost trace exactly"},
+    {"command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(S (K I a) (I b) (I c))'", "result": "6 steps → (c (b c)) — matches B §6.1 common reduct"},
+    {"command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(W (K a) (I b))'", "result": "3 steps → (a b) — matches B §6.3 common reduct"},
+    {"command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(M (I a))'", "result": "3 steps → (a a) — matches B §6.5 common reduct"},
+    {"command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --trace '(D (K a) b (I c) d)'", "result": "3 steps → (a (c d)) — matches B §6.6 common reduct"},
+    {"command": "python3 /workspaces/scripts/meta/oracles/combinator-reducer.py --max-depth 8 --trace '(Y f)'", "result": "divergent, 8 steps of f-unfolding — consistent with A §6.2 and B §6.2 Y-divergence claims"}
+  ],
+
+  "disclosed_circularity_audit": {
+    "A": {
+      "sections_scanned": ["§1.1-1.3 motivation", "§2 procedure", "§3 stages 1-13", "§4.2 critical-pair audit", "§4.3 ⇒ definition", "§4.4 M* definition", "§4.5 M⇒M*", "§4.6 triangle", "§4.7 diamond on ⇒", "§4.8 →* lift", "§4.9 counting conventions", "§5 verification", "§6 examples", "§7 open questions"],
+      "findings": "M* defined by structural recursion on term (§4.4 'recursively on the structure of M'), not on reduction or on ⇒. §4.5 M⇒M* uses induction on M with only refl/app/rule_c ⇒-constructors applied; no use of the triangle. §4.6 triangle uses (P1) distinct-head + (P2) left-linearity but does not invoke the diamond. §4.7 diamond cites only the triangle. §4.8 tiling is a standard lift. Each lemma's dependency is forward-only. No paragraph-level internal tensions found.",
+      "result": "no circularity"
+    },
+    "B": {
+      "sections_scanned": ["§1.1-1.2 motivation", "§2.1 Phase A", "§2.2 Phase B + Lemma 2.2.1/2.2.2/2.2.3", "§2.3 Φ + Triangle Lemma 2.3.1", "§2.4 Phase C", "§3 stages 1-13", "§3.1 13×13 overlap table", "§3.2 RHS audit table", "§4 Theorem 4.1 + §4.2-4.3 sub-questions", "§5 verification", "§6 examples 6.1-6.6", "§7 open questions 7.1-7.6", "§8 disclosed gaps"],
+      "findings": "§2.3 Φ 'recursion terminates because syntactic size strictly decreases' — explicit well-foundedness on size, no dependence on Triangle or on future reductions. Lemma 2.2.1 induction on derivation of U⇒U', no self-reference. §3.1 overlap-emptiness argued from head-primitive distinction + arity mismatch, purely syntactic. §4.2.2 K° non-joinability uses forward argument from normal-form property. §7.4.3 iterative-closure schema EXPLICITLY disclosed as sketch with bounded-search assumption — this is rubric-compliant disclosed-gap, not hidden circularity. §8 enumerates four disclosed gaps all outside the Theorem 4.1 proof chain.",
+      "result": "no circularity; four disclosed gaps in §8 all outside proof chain"
+    }
+  },
+
+  "notes": "SHARED-BIAS DISCLOSURE: auditor runs on the same base model as the incumbent ROOT judge; agreement on subjective axes (R1, R2, R8) should not be read as independent confirmation. Agreement is most reliable on oracle-backed axes (R6, R7 — 7 trace invocations cross-confirm §-level claims in both deliverables). Agreement on R9 (binary) is high-confidence: both deliverables state unhedged verdicts and discharge to named theorems; verdict locatable at deliverable openings and reaffirmed at §4.\n\nR10 FOR A IS THE ONE GENUINE GRAY AREA. The rubric's current band text does not clearly adjudicate the 'audit-found-nothing' pattern: A wrote a separate 4957-B on-disk deliberation artefact (A-iter-01-audit.md) but produced zero content delta on the deliverable. Band 0 says 'no on-disk trace of deliberation between emissions' — A does have a trace. Band 2 requires 'gap closure' — A closed zero gaps. Band 1 'cosmetic iteration' requires two drafts — A has one. The band cap rule 'iteration without closure scores at most the previous band = 0' argues band 0; the existence of on-disk stress-test trace argues band 1. Incumbent chose band 1 with explicit disclosure of the dilemma. Auditor independently concurs at 1 under the generous reading but flags CONDITIONAL — the rubric text should be extended in Cycle #6 pre-cycle to adjudicate 'deliberation-without-revision' patterns cleanly.\n\nNO SHARED-BIAS RISK ON R10 for B: the 7-gap closure chain is verifiable by independent diff between B-attempt-01.md and B-ARGUMENT.md; spot-checks on G3 (syntactic-size recursion) and G5 (13×13 table) both verified as genuine additions, not cosmetic rephrasing. R10=3 for B is oracle-like-confirmed.\n\nSTRUCTURAL OBSERVATIONS: (1) Both deliverables independently rediscover the standard orthogonality + parallel-reduction-diamond + triangle/Takahashi pattern (under banned names) — this corroborates that the cycle's banned-identifier set did not force a wrong-technique wrong-attractor (the correct technique was reachable from the structural hints). (2) Cycle #5 TASK anticipated R1-R9 first-draft ceiling of 17-20/27 for A; actual A first-draft R1-R9 = 27/27, a significant design-point miss that the incumbent JUDGMENT §4 'Cycle design-point miss observation' correctly flags. (3) The δ=+2 via R10-only is the architectural asymmetry the cycle is designed to measure; it is genuine (B really did close 7 gaps with diff-verifiable trace) but the domain ceiling limits the size of the R10 contribution.\n\nARBITRATION: not triggered. 0 NO disagreements; 1 CONDITIONAL (A-R10, noted above); total delta 0 out of 30 possible; no binary-axis (R9) disagreement. All four arbitration triggers negative."
+}

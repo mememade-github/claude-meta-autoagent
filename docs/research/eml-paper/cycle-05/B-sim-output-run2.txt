@@ -1,0 +1,38 @@
+======================================================================
+EXAMPLE (a):  S (K I a) (I b) (I c)
+  start: S (K I a) (I b) (I c)
+  reachable count (depth<=6): 28
+  all reachable pairs join within bound ✓
+======================================================================
+EXAMPLE (b):  Y f  (non-terminating; test confluence on expansion)
+  start: Y f
+  reachable count (depth<=5): 6
+  all reachable pairs join within bound ✓
+======================================================================
+EXAMPLE (c):  W (K a) (I b)
+  start: W (K a) (I b)
+  reachable count: 8
+  all reachable pairs join within bound ✓
+======================================================================
+EXAMPLE (d):  D (K a) (I b) (I c) w
+  start: D (K a) (I b) (I c) w
+  reachable count: 10
+  all reachable pairs join within bound ✓
+======================================================================
+EXAMPLE (e):  M (I a)  (W/M non-right-linear, tests variable-duplication)
+  start: M (I a)
+  reachable count: 6
+  all reachable pairs join within bound ✓
+======================================================================
+EXAMPLE (f):  S (P1 a b) (P2 c d) e
+  start: S (Π₁ a b) (Π₂ c d) e
+  reachable count: 8
+  all reachable pairs join within bound ✓
+======================================================================
+EXAMPLE (g):  V a b (T c d)
+  start: V a b (T c d)
+  reachable count: 4
+  all reachable pairs join within bound ✓
+======================================================================
+DEMO (h):  illustrating why no critical pairs in baseline — see
+  ARGUMENT.md §3 for the overlap-free check across all 13 primitives.
