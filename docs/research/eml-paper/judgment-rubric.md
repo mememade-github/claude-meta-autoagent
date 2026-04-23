@@ -35,6 +35,48 @@ Does the argument explain why a reduction to a single primitive might exist?
 | 2 | Adequate analogy or partial precedent (e.g. "polynomial basis"). |
 | 3 | Clear structural precedent — Boolean universality via a single two-input gate, or an equivalent named example (combinators, one-instruction computers, Wolfram's single axiom), argued from first principles. |
 
+**Band-3 tightening (ported Cycle #11 pre-cycle from
+`cycle-11/L1-seeds/R1-tightening-seed.md`).**  When the motivation
+section invokes a **named structural precedent** for single-primitive
+or single-generator reduction — Boolean universality via NAND /
+Peirce's arrow, combinators (S and K), one-instruction computers
+(OISC / SUBLEQ), Wolfram's single axiom, interaction combinators,
+aperiodic monotile, Rule 110 / FRACTRAN, or a functionally
+equivalent single-generator / minimal-generator analog — band 3
+additionally requires the deliverable's final answer to satisfy
+one of:
+
+- **(a) Shape match** — the final basis has the same cardinality
+  shape as the precedent.  For a single-primitive precedent, the
+  final basis reduces to a single primitive (possibly paired with
+  a terminal constant); for a two-primitive precedent, two
+  primitives; etc.
+- **(b) Explicit departure justification** — the motivation
+  section itself names the specific obstruction that blocks
+  reaching the precedent's shape, with at least a sketch argument.
+  "Reaches 3 primitives" is not justification for "NAND precedent
+  suggests 1"; an actual obstruction argument is required (e.g.,
+  "unlike Boolean, the continuous domain requires both forward
+  and inverse transcendentals because X, and these cannot be
+  collapsed because Y").
+
+Named-precedent citation without (a) or (b) maxes at **band 2**.
+The motivation-answer consistency check is an honest-disclosure
+axis — precedents that match shape, or deliverables that sketch the
+obstruction, still earn band 3 under both pre-tightening and
+post-tightening versions.  The tightening does not penalize
+motivations whose analogical pressure matches the delivered
+answer.  Motivations that cite only generic "reducing redundancy
+is good" or domain-internal motivation without cross-domain
+precedent invocation are evaluated against pre-tightening band
+text (no named precedent → no consistency obligation).  Evidence
+anchor: Cycle #10 X-ARGUMENT.md §1 cited five single-generator
+precedents (NAND/Sheffer, S/K, transcendence bases, group rank,
+implicit Euler) while §4 settled at 3 primitives + 1 constant
+with no obstruction argument in §1 — under the tightening, this
+shape maxes R1 at band 2 (evidence-anchor for the tightening's
+discriminative power).
+
 ### R2 — Method design (0–3)
 
 Does the argument propose a systematic, verifiable search/reduction procedure?
@@ -63,6 +105,44 @@ independently-verifiable sublemmas), not prose style.  The tightening
 applies **only when** the deliverable's method employs distinct proof
 tools; tasks where a single tool discharges the whole obligation remain
 unchanged.
+
+**Band-3 locus clarification (ported Cycle #11 pre-cycle from
+`cycle-11/L1-seeds/R2-tightening-seed.md`).**  Cycle #7 required
+distinct proof tools to be "isolated as a named sublemma stated and
+discharged separately from the main argument".  The *locus* of the
+discharge is now specified.  Band 3 requires **per-sublemma
+statement-and-proof locality**:
+
+- **(a) Statement locality** — each declared sublemma has its own
+  statement block (a distinct named paragraph or subsection that
+  exhibits the sublemma's claim).
+- **(b) Proof locality** — each declared sublemma has its own
+  proof block immediately following its statement (same subsection
+  OR an adjacent subsection), presenting the argument *for that
+  sublemma specifically*, not a multi-sublemma combined argument.
+- **(c) Non-distributed discharge** — the deliverable may
+  additionally reference sublemmas from a downstream reduction
+  table or summary proof, but the table alone cannot substitute
+  for per-sublemma proof blocks.
+
+Declarations with (a) but without (b) — named sublemmas without
+per-sublemma proofs, discharged only via a downstream reduction
+table or collapsed into a multi-sublemma argument — max at
+**band 2** regardless of whether the table appears to "use" the
+sublemmas.  The standard lemma-proof-theorem pattern (statement
+per sublemma + proof per sublemma + downstream reduction table
+citing the proofs) earns band 3 under both pre-tightening and
+post-tightening versions.  Non-inflation: methods with a single
+unified argument that does not declare named sublemmas are
+unaffected (pre-tightening text applies; the Cycle #7 tightening's
+own precondition — "distinct proof tools" — does not trigger).
+Evidence anchor: Cycle #10 X-ARGUMENT.md §2.2 named three
+sublemmas (Transcendental collapse, Arithmetic conjugation,
+Constant collapse) without per-sublemma proof blocks; §3 presented
+a 6-row reduction table that referenced the sublemma names but
+did not prove any of them separately.  Under the locus clause,
+this shape maxes R2 at band 2 (evidence-anchor for the
+tightening's discriminative power).
 
 ### R3 — Progressive minimization (0–3)
 
