@@ -342,6 +342,23 @@ a second evaluator report), B reaches band 3.
   script reading the prior `.eval-report-01.json` and the final
   ARGUMENT.md).  The verifier (ROOT) must be independent of the
   iterator (B); the attestation must live outside the deliverable.
+  **The schema for this artefact is committed at
+  `docs/research/eml-paper/gap-closure-check.schema.json`** (ported
+  Cycle #8 pre-cycle, addressing M7.2).  Required schema fields:
+  `cycle_id`, `iteration_index`, `prior_iteration_report`,
+  `prior_iteration_path`, `current_iteration_path`, `closures` (a
+  non-empty array; each entry names `gap_id`, `gap_source`,
+  `evidence_type` ∈ {`subsequent-evaluator-report`,
+  `independent-oracle-output`, `committed-diff-verification`},
+  `evidence_path`, `closure_location`), `verifier_identity` (must
+  be one of {`ROOT`, `proof-auditor`, `oracle-script`,
+  `external-reviewer`, `committed-diff-script`} — self-attestation
+  by the iterator is excluded), and `non_inflation_check` (with
+  `performed: true` + `result` ∈ {`no-new-gaps`, `new-gaps-
+  introduced`, `not-applicable`}).  Schema-conformant equivalents
+  (a JSON file at any path that satisfies the same field set) also
+  qualify; the schema fixes the *shape* of the evidence, not the
+  filename.
 
 Self-attestation inside the deliverable's own front matter is **not**
 sufficient for band 3 (the attester and the asserter are the same

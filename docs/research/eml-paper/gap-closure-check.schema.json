@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mememade/schemas/gap-closure-check.schema.json",
+  "title": "Gap Closure Check Artefact",
+  "description": "Structured artefact documenting per-iteration gap closure for R10 band-3 evaluation under M6.3 codification. Addresses M7.2 (R10 band-3 closure-artefact tooling) surfaced at Cycle #7 close. Each instance records one iteration's closure evidence for the prior iteration's named gaps. Verifier must be independent of the iterator (self-attestation by the iterator inside the deliverable is insufficient per M6.3).",
+  "type": "object",
+  "required": [
+    "cycle_id",
+    "iteration_index",
+    "prior_iteration_report",
+    "prior_iteration_path",
+    "current_iteration_path",
+    "closures",
+    "verifier_identity",
+    "non_inflation_check"
+  ],
+  "properties": {
+    "cycle_id": {
+      "type": "string",
+      "description": "e.g. 'cycle-08'. Identifies which Meta-Audit cycle this artefact belongs to.",
+      "pattern": "^cycle-[0-9]+$"
+    },
+    "iteration_index": {
+      "type": "integer",
+      "minimum": 2,
+      "description": "The iteration number being closed (must be >= 2; iteration 1 has no prior to close)."
+    },
+    "prior_iteration_report": {
+      "type": "string",
+      "description": "Path to the evaluator/audit report from iteration-(N-1) that named the gaps being closed. e.g., 'attempts/attempt-01.eval-report-01.json'."
+    },
+    "prior_iteration_path": {
+      "type": "string",
+      "description": "Path to the iteration-(N-1) draft. e.g., 'attempts/attempt-01.md'."
+    },
+    "current_iteration_path": {
+      "type": "string",
+      "description": "Path to the iteration-N draft. e.g., 'attempts/attempt-02.md' or the final deliverable if N is terminal."
+    },
+    "closures": {
+      "type": "array",
+      "description": "One entry per disclosed gap closed in this iteration. Empty array is NOT valid (a gap-closure-check artefact with no closures documents nothing).",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "gap_id",
+          "gap_source",
+          "evidence_type",
+          "evidence_path",
+          "closure_location"
+        ],
+        "properties": {
+          "gap_id": {
+            "type": "string",
+            "description": "Short identifier for the gap, e.g., 'G1' or 'hcv-03'."
+          },
+          "gap_source": {
+            "type": "string",
+            "description": "Exact path + JSON pointer or line reference where the gap was named. e.g., 'attempts/attempt-01.eval-report-01.json#/hard_constraint_violations/0'."
+          },
+          "gap_description": {
+            "type": "string",
+            "description": "Optional human-readable restatement for auditability."
+          },
+          "evidence_type": {
+            "type": "string",
+            "enum": [
+              "subsequent-evaluator-report",
+              "independent-oracle-output",
+              "committed-diff-verification"
+            ],
+            "description": "One of the three M6.3-recognised substitutes. 'subsequent-evaluator-report' = a later .eval-report-*.json from the evaluator. 'independent-oracle-output' = oracle/simulator/type-checker mechanical pass. 'committed-diff-verification' = external diff script output cited as artefact."
+          },
+          "evidence_path": {
+            "type": "string",
+            "description": "Path to the evidence file. Must be committed to the repo alongside this artefact."
+          },
+          "closure_location": {
+            "type": "string",
+            "description": "§-reference or byte range in current_iteration_path where the closure is realised. e.g., '§4.2, lines 120-155'."
+          },
+          "non_inflation_note": {
+            "type": "string",
+            "description": "Statement that this closure did not introduce a new gap of the same severity. Required when gap severity is high; optional otherwise."
+          }
+        }
+      }
+    },
+    "verifier_identity": {
+      "type": "string",
+      "description": "Who performed the verification. Must be an entity independent of the iterator: e.g., 'ROOT', 'proof-auditor', 'combinator-reducer.py', or a committed diff-check script. Self-attestation by the iterator (the deliverable's own front-matter) is NOT sufficient.",
+      "enum": [
+        "ROOT",
+        "proof-auditor",
+        "oracle-script",
+        "external-reviewer",
+        "committed-diff-script"
+      ]
+    },
+    "non_inflation_check": {
+      "type": "object",
+      "required": ["performed", "result"],
+      "description": "Per R10 non-inflation guard: iteration must not introduce new gaps of the same severity as those closed.",
+      "properties": {
+        "performed": {
+          "type": "boolean",
+          "description": "Was the non-inflation check performed?"
+        },
+        "result": {
+          "type": "string",
+          "enum": ["no-new-gaps", "new-gaps-introduced", "not-applicable"],
+          "description": "Outcome. If 'new-gaps-introduced', R10 band is capped per R10-iteration-depth.md."
+        },
+        "new_gaps": {
+          "type": "array",
+          "description": "If result='new-gaps-introduced', list them. Each should cite §-reference.",
+          "items": {
+            "type": "object",
+            "required": ["gap_id", "location"],
+            "properties": {
+              "gap_id": { "type": "string" },
+              "location": { "type": "string" },
+              "severity": { "type": "string", "enum": ["high", "medium", "low"] }
+            }
+          }
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp for audit chronology."
+    }
+  }
+}
