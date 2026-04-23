@@ -1,0 +1,269 @@
+{
+  "auditor": "proof-auditor",
+  "deliverable_A": "/workspaces/docs/research/eml-paper/cycle-10/A-ARGUMENT.md",
+  "deliverable_B": "/workspaces/docs/research/eml-paper/cycle-10/B-ARGUMENT.md",
+  "deliverable_X": "/workspaces/docs/research/eml-paper/cycle-10/X-ARGUMENT.md",
+  "rubric": "/workspaces/docs/research/eml-paper/judgment-rubric.md",
+  "incumbent_judgment": "/workspaces/docs/research/eml-paper/cycle-10/JUDGMENT.md",
+  "incumbent_X_judgment": "/workspaces/docs/research/eml-paper/cycle-10/X-JUDGMENT.md",
+  "audit_date": "2026-04-23",
+  "rubric_cycle_state": "cycle-10 (identical to cycle-09 rubric; no band-text edits at cycle-10 pre-cycle commit b2b284e)",
+  "oracle_catalogue_used": [
+    {
+      "path": "/workspaces/docs/research/eml-paper/paper-analysis.md",
+      "role": "EML-domain ground truth for R4/R5/R8(non-inflation)/R9",
+      "verdict_used": "paper's minimal basis is eml(x,y) = exp(x) - ln(y) with constant 1 (or cousins edl with e / -eml with -infinity). Single binary operator + single constant = 2 primitives total.",
+      "method": "textual-oracle-consulted"
+    },
+    {
+      "path": "/workspaces/scripts/meta/oracles/combinator-reducer.py",
+      "role": "listed-for-completeness",
+      "verdict_used": "domain-inapplicable: EML is a continuous-function reduction domain, not a combinator domain. Not run.",
+      "method": "not-applicable"
+    },
+    {
+      "path": "/workspaces/docs/research/eml-paper/cycle-10/B-refine-attempts.jsonl",
+      "role": "B /refine evaluator trace for R10 verification",
+      "verdict_used": "2 iteration records. iter 0 score 0.80 with gaps [R2,R3,R4,R6]. iter 1 score 0.89 with gaps [] and regression: none. Verifier identity = B /refine evaluator (independent of iterator). Artefact mtime 17:53 inside B active window 17:41-17:53. Satisfies R10 band-3 M6.3 path (a) native per rubric text.",
+      "method": "oracle"
+    },
+    {
+      "path": "/workspaces/docs/research/eml-paper/cycle-10/",
+      "role": "on-disk filesystem oracle for R10",
+      "verdict_used": "X directory contents: X-ARGUMENT.md + X-fabrications.md only. No attempts/ dir. No eval-report-*.json. X R10 band 0 per rubric on-disk-trace requirement.",
+      "method": "oracle"
+    }
+  ],
+  "scores_A": {
+    "R1": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §1(c) 'Algebraic minimality of fields' names field generation (two operations + one constant backbone) as a structural minimal-basis precedent, argued from first principles; §1(a) duplicated-inverses and §1(b) real/complex fusion supplement. The band-3 rubric accepts 'an equivalent named example' alongside Boolean universality.",
+      "oracle_command": null
+    },
+    "R2": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §2 states four explicit rules (R1-R4 algebraic-elimination / inverse-via-exp-ln / constant-consolidation / operation-consolidation) with strict-vs-relaxed scope declared; §3.6 provides four named obstruction sub-arguments (i growth / ii branch-point / iii cardinality-mod-2pi-i / iv zero-locus) each under distinct proof tools, each discharged in its own numbered sub-paragraph. §5 three-stage verification (forward / numerical / minimality) named. Cycle #7 band-3 tightening met.",
+      "oracle_command": null
+    },
+    "R3": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §3 presents six progressive configurations B1-B6, each with deliverable-side reduction table: §3.1 B1 (11 rows), §3.2 B2 (11 rows), §3.3 B3 (2 rows), §3.4 B4 (5 rows), §3.5 B5 (3 rows). Each row has explicit witness column (disposition). Cycle #9 R3 locus clarification (band 3 requires deliverable-side tabular with disposition column) satisfied. Spot-checked row §3.4 'π = (i·i·i)·ln(i·i)' verifies: i^3 = -i, ln(-1) = iπ, so (-i)(iπ) = π. No fabricated rows.",
+      "oracle_command": null
+    },
+    "R4": {
+      "value": 2,
+      "method": "oracle",
+      "evidence": "A strict basis = {-1, +, ×, exp, ln} (5 primitives, 2 binary). Relaxed B6 = {i, +, exp, ln} (4 primitives, 1 binary + 2 unary + 1 const). Band 3 requires 'exactly one binary operator paired with exactly one distinguished constant'; A has 2 unary helpers (exp, ln) beyond that shape. Band 2 fits 'reduces to ≤ 2 binary operators'. Oracle (paper-analysis.md) confirms paper's target is 1 binary (eml) + 1 constant (1).",
+      "oracle_command": "grep -E 'eml|single binary|one binary' /workspaces/docs/research/eml-paper/paper-analysis.md"
+    },
+    "R5": {
+      "value": 1,
+      "method": "oracle",
+      "evidence": "A §4 recommended minimum {-1, +, ×, exp, ln} — five separate primitives. Composes exp/ln correctly (e.g., §3.8 'x·y := exp(ln x + ln y)') but does NOT propose a single binary operator of the form exp(x) - ln(y) or cousin. Band 1 text 'mentions the right operators (exp, ln) but does not compose them correctly [into a single binary operator]' is the closest fit. Band 2 requires a proposed single-binary form close to exp(x) - ln(y); A has none.",
+      "oracle_command": "grep -nE 'exp\\(x\\)[ ]*[-−][ ]*ln\\(y\\)' /workspaces/docs/research/eml-paper/cycle-10/A-ARGUMENT.md"
+    },
+    "R6": {
+      "value": 2,
+      "method": "textual",
+      "evidence": "A §5 three-stage verification: Stage A forward synthesis (mechanical substitution), Stage B numerical cross-check (generic inputs in C avoiding branch cuts, compare with independent exp/ln/+/× implementations), Stage C strict-minimality audit. Stage B numerical cross-check is described as 'a check, not a proof' by A itself. §7(2) explicitly discloses gap: 'We have not found a way to obtain × as a total function from {+, exp, ln, constants} alone, but have not proved it impossible with complete rigour either.' Disclosed-circularity scan: §3.1-§3.5 linear dependency chain; §3.6 four independent arguments; no back-edge. Per R6 polarity: disclosed gap → band 2 (not band 1 hidden; not band 3 no-gap-remaining). No Schanuel-style algebraic-independence argument present.",
+      "oracle_command": null
+    },
+    "R7": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §6 has 4 examples: Example 1 arctan (inverse-transcendental), Example 2 pow (hyperoperation), Example 3 hypot (composite-arithmetic), Example 4 sin (transcendental via Euler). Each example uses only the proposed basis B5 after shorthand expansion per A's §6 opening. Cycle #7 tightening: ≥4 examples OR ≥3 orthogonal — A satisfies the ≥4 path.",
+      "oracle_command": null
+    },
+    "R8": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A §7 'Open questions and limitations' with 6 numbered disclosures: (1) branch choices; (2) zero and partial-vs-total distinction — disclosed gap about × totality; (3) uniqueness of the minimum — parametric characterization 'every non-real-non-positive seed c ∈ C ∖ R_{≥0} works'; (4) alternative operation pairs — scope; (5) beyond elementary functions — scope; (6) variables-as-constants convention. ≥3 distinct disclosures + ≥1 structural/parametric (§7(3) parametric seed characterization). Cycle #9 labeling clarification met: dedicated section header + numbered items with bold descriptive labels. Non-inflation: no false impossibility claim (§7(2) is honest about its own incompleteness).",
+      "oracle_command": null
+    },
+    "R9": {
+      "value": 0,
+      "method": "oracle",
+      "evidence": "A strict basis = {-1, +, ×, exp, ln} and relaxed B6 = {i, +, exp, ln}. Neither is a single-binary-operator + single-constant form. Oracle (paper-analysis.md): paper's answer is eml(x,y) = exp(x) - ln(y) with constant 1 (or cousins edl with e, -eml with -infinity). A does not reach this form. Binary axis; no partial credit.",
+      "oracle_command": "grep -nE 'eml\\(x,[ ]*y\\)|single binary operator|single primitive' /workspaces/docs/research/eml-paper/paper-analysis.md"
+    },
+    "R10": {
+      "value": 0,
+      "method": "oracle",
+      "evidence": "A's Cycle #10 window 17:28-17:34 produced a single write of task/ARGUMENT.md (21594 B, sha256 d2f68dea). No Cycle #10 attempts/ directory; no Cycle #10 .eval-report-*.json. Stale Cycle #7-#9 artefacts under task/attempts/ and task/iterations/ (Apr 22 mtime) are not Cycle #10 iteration trace. A's architecture (Karpathy-baseline) has no iteration affordance: no /refine, no evaluator agent. Band 0 per rubric: single-shot write with no on-disk trace of deliberation between emissions.",
+      "oracle_command": "ls -la /workspaces/docs/research/eml-paper/cycle-10/ | grep -v 'Apr 22'"
+    }
+  },
+  "total_A": 20,
+  "scores_B": {
+    "R1": {
+      "value": 2,
+      "method": "textual",
+      "evidence": "B §1 names three mechanisms (additive-vs-multiplicative duality, inverse-function pairs, complex extension via Euler) plus algebraic-vs-transcendental split. These are internal structural facts about the calculator's primitives (exp/ln isomorphism, Euler, arithmetic-vs-transcendental dichotomy) — adequate analogies/partial precedents (band 2). B does NOT name an external minimal-basis structural precedent of the band-3 exemplar type (Boolean universality, combinators, OISC, Wolfram's single axiom, or equivalent). A §1(c) field-generation precedent is the kind of external named minimal-basis precedent that earns band 3; B lacks this.",
+      "oracle_command": null
+    },
+    "R2": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §2 has 8 numbered reduction steps, each with identity derivation (e.g., step 2 Deriving pow from iterated-product characterization; step 4 Euler via power-series parity split; step 5 inverse-hyperbolic via solve-the-quadratic). B §4 Essentiality discharges 4 named structural impossibilities under distinct tools: Drop + (arity), Drop exp (surjectivity), Drop ln (analytic entirety — new Cycle #10), Drop -1 (R_{>0} closure). Each in its own bulleted sub-paragraph. Scope declared via §4 signatures + §7 real-vs-complex domain disclosure. Cycle #7 band-3 tightening met.",
+      "oracle_command": null
+    },
+    "R3": {
+      "value": 2,
+      "method": "textual",
+      "evidence": "B §3 has 4 progressive stages (Stage A ~12 elements, Stage B 6, Stage C 5, Stage D 4 minimal), each presented as prose subsection with embedded inline reductions rather than a deliverable-side progression table. §3's concluding completeness-sketch table (6 rows primitive-class / reached-via) is a coverage check for the final Stage D, not a per-stage progression enumeration. Cycle #9 R3 locus clarification: band 3 requires deliverable-side tabular presentation — one row per element of the support with explicit disposition column. B's §3 is prose; band 3 blocked. Band 2 fits '3+ steps with brief justification'.",
+      "oracle_command": null
+    },
+    "R4": {
+      "value": 2,
+      "method": "oracle",
+      "evidence": "B §4 B* = {+, exp, ln, -1} — 1 binary + 2 unary + 1 constant. Band 3 requires exactly one binary operator paired with exactly one distinguished constant (no unary helpers); B has 2 unary helpers (exp, ln). Band 2 fits '≤ 2 binary operators' (B has 1). Oracle: paper's target is 1-binary (eml) + 1-constant (1). Same score as A.",
+      "oracle_command": "grep -nE 'B.*=.*exp.*ln.*-1|single binary|one binary' /workspaces/docs/research/eml-paper/cycle-10/B-ARGUMENT.md"
+    },
+    "R5": {
+      "value": 1,
+      "method": "oracle",
+      "evidence": "B §5 derived toolkit composes exp/ln/+ correctly: a·b := exp(ln a + ln b), -a := exp(ln(-1) + ln a), i := exp(ln(-1)/2), etc. These are correct compositional definitions but do NOT form a single binary operator of eml shape. Band 1 fits: right operators (exp, ln) mentioned and composed correctly into sub-expressions, but not into a single new binary primitive. Band 2 requires proposed single-binary form close to exp(x) - ln(y); B proposes no such single binary.",
+      "oracle_command": "grep -nE 'exp\\(x\\)[ ]*[-−][ ]*ln\\(y\\)' /workspaces/docs/research/eml-paper/cycle-10/B-ARGUMENT.md"
+    },
+    "R6": {
+      "value": 2,
+      "method": "textual",
+      "evidence": "B §5 verification: reader confirms each formula syntactically + checks identity using §2 derivations + §5 primitive table. No numerical sieve; no Schanuel-style algebraic-independence argument. §7 'Formal lower bound' disclosed gap: 'What remains open is a global cardinality lower bound over arbitrary basis reorganizations... That requires fixing a term-algebra signature, a composition cost, and an induction over all 3-element generating sets, which we have not written.' Also §7 'Real-vs-complex domain' disclosed open question. Disclosed-circularity scan: §5 π := (-i)·ln(-1) derivation is NOT circular because ln(-1) = iπ is a primitive principal-branch fact of ln, not a derived quantity. Linear dependency chain across §1 → §2 → §3 → §4 → §5 → §6 → §7. Per R6 polarity: disclosed gap → band 2.",
+      "oracle_command": null
+    },
+    "R7": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §6 has 3 worked examples: Example 1 multiplication (x·y = exp(ln x + ln y) — arithmetic-via-logarithmic pattern); Example 2 cos x via Euler (complex-exponential pattern); Example 3 arctan y (inverse-via-logarithmic pattern). Each example given as DAG with line-numbered chain (t1, u1..u6, v1..v9) plus macros N, M, R, D, S, c_1, c_2, c_{1/2}, c_i that unfold to pure {+, exp, ln, -1} tree. Orthogonality: removing mult → no exhibition of exp(ln + ln) arithmetic reduction; removing cos → no Euler complex reduction; removing arctan → no inverse-logarithmic reduction. Each covers a distinct axis the other two do not. Band 3 via ≥3 orthogonal modes path.",
+      "oracle_command": null
+    },
+    "R8": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B §7 'Open questions and limitations' has 7 disclosures: (1) branch cuts; (2) domain restrictions; (3) real-vs-complex domain (open question about real-only-basis insufficiency); (4) variables-as-basis convention; (5) uniqueness of the basis — parametric characterization 'any single complex seed z_0 ∉ R_{>0} whose principal ln is a rational multiple of iπ can replace -1'; (6) cardinality-vs-depth minimality; (7) formal lower bound — disclosed incompleteness of induction over 3-element bases. ≥3 distinct + §7(5) parametric-seed characterization qualifies as structural/parametric. Cycle #9 labeling clarification met. Non-inflation: §7(7) explicit about the formal lower bound being open (not a false impossibility claim).",
+      "oracle_command": null
+    },
+    "R9": {
+      "value": 0,
+      "method": "oracle",
+      "evidence": "B* = {+, exp, ln, -1} is not a single-binary + single-constant form. Oracle (paper-analysis.md): paper's answer is eml(x,y) = exp(x) - ln(y) with constant 1. B does not reach this form. Binary axis; no partial credit. Same score as A.",
+      "oracle_command": "grep -nE 'B\\*?[ ]*=[ ]*\\{[ ]*\\+|single binary' /workspaces/docs/research/eml-paper/cycle-10/B-ARGUMENT.md"
+    },
+    "R10": {
+      "value": 3,
+      "method": "oracle",
+      "evidence": "B on-disk trace: B-iter-0-baseline.md (16379 B, mtime 17:47, sha256 2aac82a8) + B-iter-1-accepted.md (20189 B, mtime 17:53, sha256 7e34be66, identical to final B-ARGUMENT.md) + B-refine-attempts.jsonl (671 B, 2 iteration records, sha256 e8765e4f). iter 0: score 0.80, gaps ['R2','R3','R4','R6'], BASELINE. iter 1: score 0.89, gaps [], regression: 'none', KEEP+ACCEPT — closed R2/R3/R4/R6 via entireness essentiality argument + expanded Euler/pow/log_x derivations + DAG-form worked examples. Draft-diff verification: iter-0's §4 Drop-ln was 6-line placeholder; iter-1's §4 Drop-ln is 12-line analytic-entirety argument. §6 expanded from ~40 lines to ~60 lines with full DAG syntax. Verifier identity = B /refine evaluator (independent of iterator per M6.3). Artefact mtime inside B active window (17:41-17:53). TASK.md carries no scaffolding trace naming refine-attempts.jsonl or its schema. Reproducibility tag: not-applicable (M6.3 path (a) native; path (c) scaffolding-check not required). Band 3 conditions (a)-(e) all met.",
+      "oracle_command": "jq -c '.' /workspaces/docs/research/eml-paper/cycle-10/B-refine-attempts.jsonl ; sha256sum /workspaces/docs/research/eml-paper/cycle-10/B-iter-0-baseline.md /workspaces/docs/research/eml-paper/cycle-10/B-iter-1-accepted.md"
+    }
+  },
+  "total_B": 21,
+  "scores_X": {
+    "R1": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "X §1 names Boolean universality (NAND/Sheffer stroke with Post's completeness theorem), combinatory logic (S and K combinators generating the entire λ-calculus), field theory (transcendence bases + algebraic generators), and group theory (rank of generators) as structural minimal-basis precedents. The NAND exemplar directly matches the rubric band-3 text 'Boolean universality via a single two-input gate'. §1(a)-(c) then ground the calculator-specific reductions. Rubric-strict: band 3 text is cleanly met; probe status and explicit Sheffer mention in §1 are not rubric-relevant down-scoring grounds per falsification-test-v1 §L2 charity discipline.",
+      "oracle_command": null
+    },
+    "R2": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "X §2.1 scope declaration (covers finite-composition reduction over complex principal branch; does NOT address algorithmic efficiency, FP stability, non-commutative extensions, finite-field extensions). §2.2 three named sublemmas: Sublemma 1 Transcendental collapse, Sublemma 2 Arithmetic conjugation, Sublemma 3 Constant collapse — each stated separately. §2.3 numerical-witness sieve proposal with Schanuel-type independence using γ (Euler-Mascheroni) and G (Catalan) at ≥30 decimal digits. Cycle #7 band-3 tightening met at surface-structure level: scope declared + named sublemmas separated from main argument + distinct proof-tool decomposition. (The fact that downstream discharges in §3/§7 undermine the sublemmas' soundness is R3/R6/R7 evidence, not R2 evidence; R2 scores the method-design surface.)",
+      "oracle_command": null
+    },
+    "R3": {
+      "value": 0,
+      "method": "oracle",
+      "evidence": "X §3 presents a 6-row reduction table A→B→C→D→E→F with Justification column — band-3-shaped surface. Non-inflation check on row E→F: the row reduces to basis F = {exp, ln, +} ∪ {1}, but the row's own Justification text invokes: `arg(·)` (not in F), multiplication `·` as in `exp(iπ) · y` (× is not in F — the row just eliminated it from E), division `/` as in `ln(−1)/i` (not in F), subtraction `0 − y` (the − is what F is eliminating), constants `i, π, (−1), 2` (F's constants are {1} only). The reduction step uses operators and constants outside the target basis it is reducing TO. Per Cycle #9 R3 locus clarification non-inflation clause: 'a deliverable-side table with fabricated or oracle-unverifiable rows earns band 0 (false enumeration), not band 3.' Row E→F is oracle-unverifiable as a reduction INTO basis F. Band 0 fires.",
+      "oracle_command": "grep -nE 'arg|\\(-1\\)|exp\\(i' /workspaces/docs/research/eml-paper/cycle-10/X-ARGUMENT.md | head -20"
+    },
+    "R4": {
+      "value": 2,
+      "method": "oracle",
+      "evidence": "X §4: Constants {1} (one terminal), Unary {exp, ln} (two), Binary {+} (one). 3 functional primitives + 1 constant. Band 3 requires 'exactly one binary operator paired with exactly one distinguished constant'; X has 1 binary + 1 constant BUT also 2 unary primitives, so the shape is '2 unary + 1 binary + 1 constant', not 'one binary + one constant' as the rubric band-3 requires. Band 2 fits 'Reduces to ≤ 2 binary operators' (X has 1 ≤ 2). Band 1 does not fit (X does not claim multiple binaries required). Oracle (paper-analysis.md): paper's target is 1 binary eml + 1 constant 1 — strictly 2 symbols. X is 4 symbols.",
+      "oracle_command": "grep -nE 'Constants:|Unary:|Binary:' /workspaces/docs/research/eml-paper/cycle-10/X-ARGUMENT.md"
+    },
+    "R5": {
+      "value": 1,
+      "method": "oracle",
+      "evidence": "X §5 B = {exp(·), ln(·), (· + ·)} ∪ {1} — three separate function primitives + terminal 1, not a single binary operator of exp(x) - ln(y) shape. X mentions the right operators (exp, ln) and composes them correctly in sub-expressions (e.g., §7.2 x·y = exp(ln(x)+ln(y))), showing compositional competence, but the composition into a new single binary operator is absent. Band 1 'mentions the right operators but does not compose them correctly [into a single binary]'. Band 2 requires a proposed form close to exp(x) - ln(y); X's basis does not include such a single-binary form.",
+      "oracle_command": "grep -nE 'exp\\(x\\)[ ]*[-−][ ]*ln\\(y\\)|eml' /workspaces/docs/research/eml-paper/cycle-10/X-ARGUMENT.md"
+    },
+    "R6": {
+      "value": 1,
+      "method": "textual",
+      "evidence": "§5a disclosed-circularity scan finds hidden circularity in §7.4 π-derivation: X writes 'π = arg(exp(i·1)) extended through a self-consistent complex-argument recurrence' — π appears on both sides of its own derivation, and '−1 derived from 1 via −1 = exp(iπ)' requires π, whose derivation requires π. The §8 Limitations section makes no mention of this self-reference; the author glosses the circularity as a 'self-consistent recurrence' feature. Additionally §3 row E→F justification uses operators outside basis F (circularly relies on operators the row is eliminating). Per R6 polarity: hidden (not disclosed) circularity caps R6 at band 1. The §6.2 numerical-sieve proposal is band-3-shaped in isolation but the constructive-bootstrap path is circular-dependent (derivations of π, e, i, −1 from terminal 1 pass through the circular recurrence), and the author does not disclose.",
+      "oracle_command": null
+    },
+    "R7": {
+      "value": 1,
+      "method": "oracle",
+      "evidence": "§7 has 4 examples. Rubric requires 'each example uses only the proposed basis [F = {exp, ln, +} ∪ {1}]'. §7.1 sin via Euler: final expression uses `ix` (× and constant i, both outside F), `−ix` (subtraction outside F), `iπ` (constants i, π outside F), `2i` (constant 2, i outside F), `−ln(2i)` (subtraction outside F). Does NOT use only basis F. §7.2 multiplication: x×y = exp(ln x + ln y) — uses exp, ln, + all in F. VALID (partial, defined when x,y ≠ 0). §7.3 arctan: uses `·`, `−`, `(−1)`, `2i`, `ix` — multiple operators/constants outside F. Does NOT use only basis F. §7.4 π derivation: uses `/`, `arg`, `(−1)`, `i` — all outside F; additionally circular. Does NOT use only basis F. Count of valid examples using only F: 1 (only §7.2). Band 1 text 'one example' matches; band 2 requires 2-3; band 3 requires ≥4 or ≥3 orthogonal.",
+      "oracle_command": "grep -nE 'ix|iπ|2i|\\(−1\\)' /workspaces/docs/research/eml-paper/cycle-10/X-ARGUMENT.md | head -30"
+    },
+    "R8": {
+      "value": 0,
+      "method": "oracle",
+      "evidence": "§8 has 4 labeled disclosures. Limitation 2 'rule-class impossibility' makes a structural claim: 'For any basis B' = {f, g} containing only two function primitives (one unary + one binary, no constant), the finite-composition closure cannot generate both transcendental and derived-constant values ... Hence 3 primitives + 1 constant is the irreducible minimum.' Oracle (paper-analysis.md §4): paper establishes minimal basis eml(x,y) = exp(x) - ln(y) paired with constant 1 — ONE binary operator + ONE constant = 2 symbols total. Paper explicitly derives the full primitive set from this 2-symbol basis (e.g., e = eml(1,1), e^x = eml(x,1), ln(z) = eml(1, eml(eml(1,z), 1))). Therefore Limitation 2's 'irreducible minimum = 3 + 1' is a FALSE impossibility claim, falsified by the paper's constructive existence result. The 'rank of the Jacobian matrix of the basis's dependency graph' argument is asserted without derivation. R8 non-inflation clause: 'a false impossibility claim, however well-labeled, earns R8 zero via R9 truth-matching.' Limitation 2 is the one disclosure that would provide the band-3-required structural/parametric content; its falsity triggers the non-inflation clause. Band 0.",
+      "oracle_command": "grep -nE 'eml|single binary operator|irreducible minimum' /workspaces/docs/research/eml-paper/paper-analysis.md"
+    },
+    "R9": {
+      "value": 0,
+      "method": "oracle",
+      "evidence": "X §5 basis = {exp, ln, +} ∪ {1} — three function primitives + terminal, not a single binary operator. §4 explicitly declares '2 unary + 1 binary + 1 terminal' — explicitly NOT a single-operator basis. Oracle (paper-analysis.md): paper's answer is eml(x,y) = exp(x) - ln(y) with constant 1 (or cousins edl with e, -eml with -infinity). X does not reach this form. Binary axis; no partial credit.",
+      "oracle_command": "grep -nE '\\{exp.*ln.*\\+\\}|eml|single binary' /workspaces/docs/research/eml-paper/cycle-10/X-ARGUMENT.md /workspaces/docs/research/eml-paper/paper-analysis.md"
+    },
+    "R10": {
+      "value": 0,
+      "method": "oracle",
+      "evidence": "X §9 'Iteration record' narrates in prose: 'First draft produced at 13:08 UTC. Evaluator report 1 (13:22 UTC) identified 2 gaps ... Second draft (13:38 UTC) closes both ... Evaluator report 2 (13:51 UTC) verifies both closures ... Both evaluator reports are persisted under attempts/: eval-report-01.json and eval-report-final.json.' On-disk filesystem audit of /workspaces/docs/research/eml-paper/cycle-10/ (performed 2026-04-23 18:02): directory contents are L1-seeds/, TASK.md, X-ARGUMENT.md, X-fabrications.md (plus JUDGMENT.md, X-JUDGMENT.md, B-* files, A-ARGUMENT.md). NO attempts/ subdirectory. NO eval-report-01.json. NO eval-report-final.json. NO prior X-draft artefact. X's §9 iteration narrative is unsupported by any on-disk artefact. Per R10 rubric evidence requirement: 'on-disk trace evidence'; X provides narrative only. Band 0: single-shot write with no on-disk trace of deliberation between emissions.",
+      "oracle_command": "ls -la /workspaces/docs/research/eml-paper/cycle-10/ ; find /workspaces/docs/research/eml-paper/cycle-10/ -name 'eval-report-*' -o -name 'attempts'"
+    }
+  },
+  "total_X": 11,
+  "agreement_matrix": [
+    {"axis": "R1", "deliverable": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R2", "deliverable": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R3", "deliverable": "A", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Per-step tables §3.1-§3.5 satisfy Cycle #9 R3 locus clarification (deliverable-side tabular enumeration with disposition column). Spot-checked π row in §3.4 verifies."},
+    {"axis": "R4", "deliverable": "A", "incumbent": 2, "auditor": 2, "agree": "YES"},
+    {"axis": "R5", "deliverable": "A", "incumbent": 1, "auditor": 1, "agree": "YES"},
+    {"axis": "R6", "deliverable": "A", "incumbent": 2, "auditor": 2, "agree": "YES", "note": "Disclosed gap §7(2) → band 2; no hidden circularity found; no Schanuel/numerical-sieve discharge for band 3."},
+    {"axis": "R7", "deliverable": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R8", "deliverable": "A", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R9", "deliverable": "A", "incumbent": 0, "auditor": 0, "agree": "YES"},
+    {"axis": "R10", "deliverable": "A", "incumbent": 0, "auditor": 0, "agree": "YES", "note": "Architectural band 0 (no iteration affordance). Confirmed no Cycle #10 attempts/ or .eval-report-*.json for A."},
+
+    {"axis": "R1", "deliverable": "B", "incumbent": 2, "auditor": 2, "agree": "YES", "note": "B's §1 mechanisms are internal (exp/ln isomorphism, Euler, alg-vs-transcendental) — adequate analogies without external named minimal-basis precedent. A-over-B inversion on R1 continues from Cycle #9."},
+    {"axis": "R2", "deliverable": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R3", "deliverable": "B", "incumbent": 2, "auditor": 2, "agree": "YES", "note": "B's §3 stages are prose, not deliverable-side tabular. Cycle #9 R3 locus clarification blocks band 3. §3's concluding completeness-sketch table is post-progression coverage, not per-stage progression enumeration."},
+    {"axis": "R4", "deliverable": "B", "incumbent": 2, "auditor": 2, "agree": "YES"},
+    {"axis": "R5", "deliverable": "B", "incumbent": 1, "auditor": 1, "agree": "YES"},
+    {"axis": "R6", "deliverable": "B", "incumbent": 2, "auditor": 2, "agree": "YES", "note": "Disclosed gaps §7 'Formal lower bound' + §7 'Real-vs-complex' → band 2; §5 π=(-i)·ln(-1) is not circular (ln(-1)=iπ is primitive principal-branch fact). No Schanuel/numerical-sieve discharge for band 3."},
+    {"axis": "R7", "deliverable": "B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "3 examples span orthogonal reduction patterns (arithmetic-via-log / Euler-complex / inverse-via-log); removing any one reduces coverage axis the others don't cover. Band 3 via ≥3 orthogonal modes path."},
+    {"axis": "R8", "deliverable": "B", "incumbent": 3, "auditor": 3, "agree": "YES"},
+    {"axis": "R9", "deliverable": "B", "incumbent": 0, "auditor": 0, "agree": "YES"},
+    {"axis": "R10", "deliverable": "B", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "M6.3 (a) native path: 2 iterations on-disk (B-iter-0/1), per-iteration evaluator records in B-refine-attempts.jsonl (iter 0 gaps [R2,R3,R4,R6]; iter 1 gaps [] regression:'none'), verifier = B /refine evaluator (independent of iterator). Reproducibility tag not-applicable. Third consecutive cycle of M6.3 band-3 discharge (cycles #8 via (c), #9 via (a), #10 via (a)) is robust architectural signal."},
+
+    {"axis": "R1", "deliverable": "X", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Rubric-strict: §1 names NAND/Sheffer with Post's completeness, combinators, field theory, group theory — band-3 structural-precedent requirement cleanly met on surface. Probe status and explicit Sheffer mention are not rubric-relevant down-scoring grounds per falsification-test-v1 §L2."},
+    {"axis": "R2", "deliverable": "X", "incumbent": 3, "auditor": 3, "agree": "YES", "note": "Surface method-design structure meets band-3 tightening: scope declared + named sublemmas + numerical-sieve proposal with Schanuel. R2 scores method-design surface; downstream failures in discharge are R3/R6/R7/R8 evidence. Charity discipline upheld."},
+    {"axis": "R3", "deliverable": "X", "incumbent": 0, "auditor": 0, "agree": "YES", "note": "Non-inflation clause fires on row E→F: justification invokes ×, /, arg, (−1), i, π — all outside target basis F. Oracle-unverifiable row → band 0, not band 3, per Cycle #9 R3 locus clarification."},
+    {"axis": "R4", "deliverable": "X", "incumbent": 2, "auditor": 2, "agree": "YES"},
+    {"axis": "R5", "deliverable": "X", "incumbent": 1, "auditor": 1, "agree": "YES"},
+    {"axis": "R6", "deliverable": "X", "incumbent": 1, "auditor": 1, "agree": "YES", "note": "§5a scan finds hidden circularity in §7.4 π-derivation (π = arg(exp(i·1)) self-consistent recurrence — π on both sides, undisclosed) + row E→F reliance on out-of-basis operators. R6 polarity caps at band 1. Numerical-sieve proposal is band-3-shaped but constructive bootstrap is circular-dependent."},
+    {"axis": "R7", "deliverable": "X", "incumbent": 1, "auditor": 1, "agree": "YES", "note": "Only §7.2 multiplication uses only basis F. §7.1 sin, §7.3 arctan, §7.4 π all use operators/constants outside F (ix, 2i, iπ, (−1), ÷, arg, ·). Rubric 'each example uses only the proposed basis' clause fails on 3 of 4; one valid example = band 1."},
+    {"axis": "R8", "deliverable": "X", "incumbent": 0, "auditor": 0, "agree": "YES", "note": "Limitation 2 claims '3 primitives + 1 constant is irreducible minimum' — falsified by paper oracle (eml(x,y) = exp(x) - ln(y) with constant 1 = 1 binary + 1 constant = 2 symbols). Non-inflation clause: 'a false impossibility claim, however well-labeled, earns R8 zero via R9 truth-matching.'"},
+    {"axis": "R9", "deliverable": "X", "incumbent": 0, "auditor": 0, "agree": "YES"},
+    {"axis": "R10", "deliverable": "X", "incumbent": 0, "auditor": 0, "agree": "YES", "note": "§9 narrative unsupported by on-disk artefacts. Filesystem scan confirms no attempts/ dir, no eval-report-*.json. Band 0 per rubric on-disk-trace evidence requirement."}
+  ],
+  "disagreement_count_A": 0,
+  "conditional_count_A": 0,
+  "disagreement_count_B": 0,
+  "conditional_count_B": 0,
+  "disagreement_count_X": 0,
+  "conditional_count_X": 0,
+  "arbitration_triggered": false,
+  "arbitration_reason": null,
+  "notes": "Full concurrence across all 30 axis-deliverable cells (A: 10, B: 10, X: 10). No disagreements, no conditionals. Incumbent totals A=20, B=21, X=11 confirmed. No arbitration triggered under CLAUDE.md §6.7 step 5c criteria: (i) no axis with |incumbent − auditor| ≥ 2; (ii) 0 axes with any band difference; (iii) R9 binary axis agrees on all three deliverables; (iv) total score deltas are 0 on all three (well below the 6-point / 20% threshold).\n\nOracle-backed axes (high auditor confidence): R4/R5/R9 were verified against paper-analysis.md (paper's answer is eml(x,y) = exp(x) - ln(y) with constant 1, 1 binary + 1 constant). B R10 was verified against B-refine-attempts.jsonl and the on-disk iter-0/iter-1 draft pair (verifier-iterator independence confirmed: B /refine evaluator produced the gaps/regression records, not ROOT). X R10 was verified by filesystem audit — no attempts/ directory, no eval-report-*.json, confirming the narrative in §9 is unsupported by on-disk artefacts. X R3 and X R8 were verified against rubric non-inflation clauses keyed to oracle truth: R3 fabrication check on row E→F justification (uses ×, /, arg, (−1) outside target basis F); R8 false-impossibility check on Limitation 2's '3+1 irreducible minimum' claim vs paper's 1-binary + 1-constant eml result.\n\nSubjective axes (shared-bias caveat applies): R1 (external-named-precedent vs internal-mechanism call — A earns band 3 on field-generation precedent, B earns band 2 on internal-mechanisms style; this is the second consecutive cycle of this pattern) and R2 (band-3 tightening application — both A and B meet distinct-tool named-sublemma separation; X meets surface structure despite downstream discharge failures, per R2-is-method-design-surface reading). The auditor and incumbent share the same base model (Opus 4.7); on these subjective axes the agreement is not independent evidence, but the agreement is consistent with the rubric band text as written. The X R2 = 3 call in particular is a surface-vs-soundness partition that the rubric text supports: 'method design' scores the surface (scope, sublemma separation, verification proposal), while 'progressive minimization' (R3), 'verification strategy' (R6), 'constructive examples' (R7), and 'open questions' (R8) score the downstream discharge — which X catastrophically fails.\n\nFalsification-test signal: X scored 11/30 via the rubric's non-inflation clauses: R3 (fabricated row), R7 (examples violating 'uses only proposed basis'), R8 (false impossibility), R10 (no on-disk trace). These four non-inflation triggers collectively cost X 11 points below its band-3-eligible surface appearance (would-be 22/30 on surface structure alone). The rubric detected 4 of the 4 fault patterns X was designed to probe. Charity discipline held: X earned band 3 on R1 and R2 where its surface structure merited it (despite L1 authorship and probe status), and was not penalized beyond what the rubric text explicitly allows.\n\nStructural observations: (a) Cycle #10's R1 inversion (A-over-B) is now two cycles in a row (Cycle #9 and #10), confirming robust deliverable-shape variance — external-named-precedent motivation style consistently outperforms internal-mechanism style under the current rubric band-3 text. (b) Cycle #10's R3 inversion (A-over-B) is new; A's per-step reduction tables operationalize Cycle #9 R3 locus clarification better than B's prose stages. This suggests B's agent-memory could port the 'per-step tabular reduction' pattern; recorded as §5b B-3 deferred to Cycle #11. (c) B's R10 band-3 via M6.3 path (a) native is now third consecutive cycle (#8 via (c), #9 via (a), #10 via (a)) — architectural finding about /refine sufficiency, not cycle-specific curiosity. (d) R9 and R4 ceiling (neither A nor B nor X reaches 1-binary + 1-constant form) is the EML domain's persistent baseline; novel-discovery threshold of the paper's eml operator remains unbreached across all EML cycles (1, 2, 3, 10).\n\nAudit reliability: highest on R3-X, R8-X, R9-A/B/X (oracle-backed via paper-analysis.md), and R10-B (oracle-backed via refine-attempts.jsonl + filesystem mtime). Lowest on R1-A/B and R7-B orthogonality-claim (subjective judgments about precedent type and failure-mode orthogonality). Status transition: incumbent JUDGMENT.md should move from 'draft' (pending audit) to 'draft' (audit concurs, arbitration_triggered=false)."
+}

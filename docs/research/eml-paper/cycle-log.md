@@ -1851,3 +1851,223 @@ consecutive). Persistence confirmed.
   Cycle #9 under Cycle #10 rubric.
 - **Leak streak 9.** Cycles #1 through #9 all clean of 34 banned
   identifiers. Hardening sufficient so far.
+
+
+---
+
+## Cycle 10 — 2026-04-23
+
+**TASK framing.** `cycle-10/TASK.md` — "Minimal Generating Basis for
+Elementary Functions" over the 34-primitive scientific-calculator
+set. First cycle to return to the EML-paper domain since Cycle #3,
+restoring the novel-domain baseline (post-training-cutoff for Opus
+4.7; paper arXiv:2603.21852, April 2026, outside training cutoff of
+January 2026). Structural hint "does a single binary operator paired
+with a single constant suffice?" intentionally omitted; only the
+neutral "smallest generating basis" question posed. Cycle #1 format
+preserved verbatim; paper-leak-audit pre-filter and task-prompt-
+discipline self-test both pass on TASK.md. No rubric ports at
+cycle-10 pre-cycle (rubric identical to Cycle #9).
+
+**First cycle to run the M9.4 rubric falsification test.** L1 planted
+a probe deliverable X alongside the normal A/B. X exhibits band-3
+structural features on R1/R2/R3/R7/R8/R10 while claiming the pre-2026
+textbook-knowledge minimum ({exp, ln, +} + 1 = 3 primitives + 1
+const), not the paper's post-2026 novel single-binary-operator
+answer (eml(x, y) = exp(x) − ln(y) + constant 1).
+
+**Execution.** Both sub-agents launched via
+`scripts/meta/delegate-sub.sh {a,b}` with `EFFORT=high`, in parallel.
+Timeline:
+
+- A launched 17:28:57; single-shot completed 17:34:12 (21594 B
+  ARGUMENT.md). No iteration affordance (baseline Karpathy-skills);
+  no evaluator report. Final answer: strict {−1, +, ×, exp, ln}
+  (5 primitives) or relaxed {i, +, exp, ln} (4 primitives).
+- B first launch 17:29:01 died silently (0 B agent log output) —
+  known Cycle #8-style hang. Second launch 17:36:49 also died.
+  Third launch 17:41:27 (after docker restart + credential
+  re-bootstrap) ran to completion. B /refine loop: 2 iterations
+  (baseline 17:47 + iter-1-accepted 17:53 at score 0.89 ≥ 0.85
+  threshold). Final answer: {+, exp, ln, −1} (4 primitives, same
+  as A's relaxed).
+
+Neither A nor B reached the paper's 1-binary + 1-const eml form
+(R9 = 0 for both).
+
+**Scoring (JUDGMENT.md, auditor-concurred, status: draft).**
+
+- A: R1=3, R2=3, R3=3, R4=2, R5=1, R6=2, R7=3, R8=3, R9=0, R10=0 =
+  **20 / 30**.
+- B: R1=2, R2=3, R3=2, R4=2, R5=1, R6=2, R7=3, R8=3, R9=0, R10=3 =
+  **21 / 30**.
+- Δ (B − A): **+1**.
+
+A-over-B inversions this cycle: R1 (−1 named-external-precedent vs
+internal-mechanism style) and R3 (−1 per-step tables vs prose
+stages). B-over-A: R10 (+3 M6.3 (a) native iteration via
+`refine-*.jsonl` per-iter gap closure).
+
+**R1 inversion persists across Cycles #9 + #10** — named-external-
+precedent vs internal-mechanism motivation style is a stable
+deliverable-shape variance, not rubric drift.
+
+**R10 M6.3 (a) native path for third consecutive cycle** (#8 (c)
+scaffolding-assisted, #9 (a) native, #10 (a) native). B's /refine
+evaluator is architecturally sufficient for band 3 discharge;
+reproducibility-tag `not-applicable`.
+
+**X probe scoring (X-JUDGMENT.md, auditor-concurred, status: draft).**
+
+- X: R1=3, R2=3, R3=0, R4=2, R5=1, R6=1, R7=1, R8=0, R9=0, R10=0
+  = **11 / 30**.
+- Shape-axis tally: 2 of 6 shape axes awarded band ≥ 2 (R1 + R2);
+  4 of 6 shape axes dropped to ≤ 1 (R3, R7, R8, R10 via rubric-
+  internal non-inflation / locus / evidence clauses).
+
+**Falsification global finding (cycle-10/falsification-report.md):
+Partial — rubric partially measures shape on R1 and R2; other 4
+shape axes measure reasoning.** Rubric's 9-cycle evolution has
+produced enough non-inflation catches that 4 of 6 shape axes drop
+below band 3 on X's specific fault pattern. R1 (motivation-answer
+consistency) and R2 (lemma-level discharge) identified as per-axis
+tightening targets for Cycle #11 pre-cycle review (tracking handles:
+`M10.2-R1-motivation-answer-consistency`,
+`M10.3-R2-lemma-level-discharge`).
+
+**Proof-auditor audit (cycle-10/rubric-audit.json, 37 186 B).**
+30 / 30 YES agreement (10 for A + 10 for B + 10 for X), 0
+CONDITIONAL, 0 NO. `arbitration_triggered = false`. Oracle-backing:
+R4/R5/R9 for all three deliverables verified against
+`paper-analysis.md`; R10-B verified via on-disk iter-0 / iter-1
+hashes + /refine jsonl; R10-X verified by filesystem audit (no
+`attempts/` dir, no eval-report-*.json for cycle-10 — X's §9
+iteration narrative unsupported by on-disk artefacts); R3-X
+non-inflation verified (row E→F justification cites `×`, `/`,
+`arg`, `(−1)`, `i`, `π` — all outside target basis F); R8-X
+non-inflation verified (Limitation 2 "3 + 1 is irreducible minimum"
+falsified by paper's 1-binary + 1-const eml construction).
+Auditor-flagged subjective-axis caveat: R1 / R2 / R7-B are subjective
+(shared Opus 4.7 base model; highest-confidence axes are oracle-
+backed). Front-matter transition: `status: draft` (auditor-concurred).
+
+**Retrospective Cycle #9 re-score (docs/meta-audit/cycle-09/JUDGMENT-v2.md,
+status: retrospective).** Rubric unchanged between Cycle #9 close
+(`d8eb79e`) and Cycle #10 pre-cycle (`b2b284e`). Zero axis
+movement (A 23 v1 → 23 v2; B 25 v1 → 25 v2; Δ +2 both). Always-on
+retrospective discipline confirmed (3rd cycle, Cycle #8/#9/#10).
+Cross-compare with Cycle #10 in-cycle (A=20, B=21, Δ=+1): gap of
+−1 attributable to pure task-effect (no rubric change, no leakage;
+TASK-prompt-discipline clean). **EML domain is measurably harder
+than TRS domain: A lost 3 points, B lost 4 points on the same
+rubric state, driven primarily by R9 (single-binary-operator form
+unreachable)**. Domain-validity concern L0 flagged 2026-04-23
+confirmed: Cycles #4-#9 on TRS were confounded by pre-training
+coverage bias; Cycle #10's EML baseline restoration lowers absolute
+scores while preserving the architectural Δ signal.
+
+**§8a partial-defect audit.** Scanned JUDGMENT.md markdown table
+rows for partial/pending/deferred/follow-up/todo patterns. None
+found in table rows. Prose-level deferrals:
+- `M10.1-R8-analytic-essentiality-port` (§5b B-3): B's
+  analytic-entirety essentiality argument for "Drop ln" as a
+  candidate scoring-example port to `judgment-rubric.md` R8
+  structural-impossibility clause. Carry-over to Cycle #11
+  pre-cycle review.
+- `M10.2-R1-motivation-answer-consistency` (falsification-report.md
+  §4): R1 band-3 tightening proposal requiring named-precedent +
+  answer-shape consistency. Carry-over to Cycle #11 pre-cycle.
+- `M10.3-R2-lemma-level-discharge` (falsification-report.md §4): R2
+  band-3 tightening proposal requiring per-sublemma separate
+  statement + proof blocks. Carry-over to Cycle #11 pre-cycle.
+- Cross-cycle `M9.x-R6-trs-oracle-port` (Cycle #9 §5b B-2 →
+  Cycle #10 §5b): random-sample oracle shape port; deferred
+  indefinitely until TRS domain returns.
+
+All carry-overs tracked with explicit handles. §8a passes.
+
+**Ports committed this cycle (step 6 / step 7):** 0 ROOT ports; 0 B
+ports. §5b analysis identifies deferrals (see above) but no
+committed mechanical ports this cycle.
+
+**Leak streak 10.** Cycles #1 through #10 all clean of 34 banned
+identifiers across both A and B outputs. Hardening remains
+sufficient. Cycle #10 extended the streak to double-digit cycles
+and introduced the L1-probe domain (X) which carries the
+"Sheffer stroke" literal keyword deliberately — X's authorial-
+identity front-matter makes the probe status transparent; the
+paper-leak disqualification rule applies to A/B (first-principles
+requirement) but not to X (authorial-transparent probe).
+
+**Cleanup forensic (5th consecutive cycle validation).**
+
+After cycle-close commit, `scripts/meta/cleanup-sub.sh --stop`
+invoked against both A and B containers:
+
+```
+$ scripts/meta/cleanup-sub.sh a --stop
+Cleanup target: claude-meta-autoagent-a (today=20260423)
+removed: credentials.json
+Stopping container claude-meta-autoagent-a... stopped.
+
+$ scripts/meta/cleanup-sub.sh b --stop
+Cleanup target: claude-meta-autoagent-b (today=20260423)
+removed: credentials.json
+Stopping container claude-meta-autoagent-b... stopped.
+```
+
+Post-cleanup forensic (containers temporarily restarted to inspect
+filesystem, then re-stopped to Exited):
+
+- **A relayed-credential count post-cleanup: 0** ✓
+- **A today's agent-log count post-cleanup: 0** ✓
+- **B relayed-credential count post-cleanup: 0** ✓
+- **B today's agent-log count post-cleanup: 0** ✓
+
+Both containers in `Exited` state at cycle close. **Fifth consecutive
+cycle exercising L2→L3 cleanup boundary** (Cycle #6 establish →
+Cycle #7/#8/#9/#10 validate). Persistence confirmed.
+
+**Commits referenced.**
+
+- `b2b284e` chore(cycle-10-pre): falsification-test-v1 procedure
+  port + cycle-10 seeds + TASK (rubric-blind + paper-blind).
+- `(this commit)` feat(cycle-10): JUDGMENT A 20 vs B 21 — Δ=+1 —
+  M9.4 falsification test first run (Partial: 2 of 6 shape axes)
+  — EML-domain baseline restored — auditor-concurred (30/30 YES).
+
+**Open for next cycle (Cycle #11).**
+
+- **M10.1 (§5b B-3):** B's analytic-entirety essentiality argument
+  as a scoring-example port candidate for R8 structural-impossibility
+  clause. Not load-bearing; stylistic port.
+- **M10.2 (falsification R1):** R1 band-3 tightening — require
+  named-precedent + answer-shape consistency. Addresses the probe's
+  "NAND-named-then-stop-at-textbook-minimum" gap.
+- **M10.3 (falsification R2):** R2 band-3 tightening — require
+  per-sublemma separate statement + proof blocks, not distributed
+  discharge. Addresses the probe's "sublemma-label-without-content"
+  gap.
+- **M9.x-R6-trs-oracle (cross-cycle):** when a TRS cycle returns,
+  port B's random-sample-per-rule oracle shape to
+  `scripts/meta/oracles/` as a canonical R6 path-(b) artefact.
+- **A-over-B on R1 for 2 consecutive cycles** — persistent
+  deliverable-shape variance. If still present in Cycle #11, it
+  is no longer a one-cycle anomaly but a stable architectural
+  signature (B's internal-mechanism motivation style vs A's
+  named-external-precedent style).
+- **B's /refine native M6.3 (a) path for 3 consecutive cycles** —
+  architectural finding stabilized. `scaffolding-assisted` (c)
+  path exercised only at Cycle #8 introduction; thereafter B
+  discharges R10 band 3 independently.
+- **EML domain task-effect = −3 to −4 points** (cross-rubric, same
+  agents). The novel-domain baseline will be preserved in Cycle #11
+  unless L0 redirects; cross-cycle longitudinal comparison of
+  absolute scores requires controlling for domain-induced task
+  difficulty.
+- **Falsification-test-v2 candidate:** second probe with different
+  fault pattern (not textbook-minimum-stopping) would strengthen
+  the shape-vs-reasoning decomposition finding. Deferred to Cycle
+  #12+ or later WIP.
+- **Leak streak 10.** Cycles #1 through #10 all clean. Next cycle
+  extends to streak 11.
