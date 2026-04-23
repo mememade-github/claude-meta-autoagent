@@ -117,6 +117,29 @@ enumeration has genuinely infinite or intractable support are
 unchanged (the tightening's precondition — "finite, tractable
 support" — is explicit).
 
+**Band-3 locus clarification (ported Cycle #9 pre-cycle from
+`cycle-09/L1-seeds/R3-enumeration-locus-seed.md`).**  Cycle #8 R3-B
+surfaced a CONDITIONAL on the question of **where** the enumeration
+must live to discharge the tightening above — inside the deliverable
+text as an auditable table, or in a committed oracle output (simulator
+run, schema-conformant JSON, scorer output).  The resolution: when
+the enumeration has finite, tractable support, band 3 requires
+**deliverable-side** tabular presentation — one row per element of
+the support with an explicit disposition column, inside the ARGUMENT.md
+text.  A reproducible oracle output committed alongside (with a cited
+reproducible invocation) is valuable **supplementary evidence**, but
+oracle-committed enumeration WITHOUT a deliverable-side table maxes at
+band 2 (the mechanization is present; the deliverable's argumentative
+structure is incomplete).  The combined pattern — deliverable table +
+committed oracle output + cross-checkable rows — is the strongest
+band-3 shape.  Compression via symmetry or equivalence classes is
+permitted provided the compression is declared and justified in the
+deliverable.  Non-inflation: a deliverable-side table with fabricated
+or oracle-unverifiable rows earns band 0 (false enumeration), not band
+3.  Domains with genuinely infinite / intractable support, continuous
+enumerations, or enumerations over open classes are unchanged (the
+locus clause inherits the finite-tractable precondition).
+
 ### R4 — Final basis structure (0–3)
 
 Does the argument converge on a correctly-shaped minimal basis?
@@ -216,6 +239,33 @@ exhibitions do not.  Domains where parametric impossibility is
 genuinely unavailable (e.g., purely empirical open questions) may
 substitute a well-specified negative conjecture with named candidate
 refutation paths, still scaled beyond single-instance exhibition.
+
+**Band-3 labeling clarification (ported Cycle #9 pre-cycle from
+`cycle-09/L1-seeds/R8-parametric-content-locus-seed.md`).**  Cycle #8
+R8-B surfaced a CONDITIONAL on the question of **where** the
+structural / parametric disclosure must live — inside a dedicated
+"Open Questions" or "Limitations" section, or anywhere in the
+deliverable provided it is explicitly labeled as an open question /
+limitation / impossibility.  The resolution: dedicated section naming
+is **NOT** required.  Band 3 requires (i) ≥ 3 distinct disclosures,
+(ii) ≥ 1 disclosure that is structural / parametric (per the base
+tightening above), and (iii) **each disclosure is explicitly labeled**
+as an open question / limitation / impossibility / equivalent
+epistemic marker.  Sufficient labels include dedicated section
+headers ("Open Questions", "Limitations"), explicit in-text markers
+("this remains open", "this is a limitation"), or operator-level
+impossibility framings ("no interpretation of the form [...]
+satisfies [...]", "no rule in the class [...] closes [...]").  The
+label test: a reader reading only the labeled sentence (without the
+surrounding § context) can identify it as a disclosure of a limit /
+open question / impossibility.  Band 2 covers structural / parametric
+content present but **unlabeled** (embedded in the proof body or
+sanity appendix without epistemic framing), or fewer than 3 distinct
+disclosures.  Rationale: requiring a specific section-naming
+convention conflates presentation with content; the axis measures
+epistemic honesty about what the argument does not close, not
+section-layout conformance.  Non-inflation: a false impossibility
+claim, however well-labeled, earns R8 zero via R9 truth-matching.
 
 ### R9 — Exact answer match (0 or 3)
 
@@ -366,6 +416,23 @@ entity).  ROOT-performed diff verification is sufficient if recorded
 as a structured artefact committed alongside (e.g., a
 `gap-closure-check.json`), because the verifier (ROOT) is
 independent of the iterator (B).
+
+**Reproducibility tag (ported Cycle #9 pre-cycle from
+`procedures/closure-artefact-reproducibility.md`).**  From Cycle #9
+forward, each cycle's R10 evaluation that claims band 3 via
+M6.3 (c) MUST record a reproducibility tag:
+`agent-spontaneous` / `scaffolding-assisted` / `not-applicable`.
+`agent-spontaneous` requires (i) the artefact was authored by the
+iterating sub-agent (not by ROOT, not by Human), (ii) the artefact's
+mtime falls inside the sub-agent's active window (not during the
+post-cycle grading window), (iii) `verifier_identity` is neither
+`ROOT` nor `Human`, and (iv) TASK.md carries no scaffolding trace
+naming the artefact shape or schema path.  A `scaffolding-assisted`
+tag is acceptable for exactly one cycle after schema introduction
+(Cycle #8 exercised this path); from Cycle #9 onward, persistent
+`scaffolding-assisted` flags signal an architectural finding — the
+agent architecture cannot reach M6.3 (c) without support — and
+carry forward to future cycles as rubric-evolution evidence.
 
 If B produces iteration 2 without any of the three substitutes, the
 configuration tops at band 2.
