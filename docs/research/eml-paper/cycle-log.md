@@ -2071,3 +2071,251 @@ Cycle #7/#8/#9/#10 validate). Persistence confirmed.
   #12+ or later WIP.
 - **Leak streak 10.** Cycles #1 through #10 all clean. Next cycle
   extends to streak 11.
+
+## Cycle 11 — 2026-04-23
+
+**Frame.** Final cycle of the parent WIP per L0 Branch B decision
+(2026-04-23): close the M9.4 empirical loop with R1 + R2 rubric
+tightening + re-test against unchanged Cycle #10 X probe.  EML
+domain continuity preserved.  Pre-cycle commit `390e49f` ports
+M10.2 R1 motivation-answer consistency + M10.3 R2 per-sublemma
+statement-and-proof locality band-3 addenda into
+`judgment-rubric.md`, and ports the falsification-retest-v1
+procedure into `procedures/`.  Cycle-11 TASK.md authored
+rubric-blind + falsification-blind + paper-blind (Cycle #10
+prohibition regex + M10.2/M10.3/M10.5 extension keywords — zero
+match on TASK.md).  Tag `cycle-11-pre` applied.
+
+No edit on `projects/a/` at pre-cycle (no new paper identifiers
+this cycle needing hardening; existing reversed-form block list
+covers the retest artefacts, which are ROOT-only anyway).
+
+**In-cycle A/B deliverables.**
+
+- **A** (`cycle-11/A-ARGUMENT.md`, sha256 d2f68dea, 21594 B):
+  **byte-identical to cycle-10/A-ARGUMENT.md**.  A's single-shot
+  baseline architecture (karpathy-skills, no `/refine`) allowed A
+  to re-audit the existing file in its workspace, deem it
+  adequate, and decline to re-write.  A's cycle-11 measurement is
+  therefore A's cycle-10 content scored under the Cycle #11
+  rubric.  Per retrospective: no axis shifts under M10.2/M10.3
+  (A clears M10.2 (b) obstruction sketch via §1(a) exp/ln
+  irreducibility + §1(c) "transcendental lies on top"; A meets
+  M10.3 locus via §3.6 four-obstruction per-sublemma proof
+  blocks).
+- **B** (`cycle-11/B-ARGUMENT.md`, sha256 87a98ac7, 20652 B):
+  distinct from cycle-10 B (sha256 7e34be66).  `/refine`
+  converged at iter-2 with KEEP+ACCEPT = 1.0 on B's internal
+  v2 rubric.  Closed R5' (numeric-oracle) gap: added
+  `task/sim/verify.py` + `task/sim/output.txt` with 35 / 35
+  primitives PASS at ~1e-15 (machine-epsilon) error.  Declares
+  exactly four basis primitives (BASIS_ADD/EXP/LN/NEG1) wrapping
+  numpy; derived-toolkit macros (NEG/MUL/RECIP/DIV/SUB) use only
+  basis primitives; all 35 `prim_*` implementations route through
+  macros.  numpy's sin/cos/tan/arcsin/arccos/arctan/sinh/cosh/
+  tanh/arcsinh/arccosh/arctanh/sqrt/power appear **only** as
+  reference oracles in `ref_fn` arguments to `run_unary` /
+  `run_binary`, never inside `prim_*` bodies (grep-verified by
+  proof-auditor).  Added §5.1 cross-reference paragraph in
+  ARGUMENT.md.  Also strengthened §4 essentiality arguments to
+  "rigorous obstructions" framing (cycle-10 semantic-argument
+  gap closed at the individual-essentiality level; open question
+  narrowed to non-subset alternative 3-element bases).
+
+**JUDGMENT (cycle-11/JUDGMENT.md).**
+
+- **A total = 20 / 30.**  Unchanged from cycle-10 (byte-identical
+  deliverable; no band shifts under Cycle #11 rubric).
+- **B total = 22 / 30.**  **+1** over cycle-10 B (21): R6 2 → 3
+  via executable-oracle indicator + strengthened essentiality
+  (cycle-10 R6 cap on disclosed essentiality rigor now closed).
+- **Δ (B − A) = +2.**  Up from cycle-10's +1.
+- **Per-axis:** A 3 / 3 / 3 / 2 / 1 / 2 / 3 / 3 / 0 / 0; B 2 / 3
+  / 2 / 2 / 1 / **3** / 3 / 3 / 0 / 3.  A-over-B: R1, R3.
+  B-over-A: R6 (+1 this cycle), R10.
+- **M10.2/M10.3 tightening effect on A/B:** zero shift.
+  Non-inflation design holds — motivation-answer-consistent
+  deliverables (A §1) and per-sublemma-proof-local methods
+  (A §3.6, B §4) are unaffected.
+
+**§5a disclosed-circularity scan.**  A: no paragraph-level
+tensions detected; clean disclosed gap in §7(2) on × reducibility
+→ R6 band 2.  B: no tensions detected; no hidden circularity;
+constructive bootstrap chain (−1) → · → 1 → 2 → 1/2 → i → π →
+e has no self-reference (evaluator-log and §5 derived-toolkit
+agree).  X re-scan: identical to v1 tensions (§3 row F, §7.4 π,
+§7.4 −1-via-π), all undisclosed → R6 hidden circularity band 1.
+
+**§5b B → ROOT port analysis.**
+
+- **Artefact 1 — B's internal v2 rubric:** not-portable (B's
+  internal self-scorer is distinct purpose from ROOT's A/B
+  comparative rubric; R6 already has oracle indicator).
+- **Artefact 2 — B's numeric oracle pattern (verify.py + seed +
+  np-reference):** **deferred** as Q5 carry-over with handle
+  `Q5-M11.1-oracle-pattern-port`.  Highly valuable but final
+  cycle of current WIP; no subsequent cycle in this WIP can
+  validate the port; explicitly recorded for post-WIP Q5 branch
+  evaluation.
+- **Artefact 3 — B's strengthened essentiality "rigorous
+  obstructions" framing:** not-portable (within-cycle R6
+  improvement on one deliverable, not a rubric-structural
+  pattern).
+- **Artefact 4 — B's eval-iter2 gap-closure-vs-baseline JSON:**
+  not-portable (ROOT already has R10 M6.3 (c) schema for this
+  role).
+
+**§5c proof-auditor concurrence** (`cycle-11/rubric-audit.json`).
+30 YES / 0 CONDITIONAL / 0 NO across A (10) + B (10) + X-v2 (10).
+`arbitration_triggered = false` on all three deliverables.
+Auditor totals concur with incumbent on all three: A=20, B=22,
+X-v2=9.  Notably verified: B R6=3 via grep audit of
+`B-sim-verify.py` (zero np.{trig/inverse/sqrt/power} calls inside
+`prim_*` bodies); A R1=3 M10.2 (b) obstruction-sketch clear via
+§1(a) + §1(c); X-v2 R1=2 + R2=2 via M10.2/M10.3 triggers firing
+as designed.  Status transition: draft → draft + audit
+concurrence appendix.
+
+**Falsification re-test (M9.4 closure).**
+`cycle-11/X-JUDGMENT-v2.md` re-scores unchanged
+`cycle-10/X-ARGUMENT.md` under v2 rubric:
+
+- **R1: v1 band 3 → v2 band 2 (Δ = −1).**  Partial shift.  M10.2
+  trigger fires on X's 5 single-primitive / minimal-generator
+  precedent citations; (a) shape match fails (X answer 3
+  primitives + 1 const, no match); (b) obstruction sketch fails
+  (§1 closes with strategy statement, not obstruction argument).
+- **R2: v1 band 3 → v2 band 2 (Δ = −1).**  Partial shift.  M10.3
+  locus fires on X's §2.2 three named sublemmas; (a) statement
+  locality met; (b) proof locality NOT met (no per-sublemma proof
+  blocks); (c) distributed discharge via §3 table excluded as
+  substitute.
+- **R3–R10: Δ = 0 (8 control axes).**  Confirms rubric discipline
+  on axes whose text did not change.
+- **X v2 total: 9 / 30** (v1 = 11; Δ = −2).
+
+**Global M9.4 closure verdict: Partial-capped**
+(`cycle-11/falsification-report-v2.md`).  Both R1 and R2 cap at
+band 2 under v2 rubric; neither closes to reasoning (band ≤ 1).
+The tightening discriminates against the specific fault patterns
+(named-precedent without obstruction sketch; named sublemma
+without per-sublemma proof) by lowering the max-awardable band by
+one, but does not drop deliverables exhibiting those patterns
+into the reasoning band.  Seed's prediction ("X R1 earns band 2
+under the tightening") matches empirical outcome.
+
+**Retrospective Cycle #10 under v2 rubric**
+(`cycle-10/JUDGMENT-v2.md`).  **Zero shift.**  A = 20, B = 21,
+Δ = +1 — unchanged from cycle-10's original v1 verdict.
+Confirms tightening's non-inflation design on correctly-structured
+deliverables.  Contrast with X (partial shift): v2 rubric
+discriminates against the fault pattern X exhibits without
+penalizing sound A/B work.
+
+**Paper-leak audit.**  cycle-11 A + B + X (re-test) all PASS.
+Streak extends to **11 / 11** cycles.
+
+**L2→L3 cleanup forensic (6th consecutive cycle exercising the
+boundary).**
+
+Ran `scripts/meta/cleanup-sub.sh a --stop` and `b --stop` after
+archiving.  Then temporarily restarted both containers to inspect
+filesystem state; results:
+
+- **A relayed-credential count post-cleanup: 0** ✓
+  (`ls /home/vscode/.claude/.credentials.json` → "No such file").
+- **A today's agent-log count post-cleanup: 0** ✓
+  (`ls /tmp/agent-20260423-*.log` → "No such file").
+- **B relayed-credential count post-cleanup: 0** ✓.
+- **B today's agent-log count post-cleanup: 0** ✓.
+
+Both containers re-stopped to `Exited` state at cycle close.
+Sixth consecutive cycle validating the L2→L3 cleanup boundary
+(Cycle #6 establish → Cycles #7–#11 validate).  Persistence
+confirmed.
+
+**Commits referenced.**
+
+- `390e49f` chore(cycle-11-pre): R1 motivation-answer consistency
+  + R2 per-sublemma proof locality ports + falsification-retest-v1
+  procedure + cycle-11 TASK (rubric-blind + paper-blind).
+- `(this commit)` feat(cycle-11): JUDGMENT A 20 vs B 22 — Δ=+2 —
+  M9.4 falsification re-test verdict **Partial-capped** (R1 3→2,
+  R2 3→2; no axis closes to reasoning) — cycle-10 A/B
+  retrospective confirms zero shift under v2 rubric —
+  auditor-concurred (30/30 YES).
+
+**Final-cycle finding summary (WIP closure framing).**
+
+Cycle #11 is the **final cycle** of the current parent WIP per
+L0 Branch B decision.  The M9.4 empirical loop closes at
+**Partial-capped**:
+
+- **What landed:** the R1/R2 rubric-text tightenings lower the
+  max-awardable band from 3 to 2 for the specific fault patterns
+  the Cycle #10 probe surfaced (named-precedent without
+  obstruction sketch; named sublemma without per-sublemma proof).
+  Both axes now discriminate against those patterns.  Non-R1/R2
+  axes are unaffected (confirmed by 8 v1↔v2 control-shift
+  observations on X).
+- **What did not land:** neither R1 nor R2 dropped to band ≤ 1
+  ("reasoning-measuring") under the tightening.  Rubric-text-only
+  intervention of this type reduces but does not eliminate the
+  shape-measuring verdict on those axes.
+- **Q3 answer under the WIP frame:** the rubric's reasoning-
+  measurement coverage is now **4 of 6 shape axes at reasoning
+  (R3, R7, R8, R10), 2 of 6 at partial-capped (R1, R2)**, vs
+  Cycle #10's 4 reasoning + 2 shape.  Improvement present but
+  asymmetric.
+- **Cross-rubric-intervention disclosure:** the partial-capped
+  outcome suggests that stronger mechanisms than rubric-text
+  tightening (e.g., oracle-backed verification for R1/R2,
+  multi-reviewer pre-scoring scrutiny, or rubric clauses that
+  cap more aggressively at band 1) may be needed to fully close
+  R1/R2 shape verdicts.  This is recorded as a Q5-branch
+  candidate for a subsequent WIP.
+
+**Open carry-overs (post-WIP Q5 branch).**
+
+- **Q5-M11.1-oracle-pattern-port:** B's numeric-oracle pattern
+  (`verify.py` + seed + np-reference + basis-primitive
+  declaration + grep-audit contract) as a reusable R6 path-(b)
+  artefact in `scripts/meta/oracles/` for future domains that
+  admit an executable oracle.  Deferred from Cycle #11 §5b.
+- **Q5 falsification-test-v2 candidate:** second probe with
+  different fault pattern (not textbook-minimum-stopping and
+  not named-precedent-without-obstruction) would further test
+  the shape-vs-reasoning boundary.  Already recorded as a
+  carry-over at Cycle #10 close; not exercised in Cycle #11.
+- **Q5 R1/R2 aggressive-cap tightening:** if the partial-capped
+  residual is unacceptable for a successor rubric, redesign
+  M10.2/M10.3 to cap at band 1 instead of band 2 when (a)/(b)
+  fail.  The current tightening was chosen conservatively to
+  avoid over-penalizing borderline motivations; a more
+  aggressive version would need a second round of non-inflation
+  discipline testing.
+
+**Leak streak 11.** Cycles #1 through #11 all clean.  WIP-level
+streak: 11 / 11.
+
+**B's /refine native M6.3 (a) path for 4 consecutive cycles**
+(Cycles #8, #9, #10, #11).  Architectural finding stabilizes
+further.
+
+**A-over-B on R1 for 3 consecutive cycles** (Cycles #9, #10,
+#11).  Persistent deliverable-shape variance — A consistently
+reaches for named external precedents (field generation in this
+domain, TRS literature in prior domains) while B consistently
+motivates from internal structural mechanisms.  No evidence this
+is a scoring bug; reads as a stable stylistic difference between
+the two architectures.  Noted but not corrected (not a WIP-scope
+finding).
+
+**EML-domain absolute Δ = +2** (up from +1 at Cycle #10, driven
+by B's new oracle artefact in Cycle #11 closing a Cycle #10 R6
+gap).  The new-cycle R6 upward movement suggests /refine's
+gap-hunting behaviour can continue to find closure opportunities
+even on a stable domain.
+
+Cycle #11 closes the current parent WIP per L0 Branch B decision.
+No subsequent cycle in this WIP.

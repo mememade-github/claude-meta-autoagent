@@ -1,0 +1,66 @@
+{
+  "scores": {
+    "R1": 3,
+    "R2": 3,
+    "R3": 3,
+    "R4": 3,
+    "R5": 3,
+    "R5_prime": 0,
+    "R6": 3,
+    "R7": 2,
+    "R8": 3,
+    "R9": 3,
+    "R10": 2
+  },
+  "rationales": {
+    "R1": "§1 invokes additive/multiplicative duality, inverse-function pairs, Euler-derived complex extension, and algebraic-vs-transcendental split without opaque citations.",
+    "R2": "§2 gives 8 ordered steps with named identities; pow, log_x, arcsin, arctan derivations all written inline, not skipped.",
+    "R3": "§3 exhibits strictly decreasing Stage A(~12) > B(6) > C(5) > D(4), each with a 'why push further' justification.",
+    "R4": "§4 states basis, signatures, principal-branch convention; essentiality uses entireness (drop-ln), surjection (drop-exp), arity (drop-+), R>0 closure (drop -1); alternate {+,exp,ln,i} given.",
+    "R5": "§5 provides derived toolkit plus a primitive-by-primitive formula table; every formula expressible as {+, exp, ln, -1} composition.",
+    "R5_prime": "task/sim/ directory exists but is empty — no verify.py, no output.txt, no executable numeric oracle was produced.",
+    "R6": "§6 gives 3 DAG-chain examples (×, cos via Euler, arctan); macros defined that unfold to basis primitives only.",
+    "R7": "§4 and §7 note x,y are argument slots not primitives, but the 'one primitive = one constant or one operation symbol' convention is implicit; alternative conventions mentioned but not ranked against each other.",
+    "R8": "§7 branch cuts per formula, domain restrictions explicit, real-vs-complex sharpened to concrete open question on closed real sin formula, cardinality-vs-depth and global 3-element lower bound disclosed as open.",
+    "R9": "§5 derived toolkit gives dependency order -1 → 1 → 2 → 1/2 → i → π → e, each step using only prior constants.",
+    "R10": "iter-0-baseline.md, iter-1-candidate.md, iter-1-accepted.md and rubric-v2.md persisted in task/iterations/; evaluator-report content within iter files not inspected here, so scored conservatively."
+  },
+  "hard_constraints": {
+    "H1": "pass",
+    "H2": "pass",
+    "H3": "pass"
+  },
+  "weighted_score": 0.9123,
+  "weighted_score_calc": {
+    "sum_weighted": 26.0,
+    "max_weighted": 28.5,
+    "sigma_w": 9.5
+  },
+  "gaps": [
+    {
+      "id": "G1",
+      "priority": "high",
+      "dimension": "R5'",
+      "section_location": "task/sim/",
+      "description": "No executable numeric oracle exists. task/sim/ is empty — no verify.py that samples each §5 formula at pseudo-random complex points (fixed seed) against numpy/cmath reference, and no output.txt capture.",
+      "suggested_close_action": "Add task/sim/verify.py using numpy with a fixed RNG seed, evaluating every §5 primitive formula at ~50 complex sample points, comparing to numpy/cmath reference within tolerance (e.g., 1e-10), printing per-primitive PASS/FAIL and a summary; write stdout to task/sim/output.txt. Cover all §5 primitives (>30 entries)."
+    },
+    {
+      "id": "G2",
+      "priority": "medium",
+      "dimension": "R7",
+      "section_location": "§4 / §7",
+      "description": "Counting convention is implicit. The rubric asks for an explicit statement like 'one primitive = one constant or one operation symbol; variables are argument slots'. Alternative conventions (e.g., variables counted, binary +/unary exp collapsed, constants folded) are not enumerated and ranked.",
+      "suggested_close_action": "Add a short paragraph at the top of §4 stating the exact counting convention, then list 2–3 alternative conventions with the minimum they yield and a one-sentence ranking justification."
+    },
+    {
+      "id": "G3",
+      "priority": "low",
+      "dimension": "R10",
+      "section_location": "task/iterations/",
+      "description": "Iteration files exist but the rubric asks each to carry an evaluator report naming closed gaps with §-locations; this cannot be affirmed to rigorous level without inspection of prior iter files (disallowed for this evaluator).",
+      "suggested_close_action": "Ensure each new iteration file includes a top-block evaluator report section that enumerates closed gaps from the prior iteration with exact §-locations of the fix."
+    }
+  ],
+  "summary": "Strong v1 baseline holds under v2 on dimensions R1–R6, R8, R9; R5' numeric oracle absent (sim/ empty) is the dominant gap; R7 convention and R10 trace discipline minor."
+}

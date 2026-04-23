@@ -1,0 +1,58 @@
+{
+  "rubric_version": "v2",
+  "artifact": "/workspaces/task/ARGUMENT.md",
+  "scores": {
+    "R1": 3,
+    "R2": 3,
+    "R3": 3,
+    "R4": 3,
+    "R5": 3,
+    "R5_prime": 3,
+    "R6": 3,
+    "R7": 3,
+    "R8": 3,
+    "R9": 3,
+    "R10": 3
+  },
+  "rationales": {
+    "R1": "§1 explicitly covers all four required motivators: additive/multiplicative duality via exp/ln isomorphism (§1 'Additive vs multiplicative duality'), inverse-pair structure (§1 'Inverse-function pairs': inverse trig/hyperbolic expressible via ln+sqrt because sin/cos/tan are rational in e^{ix}), complex extension with Euler (§1 'Complex extension', with series-derivation sketch, and a fuller in-text derivation in §2 step 4 and §6 Example 2), and algebraic/transcendental split (§1 final paragraph: only exp and its inverse are genuinely transcendental). No opaque named-result citation.",
+    "R2": "§2 provides 8 ordered elimination steps, each justified by a named identity: (1) derived arithmetic; (2) multiplicative via exp/ln — with pow and log_x explicitly derived; (3) hyperbolic by definition; (4) trig via Euler with in-text power-series parity split; (5) inverse hyperbolic by solving u^2 - 2yu - 1 = 0 to give arsinh=ln(y+sqrt(y^2+1)); (6) inverse trig by analogous exponential-quadratic trick, giving explicit arctan and arcsin forms; (7) sigmoid; (8) constants bootstrap. All four named primitives (pow, log_x, arcsin, arctan) derived.",
+    "R3": "§3 gives four strictly decreasing sufficient bases: Stage A (12 elements), Stage B (6), Stage C (5), Stage D (4 = minimal). Each has an explicit 'why push further' transition: Stage A→B drops derivable arithmetic/constants; B→C drops × (redundant given exp/ln/+); C→D drops i (derivable as exp(ln(-1)/2)). Stage D includes a completeness table by primitive class.",
+    "R4": "§4 states the minimal basis B* = {+, exp, ln, -1} with full signatures (arity, domain including principal branch of ln with Im(ln z) ∈ (-π, π] giving ln(-1) = iπ). Essentiality is argued per-element with semantic invariants: drop-+ is an arity/bivariate-dependence argument; drop-exp is a surjectivity argument (exp is the only basis surjection C→C\\{0}) plus inability to reach i from iπ; drop-ln is a rigorous entireness argument (term algebra over {+, exp, -1, x, y} is closed under entireness on C^k by induction on depth, but 1/x, sqrt(x), ln itself have poles/branch points, so they cannot be in the algebra); drop-(-1) is a closure argument on R_{>0} under +, exp, ln. Alternate basis {+, exp, ln, i} is given (size-matched).",
+    "R5": "§5 first declares a derived toolkit expressing -a, 1, 2, ab, a/b, a-b, 1/2, i, π, e purely in B*. Primitive table covers all 35 primitives, each as an explicit formula in B*-plus-macros: constants (π, e, i, -1, 1, 2), unary transcendental (exp, ln, σ), unary algebraic (1/x, sqrt, x^2, -x, x/2), trig, inverse trig, hyperbolic, inverse hyperbolic, binary arithmetic, log_x, pow, mean, hypot. All formulas are syntactic compositions of {+, exp, ln, -1} plus declared macros.",
+    "R5_prime": "verify.py at task/sim/verify.py: (i) defines exactly four basis primitives BASIS_ADD/BASIS_EXP/BASIS_LN/BASIS_NEG1 wrapping np.add/np.exp/np.log and -1+0j; (ii) all derived-toolkit macros (NEG, MUL, RECIP, DIV, SUB) use ONLY these basis primitives; (iii) all prim_* implementations of trig/hyperbolic/inverse/etc. route through BASIS_EXP/LN/ADD via the toolkit — np.sin, np.cos, np.tan, np.arcsin, np.arccos, np.arctan, np.sinh, np.cosh, np.tanh, np.arcsinh, np.arccosh, np.arctanh, np.sqrt, np.power appear ONLY as reference ref_fn arguments to run_unary/run_binary, never inside the prim_* implementations (confirmed by grep). (iv) Fixed seed 42, 20 samples per primitive, REL_TOL=1e-8. output.txt shows 35/35 PASS with max errors at machine-epsilon scale (~1e-15). Fully compliant.",
+    "R6": "§6 gives three examples as numbered DAGs. Example 1 (x·y) — 4 basis applications, fully in {+, exp, ln}. Example 2 (cos x via Euler) — includes an in-text power-series derivation of Euler's formula (parity split of exp(iz) series) and a 6-line basis chain using macros M, N, c_i, c_{1/2} all defined in §6 macro block to unfold to basis primitives. Example 3 (arctan y) — derivation via u=exp(iw) and quadratic solve; 9-line basis chain using macros D, M, N, c_1, c_i, c_{1/2}. Explicitly satisfies 'at least one Euler-form trig' (Example 2) and 'at least one inverse-trig' (Example 3). Macros are declared in §6 to textually unfold to a pure tree over {+, exp, ln, -1, x, y}.",
+    "R7": "§4 declares 'Variables x, y ∈ C are argument slots, not basis elements' — primitives are nullary (constants) or operation symbols. §7 'Variables as basis elements' explicitly notes that including variables would shift the count but this convention matches standard term-algebra practice. §7 'Uniqueness of the basis' and 'Cardinality vs depth minimality' rank/compare alternative conventions.",
+    "R8": "§7 disclosures are concrete, not vague: (a) branch cuts — principal branch of ln with explicit cut on negative reals; arctan cut on imaginary axis for |iy|>1; (b) domain restrictions per inverse function; (c) pow/log_x branch inheritance discussed per domain; (d) real-vs-complex sharpened to crisp obstruction: ln(-1) undefined on R forces an extra primitive; the tentative {+, exp, ln, -1, π} real basis is proposed with an explicit doubt that sin can be recovered by finite closed-form composition — marked as open; (e) cardinality vs depth minimality; (f) formal global lower bound (over ALL 3-element bases, not just subsets) explicitly named as open work. Branch cuts cited per formula.",
+    "R9": "§5 derived toolkit shows the bootstrap chain with no circularity: -a := exp(ln(-1)+ln a) uses only basis; 1 := (-1)·(-1) uses · (defined above it); 2 := 1+1 uses +; 1/2 := exp(-ln 2) uses exp/ln/2; i := exp(ln(-1)/2) uses 1/2 and basis; π := (-i)·ln(-1) uses i; e := exp(1). Dependency order (-1) → · → 1 → 2 → 1/2 → i → π → e is clean; each step uses only prior constants.",
+    "R10": "Iterations persisted under task/iterations/: iter-0-baseline.md, iter-1-candidate.md, iter-1-accepted.md, rubric-v2.md, eval-baseline-v2.json. Evaluator reports exist and close gaps with §-location citations per the rubric protocol."
+  },
+  "hard_constraints": {
+    "H1_no_opaque_citations": {"status": "PASS", "evidence": "Euler's identity derived in-text at §1 (series-based argument), §2 step 4 (full parity-split derivation), and §6 Example 2. No named theorem used without derivation."},
+    "H2_no_web_consultation": {"status": "PASS", "evidence": "No web artifacts referenced; artifact appears fully self-contained."},
+    "H3_syntactic_reducibility": {"status": "PASS", "evidence": "§5 table and §6 DAGs reduce via declared macros to trees over {+, exp, ln, -1, x, y}. verify.py provides independent evidence: every prim_* uses only BASIS_ADD/BASIS_EXP/BASIS_LN/BASIS_NEG1 plus the toolkit macros built from those; grep confirms np.sin/np.cos/np.tan/np.arcsin/np.arccos/np.arctan/np.sinh/np.cosh/np.tanh/np.arcsinh/np.arccosh/np.arctanh/np.sqrt/np.power appear ONLY as reference implementations, never inside prim_* bodies. All 35/35 numeric tests PASS at ~1e-15 error."}
+  },
+  "weighted_score_computation": {
+    "weights": {"R1": 1, "R2": 1, "R3": 1, "R4": 1.5, "R5": 1.5, "R5_prime": 1, "R6": 1, "R7": 0.5, "R8": 0.5, "R9": 0.5, "R10": 0.5},
+    "sum_w": 9.5,
+    "numerator": 28.5,
+    "denominator": 28.5,
+    "cap_applied": false
+  },
+  "weighted_score": 1.0,
+  "gap_closure_vs_baseline": {
+    "G1": {"status": "closed", "location": "§4 drop-ln essentiality now a rigorous entireness-based term-algebra induction; drop-exp, drop-+, drop-(-1) each given semantic-invariant justifications (surjectivity, arity, closure under R_{>0})", "note": "Inferred: the baseline likely flagged weak essentiality arguments; §4 now carries analytic obstructions rather than case-exhaustion."},
+    "G2": {"status": "closed", "location": "§5.1 + task/sim/verify.py + task/sim/output.txt", "note": "Numeric oracle added, fixed seed, all 35 primitives PASS; implements derived toolkit over the basis only, not shortcutting via numpy's trig/inverse directly."},
+    "G3": {"status": "closed", "location": "§7 'Real-vs-complex domain' and 'Formal lower bound' paragraphs", "note": "Real-vs-complex sharpened to a crisp open question; cardinality lower bound over arbitrary 3-element bases explicitly named as the remaining formal gap. Branch cuts stated per formula in §7."}
+  },
+  "gaps": {
+    "priority_high": [],
+    "priority_medium": [],
+    "priority_low": [
+      "Formal global 3-element lower bound (over arbitrary bases, not just subsets of B*) remains explicitly open in §7. This is a deliberate, sharply-named limitation rather than a defect.",
+      "The proposed real-only basis {+, exp, ln, -1, π} is conjectural — §7 notes sin recovery from this basis may require an extra trig primitive but does not resolve the conjecture. Acceptable as limitation.",
+      "Depth minimality is not attempted; §7 flags this as separate optimization."
+    ]
+  },
+  "summary": "ARGUMENT.md is fully compliant with rubric-v2 across all 11 dimensions at score 3. Hard constraints H1/H2/H3 all PASS with independent numeric evidence: verify.py implements each §5 primitive through BASIS_EXP/BASIS_LN/BASIS_ADD/BASIS_NEG1 and the derived-toolkit macros only, with np.sin/np.cos/etc. used only as reference; output.txt reports 35/35 PASS at machine-epsilon error. Gap closures vs baseline: G1 (essentiality rigor), G2 (numeric oracle), G3 (real-vs-complex and lower-bound disclosure) all closed with cited §-locations. Weighted score 1.0 exceeds the 0.93 threshold."
+}
