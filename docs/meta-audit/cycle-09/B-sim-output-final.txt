@@ -1,0 +1,66 @@
+
+========================================================================
+Q1. NON-CONFLUENCE: witness m(c, d)
+========================================================================
+t = m(c, d)
+  size = 3, weight = 3
+  redexes: [((), 'rho3'), ((), 'rho4')]
+  via rho3 at root:  m(c, d) -> c
+  via rho4 at root:  m(c, d) -> d
+  c is a normal form: True
+  d is a normal form: True
+  c != d  -->  R is not confluent.
+
+========================================================================
+Q3. NON-SN: infinite sequence from f(c)
+========================================================================
+t_0 = f(c)
+  t_0 = f(c)   (size=2, weight=2)
+  t_1 = f(f(c))   (size=3, weight=3)
+  t_2 = f(f(f(c)))   (size=4, weight=4)
+  t_3 = f(f(f(f(c))))   (size=5, weight=5)
+  t_4 = f(f(f(f(f(c)))))   (size=6, weight=6)
+  t_5 = f(f(f(f(f(f(c))))))   (size=7, weight=7)
+  t_6 = f(f(f(f(f(f(f(c)))))))   (size=8, weight=8)
+  t_7 = f(f(f(f(f(f(f(f(c))))))))   (size=9, weight=9)
+  t_8 = f(f(f(f(f(f(f(f(f(c)))))))))   (size=10, weight=10)
+  Verified: t_n = f^(n+1)(c) for n = 0..8, with rho6 applied at the root at every step.
+
+========================================================================
+Q2. WN: 'avoid rho6' strategy terminates on a variety of terms
+========================================================================
+  f(c)  (weight=2, 1 steps)  ->  c
+  f(f(c))  (weight=3, 2 steps)  ->  c
+  u(u(c))  (weight=3, 1 steps)  ->  c
+  u(u(u(u(c))))  (weight=5, 2 steps)  ->  c
+  g(0, c)  (weight=4, 1 steps)  ->  c
+  g(s(s(s(0))), d)  (weight=10, 4 steps)  ->  s(s(s(d)))
+  m(c, d)  (weight=3, 1 steps)  ->  c
+  m(f(c), u(u(d)))  (weight=6, 2 steps)  ->  c
+  g(s(s(0)), m(c, d))  (weight=10, 4 steps)  ->  s(s(c))
+  f(g(s(s(0)), u(u(c))))  (weight=11, 5 steps)  ->  s(s(c))
+  m(f(g(s(0), c)), u(u(f(d))))  (weight=12, 5 steps)  ->  s(c)
+  g(s(s(s(s(0)))), f(u(u(g(s(0), c)))))  (weight=20, 9 steps)  ->  s(s(s(s(s(c)))))
+  Every sample reached a normal form; weight strictly decreased at every step.
+
+========================================================================
+Measure check: weight strictly decreases under every non-rho6 rule (sampled instances)
+========================================================================
+  rho1: 500 random instances, all satisfy weight(LHS) > weight(RHS)
+  rho2: 500 random instances, all satisfy weight(LHS) > weight(RHS)
+  rho3: 500 random instances, all satisfy weight(LHS) > weight(RHS)
+  rho4: 500 random instances, all satisfy weight(LHS) > weight(RHS)
+  rho5: 500 random instances, all satisfy weight(LHS) > weight(RHS)
+  rho6: weight INCREASES in 200/200 random instances  (non-rho6 rules must decrease)
+  rho7: 500 random instances, all satisfy weight(LHS) > weight(RHS)
+
+========================================================================
+Critical-pair sanity: only (rho3, rho4) at root of m(x,y) yields non-joinable pair
+========================================================================
+  (rho5,rho6) overlap at f(c): rho5 -> c; rho6 -> f(f(c)) -rho5-> f(c) -rho5-> c
+  both join at c.  So this critical pair is joinable.
+  (rho3,rho4) overlap at m(c,d): rho3 -> c; rho4 -> d; c and d are distinct normal forms.
+
+========================================================================
+ALL ORACLE CHECKS PASSED
+========================================================================

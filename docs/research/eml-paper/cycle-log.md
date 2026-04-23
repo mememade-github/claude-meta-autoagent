@@ -1650,3 +1650,204 @@ Cycle #7 validate without `--stop`; Cycle #8 validate with
   Cycle #6 establish → Cycle #7 validate → Cycle #8 third-
   consecutive-validation.  Standard close-of-cycle continues
   Cycle #9 onward.
+
+## Cycle #9 — confluence/WN/SN of TRS with q, m, f, u, g rules (2026-04-23)
+
+**Scientific result line.** Cycle #9 JUDGMENT Δ = +2 (A = 23, B = 25); R3
+locus clarification + R8 labeling clarification first activated (A stayed
+at band 2 on R3 prose-enumeration; B lifted to band 3 via explicit 7-row
+markdown table; A at band 2 on R8 for 3 unlabeled structural disclosures;
+B at band 1 for single methodological labeled observation); R10 band 3
+reached via M6.3 (a) native evaluator-per-iteration path without ROOT
+scaffolding (reproducibility tag: `not-applicable`); auditor concurred
+20/20 with zero disagreements.
+
+**Cycle #9 pre-cycle ports (commit ba9fb45):**
+
+- **R3 band-3 locus clarification** (from `cycle-09/L1-seeds/R3-enumeration-
+  locus-seed.md`). Deliverable-side tabular presentation required for band
+  3 when the enumeration has finite tractable support; oracle-committed
+  enumeration without a deliverable-side table maxes at band 2.
+- **R8 band-3 labeling clarification** (from `cycle-09/L1-seeds/R8-parametric-
+  content-locus-seed.md`). Dedicated section naming NOT required; each
+  disclosure must carry an explicit epistemic label (section header,
+  in-text marker, or operator-level impossibility framing).
+- **R10 M6.3 (c) reproducibility tag** (from `procedures/closure-artefact-
+  reproducibility.md`). Per-cycle tag mandatory on band-3 scores via M6.3
+  (c): `agent-spontaneous` / `scaffolding-assisted` / `not-applicable`.
+- **Cycle #9 TASK.md** (rubric-blind per `task-prompt-discipline.md`;
+  3-obligation Q1/Q2/Q3 confluence+WN+SN task with a fresh 7-rule TRS —
+  `g(0,y)→y`, `g(s(x),y)→s(g(x,y))`, `m(x,y)→x`, `m(x,y)→y`,
+  `f(x)→x`, `f(x)→f(f(x))`, `u(u(x))→x`).
+
+**Judgment apparatus.**
+
+- JUDGMENT.md authored 2026-04-23 (A = 23/30; B = 25/30; Δ = +2).
+- rubric-audit.json produced by proof-auditor agent; 20/20 YES (0
+  CONDITIONAL, 0 NO), `arbitration_triggered = false`. Auditor totals
+  match incumbent for both A and B.
+- JUDGMENT front-matter `status: draft` (auditor-concurred; cycle
+  proceeds with incumbent verdict).
+- §5a disclosed-circularity scan: both A and B passed (no hidden
+  circularity; both lemma chains linear). Sections scanned enumerated
+  per ARGUMENT.
+- §5b B → ROOT port analysis: 3 artefacts identified (B-1 iteration
+  pattern, B-2 oracle with 500-sample-per-rule, B-3 iteration-trace
+  header + inline cross-check blocks). Decisions: 0 ported, 1 deferred
+  to Cycle #10 pre-cycle (B-2 canonical TRS oracle shape), 2
+  not-portable (B-1 B-internal /refine + evaluator; B-3 would leak via
+  TASK.md).
+- §5c auditor-concurrence summary filled; independent oracle
+  `/tmp/verify_cycle09.py` built from first principles verified both A's
+  `w` and B's `[·]` weight measures (3000 non-rho6 assertions + 200 rho6
+  assertions) + Q1 `m(c,d)` witness + Q3 `f(c)` chain for n=0..7. All
+  mechanical claims in both deliverables confirmed.
+
+**M8.3 reproducibility-test outcome.**
+
+B's R10 = 3 was earned via M6.3 substitute **(a)** "subsequent
+`.eval-report-*.json` from the evaluator", not via (c). Reproducibility
+tag = `not-applicable` with note: "B chose the M6.3 (a) native
+evaluator-report path; the reproducibility-tag field only governs (c)
+committed-diff-verification artefacts." This is the **architectural
+finding: Cycle #9 B can reach M6.3 band 3 through its own evaluator
+agent without ROOT scaffolding.** Cycle #8's ROOT-authored
+`B-gap-closure-check.json` (substitute (c), `scaffolding-assisted` tag
+retroactively attached in JUDGMENT-v2.md) was a valid alternative; it
+is not a requirement.
+
+ROOT did **not** author a `cycle-09/B-gap-closure-check.json` this
+cycle. Clause 7 of the cycle GOAL explicitly prohibited ROOT from
+authoring one on B's behalf (doing so would inflate R10-B's M6.3 (c)
+coverage beyond B's own native achievement). No such file exists.
+
+**Retrospective re-score (JUDGMENT-v2 filed at
+`docs/meta-audit/cycle-08/JUDGMENT-v2.md`).**
+
+- Cycle #8 A and B deliverables re-scored under Cycle #9 rubric.
+- Result: **0 movement on all 10 axes** for both A and B (20 / 26
+  unchanged).
+- v1 Δ = +6; v2 Δ = +6; movement Δ = 0 ⇒ pure rubric effect 0 points.
+- Interpretation: Cycle #9 rubric ports are forward-looking
+  sharpenings that formalize implicit Cycle #8 decisions without
+  overturning them. All three ports (R3 locus, R8 labeling, R10
+  reproducibility-tag) pass backward-compatibility. The R10 port
+  retroactively attaches `scaffolding-assisted` tag to Cycle #8 R10-B
+  (within the port's explicit one-cycle allowance); band 3 unchanged.
+- Cross-compare with in-cycle Cycle #9 Δ = +2: the −4 gap (v1 Δ = +6
+  → in-cycle Δ = +2) is NOT prompt-hint leakage (Cycle #9 TASK was
+  rubric-blind per `task-prompt-discipline.md`). The gap is
+  deliverable-shape variance: Cycle #9 A stepped up on R1 + R8
+  structural commentary while Cycle #9 B flattened its motivation
+  layer in favour of method-announcement opening. Retrospective isolates
+  rubric-effect = 0, confirming the deliverable-shape interpretation.
+
+**Leak audit.** Both A and B PASS on base `paper-leak-audit.sh` and on
+Cycle #8-inherited extended 34-identifier grep (enumerated in
+TASK.md §1 constraints). **Cycles #1–#9 leak streak: 9.**
+
+**B agent-memory-seed augmentation.**
+
+Total seed entries: 16 → 20 (net +4 this commit, resolving a Cycle #8
+close-time discrepancy + Cycle #9 new content).
+
+- **seed-17** (Cycle #8 retroactive): distinct-variable-projection
+  parametric statement for non-confluence — "Any pair of rules with
+  shape `g(v_1, ..., v_n) -> v_i` and `g(v_1, ..., v_n) -> v_j` with
+  `i != j` produces a non-joining critical pair `(v_i, v_j)` at the
+  root." Complementary to seed-13 (variable-overlap joinability under
+  left-linearity) and seed-14 (polynomial-coefficient-derivation).
+- **seed-18** (Cycle #8 retroactive): source-of-non-WN structural
+  characterisation — "A rule of shape `H(C[x]) -> H(C[F(x)])` where
+  `F` strictly grows size AND no other rule's LHS matches `H(_)`
+  produces non-WN at `H(any closed term)`; when another rule with
+  shared LHS is size-shrinking, WN survives via substitute strategy
+  while SN is still defeated." Complementary to seed-15 (WN strategy
+  + progress measure) and seed-16 (universal-measure-class non-SN).
+- **seed-19** (Cycle #9): native M6.3 (a) path via evaluator-per-
+  iteration reports — `.eval-report-NN.json` naming gaps +
+  `.eval-report-final.json` confirming per-gap closure via
+  `gap_closure` field, with non-inflation strict (no new gaps of the
+  highest prior severity). Bypasses ROOT-scaffolded M6.3 (c).
+  Reproducibility-tag = `not-applicable`.
+- **seed-20** (Cycle #9): arithmetic-recurrence-as-debugging pattern —
+  for a wrong recurrence formula (e.g., `f(f(t_n)) = t_{n+1}`),
+  introduce a named body-variable `body_n` with its own recurrence
+  (`body_n = f^n(c)`, `body_{n+1} = f(body_n)`); restate the step via
+  the body-recurrence (`t_n = f(body_n) -> f(f(body_n)) = f(body_{n+1}) =
+  t_{n+1}`); verify via oracle on multiple values before finalizing.
+
+**Close-of-cycle discrepancy closure.** Cycle #8's cycle-log entry
+claimed seed-17 + seed-18 would be added post-cycle, but the
+Cycle #8 close-commit (`f0d569d`) did NOT actually touch
+`projects/b/agent-memory-seed/strategies.jsonl`. Cycle #9 close
+retroactively adds those two entries + Cycle #9's own seed-19 and
+seed-20 in one commit. Cycle-log discrepancy closed.
+
+**Cleanup forensic (4th consecutive cycle validation).**
+
+After cycle-close commit, `scripts/meta/cleanup-sub.sh --stop` invoked
+against both A and B containers at 2026-04-23 ~14:15 JST:
+
+```
+$ scripts/meta/cleanup-sub.sh a --stop
+Cleanup target: claude-meta-autoagent-a (today=20260423)
+removed: credentials.json
+Stopping container claude-meta-autoagent-a... stopped.
+
+$ scripts/meta/cleanup-sub.sh b --stop
+Cleanup target: claude-meta-autoagent-b (today=20260423)
+removed: credentials.json
+Stopping container claude-meta-autoagent-b... stopped.
+```
+
+Post-cleanup forensic (containers temporarily restarted to inspect
+filesystem, then re-stopped to Exited):
+
+- **A relayed-credential count post-cleanup: 0** ✓
+- **A today's agent-log count post-cleanup: 0** ✓
+- **B relayed-credential count post-cleanup: 0** ✓
+- **B today's agent-log count post-cleanup: 0** ✓
+
+Both containers in `Exited` state at cycle close. **Fourth consecutive
+cycle exercising L2→L3 cleanup boundary** (Cycle #6 establish → Cycle
+#7 validate → Cycle #8 validate-with-`--stop` → Cycle #9 fourth-
+consecutive). Persistence confirmed.
+
+**Commits referenced.**
+
+- `ba9fb45` chore(cycle-09-pre): R3 locus + R8 labeling port + M6.3
+  reproducibility procedure + cycle-09 TASK (rubric-blind).
+- `(this commit)` feat(cycle-09): JUDGMENT A 23 vs B 25 — Δ=+2 — R3
+  locus + R8 labeling + R10 M6.3 (a) native path — auditor-concurred +
+  retrospective backward-compat validated.
+
+**Open for next cycle (Cycle #10).**
+
+- **Carry-over from §5b B-2:** Candidate port of B's oracle shape
+  (random-sample-per-rule TRS verification) into `scripts/meta/oracles/`
+  as a canonical R6 path-(b) artefact. Deferred to Cycle #10 pre-cycle.
+  Not load-bearing.
+- **Cycle-specific A-over-B inversions on R1 and R8** — observed for
+  the first time since Cycle #4. Retrospective confirmed this is
+  deliverable-shape variance, not rubric drift. Worth observing across
+  Cycle #10 whether the inversion persists or reverts to the Cycle #6–#8
+  B > A pattern.
+- **R10 M6.3 (a) native-path streak.** Cycle #9 is the first cycle
+  with `not-applicable` reproducibility tag (native (a) path,
+  bypassing (c)). Cycle #8 was the first and only
+  `scaffolding-assisted` cycle. If Cycle #10 B also reaches band 3
+  via (a), the architectural finding "evaluator agent discharges
+  M6.3 independently" is confirmed across multiple cycles.
+- **Proof-auditor concurrence pattern stable across 5 cycles.**
+  Cycles #5/#6/#7/#8/#9 all ran with proof-auditor wired; 0
+  arbitration triggers across 100 axis-deliverable pairs. Cycle #9
+  was the first cycle with 0 CONDITIONAL (pure YES agreement across
+  all 20 A/B axes). Rubric discipline is converging to shared
+  agreement on the clarification ports.
+- **Retrospective re-score procedure 2 cycles in.** Cycle #8 → v2
+  (first-ever); Cycle #9 → v2 retrospective on Cycle #8. Always-on
+  discipline established. Cycle #10 pre-cycle should re-score
+  Cycle #9 under Cycle #10 rubric.
+- **Leak streak 9.** Cycles #1 through #9 all clean of 34 banned
+  identifiers. Hardening sufficient so far.

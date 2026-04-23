@@ -1,0 +1,118 @@
+{
+  "weighted_score": 0.7125,
+  "per_rubric": {
+    "R1": {
+      "score": 0.85,
+      "notes": "Verdict NOT confluent is correct (simulator confirms m(c,d) produces c and d as distinct NFs). Witness m(c,d) is concrete and closed. Both reductions exhibited with rho3/rho4 cited and substitution {x:=c, y:=d} named. Endpoints checked to be normal forms. Minor imprecision: the NF justification 'No rule LHS is a nullary constant' is awkwardly phrased; the intended point is that every rule LHS has a non-nullary HEAD (g, m, f, or u), so a singleton term (c or d) cannot match any LHS. Also, the argument does not explicitly state the definition of confluence (e.g., 'joinable' or 'common reduct') being negated. No explicit use of the phrase 'no common reduct.' These are small rigor deductions."
+    },
+    "R2": {
+      "score": 0.70,
+      "notes": "Verdict WN is correct. Strategy S is defined (pick any non-rho6 redex). Measure W is concretely defined on all terms over Sigma via a single recursive scheme with positive coefficients. Per-rule symbolic diffs are given and correct (verified by simulator: rho1 diff=3, rho2=1, rho3=1+[y], rho4=1+[x], rho5=1, rho7=2, rho6=-1). Problems: (i) Context closure (R2e) is asserted from monotonicity ('the coefficient is strictly positive') but the induction on context depth is not spelled out. (ii) Well-foundedness (R2f) is argued only implicitly via 'strictly decreasing sequence of positive integers' — the well-foundedness of (Z_{>0}, <) is not stated. (iii) The pathological-case argument (R2g) is correct but terse: 'rho5 shares its LHS f(x) with rho6, so whenever rho6 fires, rho5 fires' — the inference 'hence at any non-NF term, a non-rho6 redex exists' is not spelled out. (iv) The argument does not explicitly restrict to closed terms, and W's value on variables is not defined (this matters because rule LHSs are open terms, though the diffs work under any substitution); should say 'for any closed substitution sigma.'"
+    },
+    "R3": {
+      "score": 0.60,
+      "notes": "Verdict not SN is correct. Concrete closed witness t_0 = f(c). First four steps t_0 -> t_1 -> t_2 -> t_3 are explicit and correct. Rule rho6 is cited with substitutions for the first three steps. PROBLEM: the final generalization 't_n ->_{rho6} f(f(t_n)) = t_{n+1}' is WRONG. Verified with simulator: f(f(t_n)) = f^(n+3)(c) = t_{n+2}, not t_{n+1}. The correct formula is: if t_n = f(body_n) where body_n = f^n(c), then rho6 at root matches x := body_n, giving f(f(body_n)) = t_{n+1}. The parenthetical note 'match x := the body of t_n at the root' is roughly correct in intent but the equation it justifies is wrong. The size bound 'size of t_n is n+2' is correct (confirmed by simulator). This is a real flaw in the witness exhibition that must be fixed for finalization."
+    },
+    "R4": {
+      "score": 0.70,
+      "notes": "Rigor is roughly balanced across Q1/Q2/Q3 but each has gaps. Q1 is tightest. Q2 is most detailed but has implicit arguments for well-foundedness and context closure. Q3's witness has a formula error that undermines rigor asymmetrically. No asymmetry is disclosed by the draft. Suggest each Q use matching structure (verdict -> witness/argument -> verification)."
+    },
+    "R5": {
+      "score": 1.0,
+      "notes": "No banned identifiers present. Case-insensitive grep against the full list returned zero hits."
+    },
+    "R6": {
+      "score": 0.85,
+      "notes": "The argument is essentially first-principles — no named theorems are invoked. The measure-based WN argument constructs everything from scratch. Minor: the phrase 'W is strictly monotone in each argument' could invoke a standard lemma implicitly, but the draft keeps it grounded ('coefficient is strictly positive'). OK."
+    },
+    "R7": {
+      "score": 0.0,
+      "notes": "The draft makes zero reference to the simulator. Searched for 'simulator', 'oracle', 'output-final', 'verified', 'checked': no hits. R7 requires leveraging the simulator output to substantiate claims (e.g., '500 random instances all satisfy weight(LHS) > weight(RHS) for every non-rho6 rule'; 'sequence t_0..t_8 printed explicitly'). The simulator's exhaustive checks of the measure decrease and the critical-pair analysis (rho5/rho6 join at c) are NOT cited in the argument."
+    }
+  },
+  "banned_identifier_hits": [],
+  "gaps": [
+    {
+      "id": "G1",
+      "priority": "high",
+      "rubric": "R3",
+      "description": "The general recurrence claim 't_n ->_{rho6} f(f(t_n)) = t_{n+1}' is mathematically wrong. Simulator verification: f(f(t_n)) = f^(n+3)(c) = t_{n+2}, not t_{n+1}. The correct formulation: t_n = f(body_n) with body_n = f^n(c); applying rho6 at the root with substitution x := body_n yields f(f(body_n)) = t_{n+1}. Fix either by restating the result of the step as f(f(body_n)) with body_n explicitly named, or by writing 't_{n+1} is obtained from t_n by inserting one additional f between the outer f and its argument.'",
+      "where": "Q3 section, line 86 of attempt-01.md"
+    },
+    {
+      "id": "G2",
+      "priority": "high",
+      "rubric": "R7",
+      "description": "The argument does not reference the simulator or its output. The rubric explicitly weighs oracle cross-referencing. Add citations: (i) Q1's m(c,d) reductions match simulator output lines 8-9; (ii) Q2's per-rule measure decreases were verified on 500 random instances per rule (simulator output lines 49-55); (iii) Q3's sequence t_0..t_8 matches simulator output lines 17-26.",
+      "where": "Throughout; no single line to reference"
+    },
+    {
+      "id": "G3",
+      "priority": "medium",
+      "rubric": "R2e",
+      "description": "Context closure of the strict decrease under W is asserted but not inductively proven. A short induction on the structure of the one-hole context C is needed: for each function symbol h, [h(...,C',...)] is strictly monotone in the argument where C' sits, since every coefficient is positive. Base case C = Hole. This is a 3-4 line argument that should be written out for full rigor.",
+      "where": "Q2 section, line 66 of attempt-01.md"
+    },
+    {
+      "id": "G4",
+      "priority": "medium",
+      "rubric": "R2f",
+      "description": "Well-foundedness of W is implicit only. Explicitly state: 'W maps every closed term to a positive integer; (Z_{>0}, <) is well-founded; hence any S-reduction yields a strictly decreasing sequence of positive integers, which must be finite.' One sentence suffices.",
+      "where": "Q2 Termination subsection, lines 71-75 of attempt-01.md"
+    },
+    {
+      "id": "G5",
+      "priority": "medium",
+      "rubric": "R2g",
+      "description": "The pathological case 'only rho6 applies' is addressed correctly but too compactly. Spell out the reasoning: suppose t is not a normal form and admits a redex at position p. If that rule is rho6, then rho5 also applies at p (since rho5 and rho6 share LHS f(?x) as a linear first-order pattern). Hence a non-rho6 redex exists, and S has something to pick. If the rule at p is not rho6, S picks that one.",
+      "where": "Q2 Strategy S subsection, lines 32-38 of attempt-01.md"
+    },
+    {
+      "id": "G6",
+      "priority": "medium",
+      "rubric": "R1",
+      "description": "The normal-form argument 'c and d are nullary constants. No rule LHS is a nullary constant, so no rule can fire' is imprecise. The intended claim is: the root/head symbol of every rule LHS (g, m, f, or u) is non-nullary, so a term whose entire structure is a single nullary constant cannot match any LHS (matching requires head equality). Rephrase for clarity: 'Every rule LHS in R has a non-nullary head symbol; the terms c and d are single nullary constants; matching requires head symbol equality, so no LHS matches c or d (neither at the root nor at any subterm position, since c and d have no proper subterms).' Also explicitly note c != d.",
+      "where": "Q1 section, lines 22-24 of attempt-01.md"
+    },
+    {
+      "id": "G7",
+      "priority": "medium",
+      "rubric": "R1",
+      "description": "The draft does not state the definition of confluence being refuted. Add one sentence: 'R is confluent iff for every term t and reductions t ->* u and t ->* v, there exists w with u ->* w and v ->* w. Here c and d are normal forms with no outgoing reductions, and c != d; hence c and d have no common reduct, refuting confluence at t = m(c,d).'",
+      "where": "Q1 section, near the conclusion"
+    },
+    {
+      "id": "G8",
+      "priority": "low",
+      "rubric": "R2c",
+      "description": "The measure W is described as taking values in positive integers, but its domain is not explicitly identified. State: 'W is defined on all closed terms over Sigma; the recursive case analysis exhausts the signature (three nullary heads, three unary heads, two binary heads). By induction on term structure, W is a total function Closed(Sigma) -> Z_{>0}.'",
+      "where": "Q2 Measure W subsection, lines 42-54 of attempt-01.md"
+    },
+    {
+      "id": "G9",
+      "priority": "low",
+      "rubric": "R3",
+      "description": "The Q3 sequence could more explicitly invoke the simulator verification (e.g., 'simulator prints t_0..t_8 with sizes 2..10, consistent with t_n = f^(n+1)(c)'). This also overlaps with G2.",
+      "where": "Q3 section, end of proof"
+    },
+    {
+      "id": "G10",
+      "priority": "low",
+      "rubric": "R4",
+      "description": "No explicit parity discussion. Consider closing with a short 'rigor parity' paragraph noting that each of the three verdicts is substantiated with (a) explicit closed witness, (b) rule-cited reductions, and (c) argument that nothing is elided.",
+      "where": "End of document"
+    }
+  ],
+  "strengths": [
+    "Clean table of verdicts upfront.",
+    "Q1 witness and both reductions are explicit and correct, with substitution record.",
+    "Q2 measure is concretely defined via a uniform scheme and every non-rho6 rule's symbolic diff is computed and positive; coefficients are natural and well-chosen.",
+    "Q2 handles the potential objection 'what if only rho6 applies?' directly, via the LHS-sharing argument between rho5 and rho6.",
+    "Q3 witness t_0 = f(c) is maximally simple and the first several steps are spelled out concretely.",
+    "No banned identifiers (0 hits across the entire banned list).",
+    "First-principles tone throughout; no unexplained appeals to external theorems.",
+    "Language is disciplined: terms like 'critical pair', 'joinable', 'normal form' are used correctly (though 'critical pair' does not appear in the text, which is fine)."
+  ],
+  "ready_for_finalization": false,
+  "overall_notes": "Draft is a solid skeleton (three correct verdicts, valid witness choices, valid measure). The banned-identifier hygiene is perfect and first-principles discipline is good. Two high-priority fixes block finalization: (1) Q3's recurrence formula 'f(f(t_n)) = t_{n+1}' is arithmetically wrong — it would equal t_{n+2}; must be restated using body_n = f^n(c). (2) Oracle/simulator cross-referencing is entirely absent — R7 is scored 0.0 and pulls weighted_score down by 0.10. Medium-priority tightening: context-closure induction (R2e), explicit well-foundedness (R2f), more careful phrasing of the 'pathological case' argument (R2g), and explicit statement of the confluence definition being refuted (R1). Weighted score ~0.735 reflects the mix: verdicts correct, witnesses mostly correct, but with one real bug and several rigor gaps."
+}
