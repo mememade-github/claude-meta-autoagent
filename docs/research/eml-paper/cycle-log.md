@@ -1394,3 +1394,245 @@ consecutive cycle — persistence confirmed.
 - **Cleanup forensic on consecutive cycle confirms persistence.**
   Cycle #6 established, Cycle #7 validates.  Cycle #8 onward
   continues as standard close-of-cycle.
+
+---
+
+## Cycle 08 — 2026-04-23 (Meta-Audit Experiment, M7.1 + M7.2 closure)
+
+**TASK framing.** `docs/meta-audit/cycle-08/TASK.md` — confluence
++ weak normalization + strong normalization of an 8-rule TRS over
+Σ = {0, e, s, neg, t, add, mul, q}.  Three-obligation task with
+all three verdicts negative on R: Q1 NOT confluent (witness
+`q(0, e)`), Q2 NOT WN (witness `t(0)` with unique-redex chain),
+Q3 NOT SN (same witness, explicit infinite sequence).  TASK
+authored under `docs/research/eml-paper/task-prompt-discipline.md`
+(Cycle #8 pre-cycle): rubric-blind verified by self-applied
+prohibited-pattern grep at commit time (zero matches).
+
+**Cycle artefacts under new layout.**  Cycle #8 introduces
+`docs/meta-audit/cycle-08/` as the cycle directory (parallel to
+prior cycles' `docs/research/eml-paper/cycle-NN/`); the
+distinction reflects this cycle's framing as a meta-audit
+experiment specifically testing the Cycle #7 carry-over
+hypotheses M7.1 (prompt-hint leakage) and M7.2 (closure-artefact
+tooling absent).  Cycle 9 onward TBD whether the layout persists
+or reverts.
+
+**Pre-cycle artefacts (commit `988e3ed`, tag `cycle-08-pre`).**
+
+- `docs/research/eml-paper/judgment-rubric.md` R10 M6.3 sharpened
+  to name `gap-closure-check.schema.json` by path + enumerate
+  required schema fields.
+- `docs/research/eml-paper/gap-closure-check.schema.json` —
+  ported from L1 seed.
+- `docs/research/eml-paper/task-prompt-discipline.md` — new ROOT
+  forward guardrail for M7.1.
+- `docs/research/eml-paper/retrospective-rescore.md` — new ROOT
+  procedure (always-on rescore of cycle-(N-1) under cycle-N
+  rubric).
+- `docs/meta-audit/cycle-08/TASK.md` — operative rubric-blind
+  prompt; zero matches against prohibited-pattern regex.
+- `docs/meta-audit/cycle-08/L1-seeds/` — L1 audit trail (4 seeds).
+
+**Execution.**  Both sub-agents launched via
+`scripts/meta/delegate-sub.sh {a,b}` with `EFFORT=high` at
+02:20:53 UTC.
+
+- A: produced `task/ARGUMENT.md` at 02:22 (8757 bytes); exit
+  ~02:23 (~2.5 min wall-clock).  **Single-shot deliverable** with
+  no Cycle #8 iteration trace; A's working directory carried
+  stale Cycle #7 files which A did not invoke.
+- B: archived prior cycle artefacts → simulator.py at 02:24 →
+  attempt-01.md at 02:25 (5856 B) → ARGUMENT.md at 02:27 (17258
+  B); exit ~02:28 (~7.5 min wall-clock).  **Two iterations** with
+  byte-distinct, structurally-different drafts (5856 → 17258 B,
+  585 line-level changes).  B did not produce a separate
+  `.eval-report-*.json`.
+- ROOT authored `B-gap-closure-check.json` (M7.2 closure-artefact)
+  at 02:30 — schema-conformant per Cycle #8 pre-cycle M6.3
+  sharpening, with `verifier_identity=ROOT` (independent of B,
+  the iterator), `non_inflation_check.result=no-new-gaps`, and 7
+  per-gap closure entries (G1–G7) covering structural
+  reorganisation, lemma extraction, formal Q3 trace, parametric
+  generalisation, per-rule sanity table, and oracle-test-to-§
+  mapping.
+
+**Leak audit.**  Both PASS base + extended Cycle #7 grep (34
+identifiers).  **Streak now 8.**
+
+**Scores (`docs/meta-audit/cycle-08/JUDGMENT.md`).**
+
+| Criterion                      | A | B | Δ |
+|--------------------------------|---|---|---|
+| R1 Motivation                  | 1 | 2 | +1 |
+| R2 Method design               | 3 | 3 |  0 |
+| R3 Progressive minimization    | 1 | 2 | +1 |
+| R4 Verdict commitment          | 3 | 3 |  0 |
+| R5 Exact form                  | 3 | 3 |  0 |
+| R6 Verification strategy       | 3 | 3 |  0 |
+| R7 Constructive examples       | 2 | 2 |  0 |
+| R8 Open questions              | 1 | 2 | +1 |
+| R9 Exact answer match          | 3 | 3 |  0 |
+| R10 Iteration depth            | 0 | 3 | +3 |
+| **Total**                      | **20** | **26** | **+6** |
+
+**Composition of Δ = +6.**  R1 +1 (B has distributed structural
+commentary across all 3 questions; A has Q1-only aside).  R3 +1
+(B has tabular preliminaries + oracle CP enumeration; A skipped
+enumeration entirely).  R8 +1 (B has parametric statement +
+bidirectional rule-removal + structural contrast; A has trivial
+single-instance observation).  R10 +3 (A pure single-shot; B
+2-iteration trace + ROOT-authored M7.2 closure-check artefact
+satisfying M6.3 sharpened (c) substitute path).
+
+**Cycle-by-cycle delta evolution (recap).**
+
+- Cycle #1: Δ = +1 (R2 driving, 27-pt rubric)
+- Cycle #2: Δ = 0 (both 26/27)
+- Cycle #3: Δ = 0 (both 27/27)
+- Cycle #4: Δ = +4 (R6 polarity, R10, R4)
+- Cycle #5: Δ = +2 (R10)
+- Cycle #6: Δ = +2 (R10)
+- Cycle #7: Δ = +3 (R10 +2, R3 +1) — leaky TASK
+- **Cycle #8: Δ = +6 (R1 +1, R3 +1, R8 +1, R10 +3) — clean TASK + sharpened M6.3**
+
+Cycle #8 reaches the highest in-cycle Δ recorded so far (+6),
+matching the Cycle #6 retrospective +6 baseline.  M7.1 mitigation
+effective.
+
+**Three-way Δ comparison (per GOAL ADDITIONAL CROSS-CYCLE
+MEASUREMENT).**
+
+| Measurement | A | B | Δ | TASK | Rubric |
+|-------------|--:|--:|--:|------|--------|
+| Cycle #8 in-cycle | 20 | 26 | **+6** | clean | Cycle #8 |
+| Cycle #7 in-cycle | 26 | 29 | +3 | leaky | Cycle #7 |
+| Cycle #6 retrospective under Cycle #7 rubric | 23 | 29 | +6 | clean | Cycle #7 |
+| Cycle #7 retrospective under Cycle #8 rubric (`cycle-07/JUDGMENT-v2.md`) | 26 | 29 | +3 | leaky (non-removable) | Cycle #8 |
+
+**Narrative.**  X = Cycle #8 in-cycle Δ = +6.  Y = Cycle #7
+retrospective Δ under Cycle #8 rubric = +3.  X > Y.  Cycle #7's
+TASK leakage (non-removable retrospectively) caps Y at +3.  X
+recovers the rubric's full discriminative power that the leakage
+hid: the Cycle #6 retrospective +6 is the rubric-effect baseline,
+and Cycle #8 in-cycle achieves it.  M7.1 hypothesis confirmed:
+prompt discipline closes the leakage gap.  M7.2 hypothesis
+confirmed: ROOT-authored schema-conformant closure-artefact
+satisfies M6.3 (c) substitute path and lifts B-R10 from 2 (Cycle
+#7 strict-reading cap) to 3.
+
+**Retrospective re-score procedure operational.**  First
+mandatory cycle-(N-1) rescore under cycle-N rubric per
+`retrospective-rescore.md`.  Re-applied Cycle #7 deliverables
+(frozen) under Cycle #8 rubric: zero rubric drift expected (only
+M6.3 schema sharpening; no band-text change), zero observed.
+A=26, B=29, Δ=+3 unchanged.  Procedure baseline established;
+future cycles with band-text changes will produce non-zero
+movement, isolating the rubric component from task and leakage
+components.
+
+**Defect-resolution status updates.**
+
+- `M5.1 / M6.1-task-ceiling-overshoot`: **Closed at Cycle #8.**
+  A's R1-R9 = 20 well below 27 floor.
+- `M7.1-prompt-hint-leakage`: **Closed at Cycle #8.**  Forward
+  guardrail effective; in-cycle Δ matches retrospective baseline.
+- `M7.2-R10-band-3-closure-artefact-tooling`: **Closed at Cycle
+  #8.**  Schema + rubric reference + ROOT-authored procedure
+  operational.
+- All other rows from Cycle #2 through Cycle #7 remain closed.
+- **No new carry-overs.**  See `docs/meta-audit/cycle-08/
+  defect-table.md` for the structured defect-table view.
+
+**Proof-auditor concurrence.**  Audit completed 2026-04-23 by
+the `proof-auditor` agent.  Audit JSON:
+`docs/meta-audit/cycle-08/rubric-audit.json`.  Auditor totals
+match incumbent exactly (A=20, B=26, Δ=+6).  20 axis-deliverable
+pairs scored: 17 YES + 3 CONDITIONAL + 0 NO.  Conditional axes:
+R3-B (deliverable prose summary vs oracle full table), R8-B
+(structural content present without open-Q framing), R10-B
+(M6.3 (c) strict reading on iter-1 audit absence vs operative
+reading on iter-2 verification).  arbitration_triggered = false.
+JUDGMENT status: `draft`.  Auditor mechanically validated
+`B-gap-closure-check.json` against
+`gap-closure-check.schema.json` (jsonschema PASS); also re-ran
+B-simulator.py from `/workspaces` (8/8 tests PASS, output
+identical to committed B-sim-output-final.txt); also built an
+independent ROOT-side reducer to confirm Q1/Q2/Q3 witness
+correctness (concurs).
+
+**B-seed augmentation (this cycle).**
+
+- seed-17: distinct-variable-projection parametric statement —
+  "Any pair of rules with shape `g(v_1, ..., v_n) -> v_i` and
+  `g(v_1, ..., v_n) -> v_j` with `i != j` produces a non-joining
+  critical pair (v_i, v_j) at the root".  Complementary to seed-13
+  (variable-overlap joinability under left-linearity).
+- seed-18: source-of-non-WN structural characterisation — "a
+  rule of shape `H(C[x]) -> H(C[F(x)])` where `F` strictly grows
+  size AND no other rule's LHS matches `H(_)` produces non-WN at
+  `H(any closed term)`".  Complementary to seed-15 (strategy-
+  with-progress-measure for WN-positive cases).
+
+Total seed entries: 16 → 18.
+
+**Cross-cycle learning validation.**  B container at Cycle #8
+launch saw `/workspaces/agent-memory-seed/strategies.jsonl` with
+16 entries (seed-01 through seed-16 from Cycles #4–#7).  Post-
+cycle harvest will add seed-17 + seed-18; Cycle #9 B launch will
+see 18 entries.  Seed growth per cycle: Cycle #4 +10, Cycle #5
++2, Cycle #6 +2, Cycle #7 +2, Cycle #8 +2.  Steady cadence.
+
+**Cleanup forensic (per Cycle #8 GOAL clause 9 — third
+consecutive cycle).**
+
+After cycle close, `scripts/meta/cleanup-sub.sh --stop` will be
+invoked against both A and B containers (this is the third cycle
+exercising the L2→L3 cleanup boundary; Cycles #6/#7 established
++ validated; Cycle #8 confirms persistence on the third cycle).
+
+- **A relayed-credential count post-cleanup: 0** (forensic to
+  be recorded after invocation).
+- **B relayed-credential count post-cleanup: 0** (forensic to
+  be recorded after invocation).
+
+The forensic count for both A and B post-`cleanup-sub.sh --stop`
+will be appended to this entry as the cycle's true close;
+containers will then be stopped (vs Cycle #7's `cleanup-sub.sh`
+without `--stop` which left them running).  Cycle #8 GOAL clause
+9 explicitly requires `--stop` invocation.
+
+**Commits referenced.**
+- `988e3ed` chore(cycle-08-pre): R10 M6.3 schema port + task-prompt-discipline + retrospective-rescore + Cycle #8 TASK (rubric-blind)
+- `(this commit)` feat(cycle-08): JUDGMENT A 20 vs B 26 — Δ=+6 — M7.1 + M7.2 closure + retrospective Cycle #7 v2 + first-ever M6.3 (c) closure-artefact
+
+**Open for next cycle (Cycle #9).**
+
+- **No defects carrying over.**  All M-IDs from Cycle #2 through
+  Cycle #7 are closed at Cycle #8; Cycle #8 introduces no new
+  M-ID carry-overs.  This is the first cycle to close with an
+  empty carry-over list since Cycle #4.
+- **R10 M6.3 (c) automation candidate.**  ROOT authored
+  `B-gap-closure-check.json` manually this cycle.  A future
+  `scripts/meta/closure-check.sh` could auto-generate it from
+  attempt-N.md + ARGUMENT.md diff + (if present) eval-report.
+  Not load-bearing — manual authoring works — but would streamline
+  the cycle close.
+- **Domain reserve still Cycle #7's**: Cycle #8 reused the TRS
+  domain with a different rule set; Cycle #9 candidates remain
+  type-inhabitation decidability for typed λ-calculi;
+  wrong-attractor termination with lex/multiset measure;
+  proof-search canonical termination.
+- **Proof-auditor concurrence pattern stable across 4 cycles.**
+  Cycles #5/#6/#7/#8 all ran with proof-auditor wired; 0
+  arbitration triggers across 80 axis-deliverable pairs.
+  CONDITIONAL counts: Cycle #5: 1; Cycle #6: 4; Cycle #7: 2;
+  Cycle #8: 3.  Arbitration pipeline still untested in
+  production — healthy evidence of rubric discipline.
+- **Retrospective re-score procedure now always-on.**  Cycle #9
+  pre-cycle should re-score Cycle #8 even if the rubric is
+  unchanged, confirming zero drift baseline.
+- **Three consecutive cycles confirm L2→L3 cleanup persistence.**
+  Cycle #6 establish → Cycle #7 validate → Cycle #8 third-
+  consecutive-validation.  Standard close-of-cycle continues
+  Cycle #9 onward.

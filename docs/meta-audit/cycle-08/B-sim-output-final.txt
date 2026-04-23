@@ -1,0 +1,83 @@
+
+=== Sanity: no LHS is headed by 0, e, or s ===
+  alpha1: LHS head = add
+  alpha2: LHS head = add
+  alpha3: LHS head = mul
+  alpha4: LHS head = mul
+  alpha5: LHS head = q
+  alpha6: LHS head = q
+  alpha7: LHS head = t
+  alpha8: LHS head = neg
+  Conclusion: terms headed by 0, e, or s have no root redex.
+  (Subterm redexes are independent of this.)
+
+=== Sanity: claimed NFs are irreducible ===
+  0   [NF confirmed]
+  e   [NF confirmed]
+  s(0)   [NF confirmed]
+  s(s(e))   [NF confirmed]
+  neg(0)   [NF confirmed]
+  neg(s(e))   [NF confirmed]
+
+=== Per-rule size deltas on representative closed instances ===
+  alpha1: add(0, e)                    -> e                     size 3 -> 1  (delta -2)  [y=e]
+  alpha2: add(s(0), e)                 -> s(add(0, e))          size 4 -> 4  (delta 0)  [x=0, y=e]
+  alpha3: mul(0, e)                    -> 0                     size 3 -> 1  (delta -2)  [y=e]
+  alpha4: mul(s(0), e)                 -> add(e, mul(0, e))     size 4 -> 5  (delta +1)  [x=0, y=e]
+  alpha5: q(0, e)                      -> 0                     size 3 -> 1  (delta -2)  [x=0, y=e]
+  alpha6: q(0, e)                      -> e                     size 3 -> 1  (delta -2)  [x=0, y=e]
+  alpha7: t(0)                         -> t(s(0))               size 2 -> 3  (delta +1)  [x=0]
+  alpha8: neg(neg(e))                  -> e                     size 3 -> 1  (delta -2)  [x=e]
+
+=== Q1 witness: R is NOT confluent ===
+  t   = q(0, e)
+  t --alpha5@eps--> 0
+  t --alpha6@eps--> e
+  is_nf(0) = True;  is_nf(e) = True;  0 != e.
+  reachable(0) = {0}
+  reachable(e) = {e}
+  reachable sets are disjoint ==> no common reduct.
+
+=== Q1 critical-pair enumeration (every (outer, inner, pos)) ===
+  total (outer, inner, pos) triples: 104
+  non-unifiable (head mismatch): 93
+  unifiable:                     11
+
+  Unifiable overlaps (details):
+    (alpha1, alpha1, pos=eps): <y#j, y#j>   [trivial (same rule)]
+    (alpha2, alpha2, pos=eps): <s(add(x#j, y#j)), s(add(x#j, y#j))>   [trivial (same rule)]
+    (alpha3, alpha3, pos=eps): <0, 0>   [trivial (same rule)]
+    (alpha4, alpha4, pos=eps): <add(y#j, mul(x#j, y#j)), add(y#j, mul(x#j, y#j))>   [trivial (same rule)]
+    (alpha5, alpha5, pos=eps): <x#j, x#j>   [trivial (same rule)]
+    (alpha5, alpha6, pos=eps): <x#j, y#j>   [NON-JOINABLE by bounded search]
+    (alpha6, alpha5, pos=eps): <y#j, x#j>   [NON-JOINABLE by bounded search]
+    (alpha6, alpha6, pos=eps): <y#j, y#j>   [trivial (same rule)]
+    (alpha7, alpha7, pos=eps): <t(s(x#j)), t(s(x#j))>   [trivial (same rule)]
+    (alpha8, alpha8, pos=eps): <x#j, x#j>   [trivial (same rule)]
+    (alpha8, alpha8, pos=1): <neg(x#j), neg(x#j)>   [identical reducts]
+
+=== Q2 witness: R is NOT weakly normalizing ===
+  Claim: from t_0 = t(0), the *only* reduction sequence is infinite.
+  Step-by-step unique redex at each stage:
+    t_0 = t(0)   redexes: [('eps', 'alpha7')]
+    t_1 = t(s(0))   redexes: [('eps', 'alpha7')]
+    t_2 = t(s(s(0)))   redexes: [('eps', 'alpha7')]
+    t_3 = t(s(s(s(0))))   redexes: [('eps', 'alpha7')]
+    ... (pattern persists: only redex is alpha7 at root) ...
+    t_9 = t(s(s(s(s(s(s(s(s(s(0))))))))))   redexes: [('eps', 'alpha7')]
+    t_9 confirmed at size 12
+  Every closed term reachable from t(0) has shape t(s^n(0)), with unique redex alpha7@eps, so NO normal form is reachable.
+
+=== Q2 support: uniqueness of the alpha7@eps redex on t(s^n(0)) ===
+  Verified: for n in 0..11, t(s^n(0)) has exactly one redex, at root via alpha7.
+
+=== Q3 witness: infinite reduction via alpha7 ===
+  t_0 = t(0)   size=2
+  t_1 = t(s(0))   size=3   via alpha7@eps
+  t_2 = t(s(s(0)))   size=4   via alpha7@eps
+  t_3 = t(s(s(s(0))))   size=5   via alpha7@eps
+  ... (structure: t(s^n(0)); each step appends one s-layer) ...
+  t_20 = t(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(0)))))))))))))))))))))   size=22   via alpha7@eps
+  t_20 confirmed at size 22; sequence is unbounded.
+
+=== All oracle checks passed. ===

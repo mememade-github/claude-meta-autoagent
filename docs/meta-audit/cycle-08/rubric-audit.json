@@ -1,0 +1,372 @@
+{
+  "auditor": "proof-auditor",
+  "cycle": 8,
+  "audit_date": "2026-04-23",
+  "deliverables": {
+    "A": "/workspaces/docs/meta-audit/cycle-08/A-ARGUMENT.md",
+    "B": "/workspaces/docs/meta-audit/cycle-08/B-ARGUMENT.md"
+  },
+  "rubric": "/workspaces/docs/research/eml-paper/judgment-rubric.md",
+  "incumbent_judgment": "/workspaces/docs/meta-audit/cycle-08/JUDGMENT.md",
+  "supporting_artefacts": {
+    "B_iteration_1_draft": "/workspaces/docs/meta-audit/cycle-08/B-attempt-01.md",
+    "B_simulator": "/workspaces/docs/meta-audit/cycle-08/B-simulator.py",
+    "B_simulator_output": "/workspaces/docs/meta-audit/cycle-08/B-sim-output-final.txt",
+    "B_gap_closure_check": "/workspaces/docs/meta-audit/cycle-08/B-gap-closure-check.json",
+    "gap_closure_check_schema": "/workspaces/docs/research/eml-paper/gap-closure-check.schema.json",
+    "rubric_pre_cycle_commit": "988e3ed (Cycle #8 pre-cycle: M6.3 schema sharpening + R10 schema cite)"
+  },
+  "incumbent_total_A": 20,
+  "incumbent_total_B": 26,
+  "auditor_total_A": 20,
+  "auditor_total_B": 26,
+  "scores_A": {
+    "R1": {
+      "value": 1,
+      "method": "textual",
+      "evidence": "A-ARGUMENT.md \u00a72 closing paragraph 'the pair (alpha5, alpha6) is exactly a non-deterministic projection operator that commits irrevocably to one coordinate' \u2014 Q1-only, post-hoc structural commentary; \u00a70/\u00a71/\u00a73/\u00a74/\u00a75/\u00a76 contain no motivation framing. Sparse, single-question, post-hoc.",
+      "oracle_command": null
+    },
+    "R2": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A-ARGUMENT.md \u00a71 'NF-1' (named lemma: 'A ground subterm whose tree contains only the symbols 0, e, and s is a normal form' + proof by LHS-head inspection); \u00a73.1 'Unique Redex Lemma' (named lemma: 'For every n>=0, the term t(s^n(0)) has *exactly one* redex' + proof). Each named, separately discharged, cited downstream (\u00a72 cites NF-1; \u00a73.2 cites Unique Redex Lemma; \u00a74 reuses Unique Redex Lemma). Distinct proof tools per question. Meets Cycle #7 R2 tightening.",
+      "oracle_command": null
+    },
+    "R3": {
+      "value": 1,
+      "method": "textual",
+      "evidence": "A-ARGUMENT.md presents NO critical-pair enumeration (neither prose nor table). \u00a72 goes directly to single witness q(0,e) without enumerating the overlap support. The \u00a71->\u00a72->\u00a73->\u00a74 progression is per-question discharge, not progressive minimization in the rubric sense. 1-2 intermediate steps without enumeration justification.",
+      "oracle_command": null
+    },
+    "R4": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "A-ARGUMENT.md \u00a7'Verdicts' table commits Q1 NOT confluent + Q2 NOT WN + Q3 NOT SN. Per-obligation discharge: \u00a72 Q1 (witness + alpha5/alpha6 derivations + NF check + distinctness + conclusion), \u00a73 Q2 (witness + Unique Redex Lemma + induction + conclusion), \u00a74 Q3 (witness + explicit infinite sequence + per-step rule citation + conclusion), \u00a75 cross-question relationships. Cycle #8 R4 3-obligation semantic met: firm commitment + rigorous discharge of each.",
+      "oracle_command": null
+    },
+    "R5": {
+      "value": 3,
+      "method": "oracle",
+      "evidence": "Independent ROOT-side reducer verified: q(0,e) -> 0 via alpha5; q(0,e) -> e via alpha6; both NF; distinct. For n=0..15: t(s^n(0)) has unique redex (eps, alpha7); reduces to t(s^(n+1)(0)). All A-ARGUMENT.md mechanical claims hold.",
+      "oracle_command": "python3 (independent reducer at /tmp/auditor-reducer; reproduces match/reduce/redexes for the 8-rule TRS R; verified Q1 witness + Q2/Q3 unique-redex chain for n=0..15)"
+    },
+    "R6": {
+      "value": 3,
+      "method": "textual+circularity-scan",
+      "evidence": "A-ARGUMENT.md verification is purely symbolic. Disclosed-circularity scan: NF-1 (\u00a71) self-contained from LHS-head list \u2014 not circular. Unique Redex Lemma (\u00a73.1) cites NF-1 + extends with head-matching for t(s^n(0)) \u2014 linear dependency. \u00a73.2 induction cites Unique Redex Lemma \u2014 linear. \u00a75 consistency check is trivial implication (Q3 from Q2) \u2014 no dependency loop. Lemma chain NF-1 -> Unique Redex Lemma -> \u00a73.2 induction is linear with no back-edges. R6 honesty-polarity score 3 justified (no hidden circularity, no disclosed unresolved gap). Oracle is 'in addition to' the trace path per R6 band-3 text; A's algebraic/trace-argument path with no disclosed gap qualifies as 3.",
+      "oracle_command": null
+    },
+    "R7": {
+      "value": 2,
+      "method": "textual",
+      "evidence": "A-ARGUMENT.md constructive examples: \u00a72 q(0,e) -> 0 and -> e (Q1, 2 reductions on 1 closed term); \u00a73 t(0) unique-reduction induction (Q2); \u00a74 t(0) explicit infinite sequence (Q3); \u00a76 summary table 3 rows. Distinct closed-term witnesses: 2 (q(0,e), t(0)). Orthogonal axes: 2 (non-confluence, non-normalization); Q2/Q3 share the t(0) witness and are not orthogonal (Q3 follows from Q2 by definition per A \u00a75). Tightening cap (\u22654 OR \u22653 orthogonal) not met. Band 2.",
+      "oracle_command": null
+    },
+    "R8": {
+      "value": 1,
+      "method": "textual",
+      "evidence": "A-ARGUMENT.md has no open-questions section. \u00a75 'Consistency check of the three verdicts' is cross-question implication discussion (Q3 from Q2; Q1 vs Q2/Q3 independence) and includes single trivial rule-removal observation: 'Removing alpha7 from R would not restore confluence (Q1's witness survives); removing alpha5 and alpha6 would not restore normalization (Q2/Q3's witness survives)'. Single-instance rule-removal, not parametric/structural disclosure. Band 1.",
+      "oracle_command": null
+    },
+    "R9": {
+      "value": 3,
+      "method": "oracle",
+      "evidence": "All three verdicts correct under Cycle #8 R9 3-obligation binary semantic: Q1 NOT confluent (q(0,e) witness verified); Q2 NOT WN (t(0) witness, unique-reduction lemma verified for n=0..15); Q3 NOT SN (explicit infinite sequence verified). Each discharged with concrete witness + per-step rule citation.",
+      "oracle_command": "python3 (independent reducer; same as R5)"
+    },
+    "R10": {
+      "value": 0,
+      "method": "trace",
+      "evidence": "A's Cycle #8 on-disk artefacts (per incumbent JUDGMENT \u00a72): task/ARGUMENT.md (02:22 UTC, 8757 B, single substantive write); task/sim.py + task/sim_output.txt are stale Cycle #7 files (mtime Apr 22 17:34, untouched); task/attempts/ + task/iterations/ contain only stale prior-cycle entries. No Cycle #8 evaluator report, no Cycle #8 iteration trace, no disclosed-gap disclosure file, no closure artefact. Pure single-shot. Bands 1-3 require \u22651 disclosed gap in iteration-separate artefact; A has none for Cycle #8.",
+      "oracle_command": null
+    }
+  },
+  "scores_B": {
+    "R1": {
+      "value": 2,
+      "method": "textual",
+      "evidence": "B-ARGUMENT.md distributes structural commentary: \u00a72.5 parametric statement ('Any pair of rules with shape g(v_1,...,v_n) -> v_i and g(v_1,...,v_n) -> v_j with i!=j produces a non-joining critical pair'); \u00a74.4 'general termination impossibility' (universal-measure argument); \u00a75 bidirectional rule-removal analysis distinguishing q-source of non-confluence from t-source of non-WN/non-SN; Appendix A structural contrast (alpha7 self-replicating vs alpha4 well-founded-on-x). Multiple per-question structural anchors, at least one parametric, but no opening motivation framing. Band 2.",
+      "oracle_command": null
+    },
+    "R2": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B-ARGUMENT.md named preliminaries: \u00a71.1 'Rule LHS heads' (catalogue); \u00a71.2 'Immediate NF catalogue' (3 structured sub-claims); \u00a71.3 'Subterm/closure conventions'. Numbered formal artefacts: Lemma 3.2 (uniqueness of redex at t(s^n(0)) \u2014 full inline proof, cited by Theorem 3.3 + \u00a74); Theorem 3.3 (unique-reduction theorem \u2014 proved by induction over Lemma 3.2, cited by \u00a73.5 + \u00a74). Each lemma/theorem named, separately discharged, cited by name downstream. Distinct proof tools per question. Meets Cycle #7 R2 tightening.",
+      "oracle_command": null
+    },
+    "R3": {
+      "value": 2,
+      "method": "textual+oracle-cross-ref",
+      "evidence": "B-ARGUMENT.md tabular elements: \u00a71.1 8-row LHS-heads table; Appendix A 8-row per-rule sanity table. The 104-triple CP enumeration lives in B-simulator.py (test_q1_cp_enumeration), with per-row output in B-sim-output-final.txt (93 non-unifiable, 11 unifiable, 2 non-joinable). Deliverable \u00a72.5 enumerates the unifiable critical pairs in PROSE only ('Of the 11 unifiable overlaps, the only nontrivial ones are (alpha5, alpha6, eps) ... and its swap'). Strict reading of Cycle #7 R3 tightening ('the deliverable to present the enumeration in auditable tabular form'): full table is in the oracle, not in the deliverable text. Cycle #7 B met this with a 10-row table inline; Cycle #8 B chose to push the full enumeration to the oracle. Band 2 under strict tightening reading.",
+      "oracle_command": "python3 docs/meta-audit/cycle-08/B-simulator.py (test_q1_cp_enumeration produces the 104-cell table; verified 93 non-unifiable + 11 unifiable + 2 non-joinable as captured in B-sim-output-final.txt)"
+    },
+    "R4": {
+      "value": 3,
+      "method": "textual",
+      "evidence": "B-ARGUMENT.md \u00a7'Verdicts committed to' table commits Q1/Q2/Q3 explicitly. Per-obligation discharge: \u00a72.1-\u00a72.5 (Q1: witness + derivations + NF check + distinctness + conclusion + structural reason); \u00a73.1-\u00a73.5 (Q2: witness + Lemma 3.2 + Theorem 3.3 + explicit first steps + conclusion); \u00a74.1-\u00a74.5 (Q3: witness + per-step verification + pattern + general-termination impossibility + conclusion); \u00a75 cross-question dependency analysis. Cycle #8 R4 3-obligation semantic met.",
+      "oracle_command": null
+    },
+    "R5": {
+      "value": 3,
+      "method": "oracle",
+      "evidence": "Verified by B-simulator.py 8 tests (all pass per B-sim-output-final.txt) AND independently by ROOT-side reducer. Per-rule deltas tabulated in B-sim-output-final.txt 'Per-rule size deltas' section: alpha1 -2, alpha2 0, alpha3 -2, alpha4 +1, alpha5 -2, alpha6 -2, alpha7 +1, alpha8 -2. Q1/Q2/Q3 witnesses all mechanically valid.",
+      "oracle_command": "python3 docs/meta-audit/cycle-08/B-simulator.py (8/8 tests pass, including test_q1_non_confluence_witness, test_q2_not_wn_witness, test_t_subterm_has_only_alpha7_redex over n=0..11, test_q3_infinite_sequence over 20 steps); plus independent ROOT-side reducer cross-check"
+    },
+    "R6": {
+      "value": 3,
+      "method": "oracle+circularity-scan",
+      "evidence": "B-ARGUMENT.md dual verification: symbolic (\u00a71.1+\u00a71.2+\u00a71.3 preliminaries; \u00a72.2+\u00a72.3 Q1 NF/distinctness; \u00a73.2 Lemma 3.2 + \u00a73.3 Theorem 3.3 for Q2; \u00a74.2 per-step Q3 verification) AND executable oracle (B-simulator.py 8 tests, all pass). \u00a76 explicitly maps each oracle test to deliverable \u00a7-reference. Disclosed-circularity scan: \u00a71.1 inspection, \u00a71.2 cites \u00a71.1 (linear), \u00a71.3 task-prompt restatement, Lemma 3.2 cites \u00a71.1 + extends, Theorem 3.3 cites Lemma 3.2 by induction, \u00a74.4 self-contained one-paragraph well-foundedness invocation. No back-edges. R6 = 3 by both legs (oracle + trace-argument with no disclosed unresolved gap).",
+      "oracle_command": "python3 docs/meta-audit/cycle-08/B-simulator.py (8/8 PASS)"
+    },
+    "R7": {
+      "value": 2,
+      "method": "textual",
+      "evidence": "B-ARGUMENT.md constructive examples: \u00a72 q(0,e) -> 0/e (Q1 divergent pair); \u00a73.4 t(0) -> t(s(0)) -> ... (Q2+Q3 trace + general pattern); \u00a76 oracle 8 tests (verifications, not new constructions); Appendix A 8-rule sanity table. Distinct closed-term witnesses: 2 (q(0,e), t(0)). Orthogonal axes: 2 (non-confluence via q-projection + non-normalization via t-self-replication); Q2/Q3 share the t(0) witness (Q3 strictly weaker than Q2 per \u00a75). Tightening cap (\u22654 OR \u22653 orthogonal) not met. Oracle tests are *verifications* of claims, not new constructions of failure modes. Band 2 (same as A \u2014 both produce minimum 2-witness set).",
+      "oracle_command": null
+    },
+    "R8": {
+      "value": 2,
+      "method": "textual",
+      "evidence": "B-ARGUMENT.md structural/parametric disclosures: \u00a72.5 universal parametric statement ('Any pair of rules with shape g(v_1,...,v_n) -> v_i and g(v_1,...,v_n) -> v_j with i!=j produces a non-joining critical pair' \u2014 universally quantified over distinct-variable-projection rule class); \u00a75 bidirectional rule-removal analysis (Q1 source vs Q2/Q3 source); Appendix A structural alpha7-vs-alpha4 contrast. Tightening criterion (\u22651 structural/parametric disclosure rather than case-exhibition) met TWICE (parametric in \u00a72.5; structural in Appendix A). HOWEVER: B has no dedicated open-questions section. The structural commentary is framed as 'what is closed and why' (rigor-asymmetry framing in \u00a75; sanity-reference framing in Appendix A), not as 'what remains open'. R8 axis is about meaningful limits and open directions \u2014 under strict R8-as-open-questions reading, the framing absence caps at band 2 despite the structural content exceeding the tightening threshold. Band 2 (CONDITIONAL on strict-vs-generous reading).",
+      "oracle_command": null
+    },
+    "R9": {
+      "value": 3,
+      "method": "oracle",
+      "evidence": "All three verdicts correct under Cycle #8 R9 3-obligation binary semantic. Verified by B-simulator.py + independent ROOT-side reducer.",
+      "oracle_command": "python3 docs/meta-audit/cycle-08/B-simulator.py (8/8 PASS; covers all three verdicts) + independent ROOT reducer"
+    },
+    "R10": {
+      "value": 3,
+      "method": "trace+schema-validation",
+      "evidence": "B's on-disk iteration trace: task/iterations/attempt-01.md (02:25 UTC, 5856 B, 4-section scratch flow with verdict-sketch + scratch-notes + oracle-cross-check + rigor-disclosure); task/sim/simulator.py (02:24 UTC, 13009 B); task/sim/output-final.txt (02:24 UTC, 3924 B); task/ARGUMENT.md (02:27 UTC, 17258 B, 6-section per-question structured proof + Appendix A). Two substantive iterations: byte delta +11402, structurally different (attempt-01 has 'Scratch notes' single-section with 3 sub-headings per question; final has \u00a71 preliminaries + \u00a72-\u00a74 5-sub-section per-question + \u00a75-\u00a76 + Appendix). Lemma 3.2, Theorem 3.3, \u00a72.5 parametric, \u00a74.4 termination impossibility, \u00a76 \u00a7-mapping, Appendix A \u2014 all NEW in iteration 2. ROOT-authored B-gap-closure-check.json (02:30 UTC, \u22488 KB): SCHEMA-VALIDATED PASS against /workspaces/docs/research/eml-paper/gap-closure-check.schema.json (jsonschema.validate). 7 closures (G1-G7), verifier_identity=ROOT (independent of B), non_inflation_check.performed=true + result=no-new-gaps. M6.3 (c) committed-diff-verification substitute path exercised for the first time. All band-3 criteria met: (a) \u22652 iterations on disk; (b) iteration-separate gap report (ROOT-identified gaps named in closure-check); (c) deltas close gaps without same-severity new gaps; (d) final reflects progression; (e) JUDGMENT cites artefact paths. Band 3.",
+      "oracle_command": "python3 -c 'import json,jsonschema; jsonschema.validate(json.load(open(\"docs/meta-audit/cycle-08/B-gap-closure-check.json\")), json.load(open(\"docs/research/eml-paper/gap-closure-check.schema.json\")))' (PASS \u2014 schema-conformant)"
+    }
+  },
+  "agreement_matrix": [
+    {
+      "axis": "R1",
+      "deliverable": "A",
+      "incumbent": 1,
+      "auditor": 1,
+      "agree": "YES",
+      "note": "Q1-only post-hoc structural commentary in \u00a72 closing; sparse single-question motivation."
+    },
+    {
+      "axis": "R1",
+      "deliverable": "B",
+      "incumbent": 2,
+      "auditor": 2,
+      "agree": "YES",
+      "note": "Distributed structural commentary across \u00a72.5/\u00a74.4/\u00a75/Appendix A with at least one parametric statement; no opening motivation framing."
+    },
+    {
+      "axis": "R2",
+      "deliverable": "A",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "NF-1 + Unique Redex Lemma named, separately discharged, cited downstream; meets Cycle #7 tightening."
+    },
+    {
+      "axis": "R2",
+      "deliverable": "B",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "\u00a71.1/\u00a71.2/\u00a71.3 preliminaries + Lemma 3.2 + Theorem 3.3 named, separately discharged, cited downstream by name."
+    },
+    {
+      "axis": "R3",
+      "deliverable": "A",
+      "incumbent": 1,
+      "auditor": 1,
+      "agree": "YES",
+      "note": "No CP enumeration in any form; single-witness approach skipped support enumeration entirely."
+    },
+    {
+      "axis": "R3",
+      "deliverable": "B",
+      "incumbent": 2,
+      "auditor": 2,
+      "agree": "CONDITIONAL",
+      "note": "Strict reading of Cycle #7 R3 tightening: deliverable \u00a72.5 prose summary of unifiable overlaps; full 104-cell table in oracle (B-simulator.py test_q1_cp_enumeration). Generous reading (deliverable+oracle union as tabular form) would give 3. Auditor concurs with incumbent strict reading; flags rubric-semantic disambiguation between deliverable-only-vs-deliverable+oracle."
+    },
+    {
+      "axis": "R4",
+      "deliverable": "A",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "All three obligations firmly committed and rigorously discharged separately under Cycle #8 R4 3-obligation semantic."
+    },
+    {
+      "axis": "R4",
+      "deliverable": "B",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "All three obligations firmly committed with separate per-question 5-sub-section discharge."
+    },
+    {
+      "axis": "R5",
+      "deliverable": "A",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "Mechanically correct \u2014 independent ROOT reducer verified Q1 witness + unique-redex chain n=0..15."
+    },
+    {
+      "axis": "R5",
+      "deliverable": "B",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "Mechanically correct \u2014 B-simulator.py 8/8 pass + independent ROOT reducer cross-check."
+    },
+    {
+      "axis": "R6",
+      "deliverable": "A",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "No hidden circularity (lemma chain linear); trace-argument path qualifies as band 3 per R6 oracle-as-additional-indicator clause."
+    },
+    {
+      "axis": "R6",
+      "deliverable": "B",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "Both legs met: trace-argument (linear, no back-edges) AND executable oracle (8/8 PASS)."
+    },
+    {
+      "axis": "R7",
+      "deliverable": "A",
+      "incumbent": 2,
+      "auditor": 2,
+      "agree": "YES",
+      "note": "2 distinct closed-term witnesses, 2 orthogonal axes; Q2/Q3 share t(0); tightening cap not met."
+    },
+    {
+      "axis": "R7",
+      "deliverable": "B",
+      "incumbent": 2,
+      "auditor": 2,
+      "agree": "YES",
+      "note": "Same 2-witness minimum set; oracle tests are verifications not new constructions."
+    },
+    {
+      "axis": "R8",
+      "deliverable": "A",
+      "incumbent": 1,
+      "auditor": 1,
+      "agree": "YES",
+      "note": "Single-instance rule-removal observation in \u00a75; trivial."
+    },
+    {
+      "axis": "R8",
+      "deliverable": "B",
+      "incumbent": 2,
+      "auditor": 2,
+      "agree": "CONDITIONAL",
+      "note": "Structural content (\u00a72.5 parametric + \u00a75 bidirectional + Appendix A contrast) exceeds tightening threshold, BUT no dedicated open-questions section; framing is 'what is closed and why' not 'what is open'. Strict R8-as-open-questions reading caps at 2; generous reading (tightening met by content regardless of framing) gives 3. Auditor concurs with incumbent strict reading."
+    },
+    {
+      "axis": "R9",
+      "deliverable": "A",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "All three verdicts correct, mechanically verified."
+    },
+    {
+      "axis": "R9",
+      "deliverable": "B",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "YES",
+      "note": "All three verdicts correct, mechanically verified by both oracles."
+    },
+    {
+      "axis": "R10",
+      "deliverable": "A",
+      "incumbent": 0,
+      "auditor": 0,
+      "agree": "YES",
+      "note": "Pure single-shot; no Cycle #8 iteration trace at all (stale Cycle #7 files in workspace untouched)."
+    },
+    {
+      "axis": "R10",
+      "deliverable": "B",
+      "incumbent": 3,
+      "auditor": 3,
+      "agree": "CONDITIONAL",
+      "note": "B-gap-closure-check.json schema-validated PASS against gap-closure-check.schema.json (jsonschema). 7 closures, verifier_identity=ROOT (independent of iterator), non_inflation_check=no-new-gaps. M6.3 (c) committed-diff-verification path. CONDITIONAL flag: M6.3 codification text says band 3 requires 'evaluator-or-equivalent verification per iteration beyond the first'; the gap-closure-check.json's prior_iteration_report field admits 'no separate .eval-report-01.json was produced by B; ROOT performed the gap identification'. Strict reading would ask whether (c) requires an iter-1 audit artefact separate from ROOT's post-hoc identification; generous reading (the schema-conformant ROOT-authored closure artefact IS the iteration-2 verification, with iter-1 gaps identified by an independent verifier at closure time) is the operative incumbent reading. Auditor concurs with incumbent band 3 under the operative M6.3 substitute (c) reading."
+    }
+  ],
+  "agreement_summary": {
+    "total_axis_deliverable_pairs": 20,
+    "YES": 17,
+    "CONDITIONAL": 3,
+    "NO": 0
+  },
+  "disagreement_count": 0,
+  "conditional_count": 3,
+  "arbitration_triggered": false,
+  "arbitration_reason": null,
+  "arbitration_protocol_check": {
+    "criterion_a_band_diff_ge_2": "0 axes (no NO with band-diff \u2265 2)",
+    "criterion_b_three_or_more_NOs": "0 NOs (well below threshold of 3)",
+    "criterion_c_R9_disagreement": "R9-A YES, R9-B YES (no disagreement on binary axis)",
+    "criterion_d_total_diff_gt_20pct": "auditor_total_A 20 == incumbent_total_A 20 (\u0394=0); auditor_total_B 26 == incumbent_total_B 26 (\u0394=0); 20% of rubric max 30 = 6 points; 0 < 6, not triggered",
+    "result": "arbitration_triggered = false"
+  },
+  "schema_validation": {
+    "B_gap_closure_check_against_schema": "PASS",
+    "validation_command": "python3 -c 'import json,jsonschema; jsonschema.validate(json.load(open(\"docs/meta-audit/cycle-08/B-gap-closure-check.json\")), json.load(open(\"docs/research/eml-paper/gap-closure-check.schema.json\")))'",
+    "validated_fields": {
+      "cycle_id": "cycle-08 (matches pattern ^cycle-[0-9]+$)",
+      "iteration_index": 2,
+      "closures_count": 7,
+      "verifier_identity": "ROOT (in enum)",
+      "non_inflation_check.performed": true,
+      "non_inflation_check.result": "no-new-gaps (in enum)"
+    }
+  },
+  "mechanical_verifications": {
+    "B_simulator_re_run": "8/8 tests PASS (re-run from /workspaces, output identical to B-sim-output-final.txt)",
+    "independent_ROOT_reducer": "Q1 witness + Q2/Q3 unique-redex chain for n=0..15 + per-rule applicability all PASS",
+    "Q1_witness_q_0_e": "alpha5: q(0,e)->0; alpha6: q(0,e)->e; redexes(0)=[]; redexes(e)=[]; 0!=e",
+    "Q2_unique_redex_chain": "for n in 0..15: redexes(t(s^n(0))) == [((),'a7')]; reduct = t(s^(n+1)(0))",
+    "Q3_infinite_sequence_validity": "every step alpha7@eps applicable; size strictly grows (n+2); no repetition"
+  },
+  "notes": "Independent audit concurs with incumbent JUDGMENT on all 20 axis-deliverable pairs (10 axes \u00d7 2 deliverables). Auditor totals (A=20, B=26, \u0394=+6) exactly match incumbent totals; arbitration_triggered=false. Three CONDITIONAL flags surface rubric-semantic dependencies that do not constitute disagreement: (i) R3-B (deliverable-only vs deliverable+oracle reading of Cycle #7 R3 tightening's 'auditable tabular form' requirement); (ii) R8-B (tightening-met-by-structural-content vs tightening-met-by-content+open-question-framing); (iii) R10-B (M6.3 substitute (c)'s relationship to the absence of a separate iter-1 evaluator report \u2014 the gap-closure-check.json's verifier_identity=ROOT covers iteration-2 verification, with prior gaps identified by ROOT post-hoc rather than by a separate B-authored eval-report-01.json). All three are rubric-disambiguation matters appropriate for the next pre-cycle's rubric review, not arbitration triggers per the disagreement protocol. Shared-bias disclosure: R1, R2, R7, R8 are scored textually by both incumbent and proof-auditor running on the same base model; agreement on these subjective axes is not independent evidence of correctness \u2014 may reflect shared blind spots in what counts as 'meaningful motivation', 'named sublemma', 'orthogonal example', 'open question framing'. Strongest audit confidence is on oracle-or-trace-backed axes: R5 (independent ROOT reducer + B's oracle, both PASS), R9 (same), R6 (executable oracle 8/8 PASS for B; independent disclosed-circularity scan for both A and B confirms linear lemma chains with no back-edges), R10 (jsonschema validation PASS on B-gap-closure-check.json; mtime/byte-size/structural-section delta directly observable on disk). The +6 \u0394 is dominated by R10 (+3) which is purely architecture-driven and oracle-verifiable, plus R1/R3/R8 (+1 each) which are subjective-axis differentials where shared-bias risk applies \u2014 but the differentials are corroborated by concrete deliverable-text artefacts (B's \u00a72.5 parametric statement, B's Appendix A 8-row table, B's \u00a75 bidirectional rule-removal analysis) that A demonstrably lacks. Cycle-close disposition: status=draft, proceed with auditor-backed incumbent verdict per CLAUDE.md \u00a76.7 step 5c.",
+  "shared_bias_disclosure": {
+    "subjective_axes_textual_only": [
+      "R1-A",
+      "R1-B",
+      "R2-A",
+      "R2-B",
+      "R7-A",
+      "R7-B",
+      "R8-A",
+      "R8-B"
+    ],
+    "oracle_or_trace_backed_axes": [
+      "R3-B (oracle cross-ref)",
+      "R5-A (independent reducer)",
+      "R5-B (B oracle + independent reducer)",
+      "R6-A (circularity scan)",
+      "R6-B (oracle + circularity scan)",
+      "R9-A (independent reducer)",
+      "R9-B (B oracle + independent reducer)",
+      "R10-A (mtime/disk-trace)",
+      "R10-B (mtime/disk-trace + jsonschema validation)"
+    ],
+    "highest_confidence": "R5, R6, R9 (mechanically verified) and R10 (jsonschema-validated + on-disk byte/mtime delta)",
+    "lowest_confidence": "R1, R8 (presentation-framing judgment); R3 (presentation-form judgment between deliverable and oracle)",
+    "caveat": "Auditor and incumbent run on the same base model. Concurrence on R1/R2/R7/R8 is consistent with shared training corpus reading patterns and should not be treated as independent confirmation. The +1 differentials at R1/R3/R8 (B over A) ARE corroborated by concrete textual artefacts in B (parametric statements, tabular elements, structural disclosures) that are absent in A \u2014 making the differentials more robust than absolute-band readings."
+  }
+}

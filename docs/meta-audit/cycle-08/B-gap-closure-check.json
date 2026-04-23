@@ -1,0 +1,79 @@
+{
+  "cycle_id": "cycle-08",
+  "iteration_index": 2,
+  "prior_iteration_report": "docs/meta-audit/cycle-08/B-attempt-01.md (no separate .eval-report-01.json was produced by B this cycle; ROOT performed the gap identification by reading B-attempt-01.md against the deliverable obligations stated in TASK.md and surfacing the attempt-01 sections that were below deliverable rigor)",
+  "prior_iteration_path": "docs/meta-audit/cycle-08/B-attempt-01.md",
+  "current_iteration_path": "docs/meta-audit/cycle-08/B-ARGUMENT.md",
+  "closures": [
+    {
+      "gap_id": "G1",
+      "gap_source": "docs/meta-audit/cycle-08/B-attempt-01.md (attempt-01 organises its content as a single 'Scratch notes' section with three sub-headings; no per-question discharge section per Q1/Q2/Q3 with sub-section structure separating witness + NF check + distinctness + conclusion)",
+      "gap_description": "attempt-01 conflates the three obligation discharges into scratch-style prose; the deliverable's per-question rigor cannot be checked sub-section by sub-section.",
+      "evidence_type": "committed-diff-verification",
+      "evidence_path": "docs/meta-audit/cycle-08/B-gap-closure-check.json (this file; closure verified by ROOT diff between B-attempt-01.md and B-ARGUMENT.md)",
+      "closure_location": "B-ARGUMENT.md §2 (Q1: §2.1-§2.5), §3 (Q2: §3.1-§3.5), §4 (Q3: §4.1-§4.5) — five sub-sections per question explicitly separating witness, NF-check, distinctness, conclusion, structural explanation",
+      "non_inflation_note": "Per-question structuring did not introduce new gaps; the prior single-flow scratch-note coverage is preserved within the new sub-sections."
+    },
+    {
+      "gap_id": "G2",
+      "gap_source": "docs/meta-audit/cycle-08/B-attempt-01.md §'Scratch notes' (no preliminaries lemma; the claim 'rule LHSs have heads in {add, mul, q, t, neg}' is stated inline in Q1's NF check rather than extracted as a reusable lemma cited by Q2's uniqueness argument)",
+      "gap_description": "attempt-01 lacks the preliminary catalogue of rule-LHS heads + immediate-NF catalogue used by both Q1 and Q2; the same head-enumeration is implicitly performed twice.",
+      "evidence_type": "committed-diff-verification",
+      "evidence_path": "docs/meta-audit/cycle-08/B-gap-closure-check.json",
+      "closure_location": "B-ARGUMENT.md §1.1 'Rule LHS heads' + §1.2 'Immediate NF catalogue' + §1.3 'Subterm/closure conventions' — three preliminary sub-sections cited by §2.2 (Q1 NF check) and §3.2/§3.3 (Q2 uniqueness theorem)",
+      "non_inflation_note": "Lemma extraction strengthens the deliverable; the cited inline claims become citations to a single proof. No new gap."
+    },
+    {
+      "gap_id": "G3",
+      "gap_source": "docs/meta-audit/cycle-08/B-attempt-01.md 'Q2 — non-WN' subsection (claims uniqueness of redex prose-style: 'the only redex in t(s^n(0)) is alpha7 at root because no LHS matches s or 0'; treated as obvious; no formal lemma statement)",
+      "gap_description": "attempt-01 hand-waves the load-bearing uniqueness-of-redex claim. The deliverable obligation requires a rigorous proof since the entire Q2 verdict rests on it.",
+      "evidence_type": "committed-diff-verification",
+      "evidence_path": "docs/meta-audit/cycle-08/B-gap-closure-check.json",
+      "closure_location": "B-ARGUMENT.md §3.2 'The crux: uniqueness of redex at t(s^n(0))' (formal lemma statement + per-LHS rejection enumeration over the 8 rules) + §3.3 'The unique-reduction theorem' (induction over reduction-sequence length) — load-bearing claim now has a formal lemma + theorem with full proof",
+      "non_inflation_note": "Formalising the lemma did not introduce new high-severity gaps. (One CONDITIONAL: the lemma uses 'no rule LHS has head s or 0' which is verified inline by case analysis of the 8 rules; this dependency is fully discharged.)"
+    },
+    {
+      "gap_id": "G4",
+      "gap_source": "docs/meta-audit/cycle-08/B-attempt-01.md 'Q1 — non-confluence' subsection (states 'instantiating x:=0, y:=e gives the concrete closed term q(0,e)' but does not generalise to a structural statement about q-projection)",
+      "gap_description": "attempt-01 stops at the single-instance witness for Q1; no claim about whether q's non-confluence pattern generalises (a structural / parametric observation that strengthens the deliverable's Q1 reasoning).",
+      "evidence_type": "committed-diff-verification",
+      "evidence_path": "docs/meta-audit/cycle-08/B-gap-closure-check.json",
+      "closure_location": "B-ARGUMENT.md §2.5 'Structural reason (non-essential, for completeness)' — adds the parametric observation that 'any pair of rules with shape g(v_1,...,v_n) -> v_i and g(v_1,...,v_n) -> v_j with i != j produces a non-joining critical pair (v_i, v_j) at the root', generalising the q-specific witness",
+      "non_inflation_note": "Structural generalisation is additive; no new gaps."
+    },
+    {
+      "gap_id": "G5",
+      "gap_source": "docs/meta-audit/cycle-08/B-attempt-01.md 'Q3 — non-SN' subsection (single sentence noting 'Q3 follows from Q2 since the unique reduction is already infinite', no explicit step-by-step infinite sequence with rule citation per step)",
+      "gap_description": "attempt-01 reduces Q3 to Q2 informally; the TASK constraint requires a SPECIFIC infinite reduction sequence with the rule applied at each step explicitly named.",
+      "evidence_type": "committed-diff-verification",
+      "evidence_path": "docs/meta-audit/cycle-08/B-gap-closure-check.json",
+      "closure_location": "B-ARGUMENT.md §4.1 'Witness' + §4.2 'Verification that each step is a legal rewrite' + §4.3 'Pattern made explicit' + §4.4 'The general termination impossibility' + §4.5 'Conclusion for Q3' — Q3 now has its own explicit step-by-step trace t(0) -> t(s(0)) -> t(s(s(0))) -> ... with per-step alpha7 citation and inductive argument that the pattern is unbounded",
+      "non_inflation_note": "Explicit Q3 trace closes the constraint requirement. No new gap."
+    },
+    {
+      "gap_id": "G6",
+      "gap_source": "docs/meta-audit/cycle-08/B-attempt-01.md (no per-rule applicability summary; the 8-rule signature is enumerated in the Q1 NF prose but not cross-referenced as a sanity check)",
+      "gap_description": "attempt-01 lacks an at-a-glance audit table of how each of the 8 rules behaves on representative ground inputs (a sanity check that would catch any rule mis-statement at deliverable-write time).",
+      "evidence_type": "independent-oracle-output",
+      "evidence_path": "docs/meta-audit/cycle-08/B-sim-output-final.txt (sections '=== Per-rule size deltas on representative closed instances ===' and '=== Sanity: claimed NFs are irreducible ===') + B-ARGUMENT.md Appendix A 'Sanity table of per-rule behaviour'",
+      "closure_location": "B-ARGUMENT.md Appendix A — explicit table of per-rule application on canonical ground instances; cross-validated by B-sim-output-final.txt's per-rule output",
+      "non_inflation_note": "Appendix is verifiable independently by re-running simulator.py. No new gap."
+    },
+    {
+      "gap_id": "G7",
+      "gap_source": "docs/meta-audit/cycle-08/B-attempt-01.md '## Oracle cross-check' subsection (lists what the oracle tests but does not cite which §-references in the deliverable each test corresponds to)",
+      "gap_description": "attempt-01's oracle-cross-check is a flat list; no mapping from each test to the specific deliverable claim it verifies. A reader cannot navigate from 'test_q2_not_wn_witness passes' to 'this empirically verifies B-ARGUMENT.md §3.2's lemma statement on n=0..11'.",
+      "evidence_type": "independent-oracle-output",
+      "evidence_path": "docs/meta-audit/cycle-08/B-sim-output-final.txt + B-simulator.py",
+      "closure_location": "B-ARGUMENT.md §6 'Oracle verification summary' — explicit mapping per oracle test to the §-reference it cross-checks",
+      "non_inflation_note": "Mapping is additive; no new gap."
+    }
+  ],
+  "verifier_identity": "ROOT",
+  "non_inflation_check": {
+    "performed": true,
+    "result": "no-new-gaps",
+    "new_gaps": []
+  },
+  "generated_at": "2026-04-23T02:30:00Z"
+}
