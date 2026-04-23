@@ -1591,16 +1591,30 @@ invoked against both A and B containers (this is the third cycle
 exercising the L2→L3 cleanup boundary; Cycles #6/#7 established
 + validated; Cycle #8 confirms persistence on the third cycle).
 
-- **A relayed-credential count post-cleanup: 0** (forensic to
-  be recorded after invocation).
-- **B relayed-credential count post-cleanup: 0** (forensic to
-  be recorded after invocation).
+Cleanup invoked at 02:35 UTC after the cycle-close commit
+(`f0d569d`) was pushed to origin/main:
 
-The forensic count for both A and B post-`cleanup-sub.sh --stop`
-will be appended to this entry as the cycle's true close;
-containers will then be stopped (vs Cycle #7's `cleanup-sub.sh`
-without `--stop` which left them running).  Cycle #8 GOAL clause
-9 explicitly requires `--stop` invocation.
+```
+$ scripts/meta/cleanup-sub.sh a --stop
+removed: credentials.json
+Stopping container claude-meta-autoagent-a... stopped.
+$ scripts/meta/cleanup-sub.sh b --stop
+removed: credentials.json
+Stopping container claude-meta-autoagent-b... stopped.
+```
+
+Post-cleanup forensic (containers temporarily restarted to
+inspect filesystem, then re-stopped):
+
+- **A relayed-credential count post-cleanup: 0** ✓
+- **B relayed-credential count post-cleanup: 0** ✓
+
+Both containers in `Exited` state at cycle close (vs Cycle #7's
+left-running close).  Cycle #8 GOAL clause 9 explicitly required
+`--stop` invocation; satisfied.  This is the **third consecutive
+cycle exercising the L2→L3 cleanup boundary** (Cycle #6 establish;
+Cycle #7 validate without `--stop`; Cycle #8 validate with
+`--stop`).  Persistence confirmed across the sequence.
 
 **Commits referenced.**
 - `988e3ed` chore(cycle-08-pre): R10 M6.3 schema port + task-prompt-discipline + retrospective-rescore + Cycle #8 TASK (rubric-blind)
