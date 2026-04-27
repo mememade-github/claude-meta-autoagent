@@ -2319,3 +2319,170 @@ even on a stable domain.
 
 Cycle #11 closes the current parent WIP per L0 Branch B decision.
 No subsequent cycle in this WIP.
+
+---
+
+## Cycle #12 — 2026-04-27 (parent WIP: task-20260427-q5-outcome-grounded)
+
+### Task
+
+EML-domain continuity (Cycles #1, #10, #11 same primitive set).
+Cycle #12 introduces the parallel **outcome-verification dimension**
+per L0 selection of alternative (I) Outcome-based measurement
+(2026-04-27).  TASK adds (b) `outcome.json` side-car deliverable
+with a 7-question outcome battery (Q1-Q7) on top of the §1-§7
+ARGUMENT.md prose deliverable.  Rubric R1-R10 text unchanged this
+cycle.
+
+Hypothesis under test:
+- **H1:** B's rubric-Δ advantage corresponds to outcome-Δ in same
+  direction and magnitude.
+- **H0:** outcome-Δ is 0 or anti-correlated.
+
+### Verdict
+
+- **Rubric:** A 20/30, B 18/30, **Δ = −2** (A ahead).  Direction
+  reversal vs Cycle #11 (where Δ = +2).
+- **Outcome:** A 3/7 (0.429), B 4/7 (0.571), **Δ = +1/7 ≈ +0.143**
+  (B ahead).
+- **Direction agreement:** **opposite**.
+- **H1/H0:** **H0-favorable** for this single-cycle test.
+- **Audit concurrence:** auditor totals match incumbent byte-for-byte
+  (A=20, B=18); agreement matrix 19 YES + 1 CONDITIONAL on B-R4 +
+  0 NO; arbitration_triggered = false; status = draft.
+
+Per-axis Δ breakdown (B − A):
+
+| Axis | A | B | Δ | Cause |
+|------|---|---|---|-------|
+| R1 | 3 | 2 | −1 | A names field-generation precedent + obstruction sketch; B's motivation is internal mechanisms only, no cross-domain precedent |
+| R2 | 3 | 3 | 0 | Both meet M10.3 per-sublemma proof locality |
+| R3 | 3 | 2 | −1 | A has deliverable-side tables per stage (Cycle #9 locus met); B has prose-per-stage |
+| R4 | 2 | 2 | 0 | Both ≤2 binary; A=5 elements (binary+constant shape), B=2 elements (binary+unary shape) — auditor CONDITIONAL on B's structurally-distinct cardinality-2 route |
+| R5 | 1 | 1 | 0 | Neither proposes single binary operator |
+| R6 | 2 | 2 | 0 | Both disclose gaps; B regressed from cycle-11 R6=3 (no executable oracle this cycle) |
+| R7 | 3 | 3 | 0 | Both ≥3 examples |
+| R8 | 3 | 3 | 0 | Both have parametric/structural disclosure |
+| R9 | 0 | 0 | 0 | Neither reaches paper's binary+constant answer |
+| R10 | 0 | 0 | 0 | A 3rd byte-identical no-op; B single-shot fresh content (no /refine trace this cycle) |
+
+### Substantive findings
+
+- **A 3rd-consecutive byte-identical no-op** on ARGUMENT.md (sha256
+  d2f68dea7a34e7c8 across cycles #10/#11/#12).  A's autonomy at
+  work — karpathy-skills without /refine allows A to decline
+  re-writing a deliverable it judges adequate.  A added
+  `outcome.json` this cycle as a projection of existing argument
+  onto the battery questions.
+
+- **B's 4-element ceiling broken to 2-element basis.**  Cycle #11
+  B converged at `B* = {+, exp, ln, −1}` (4 elements); Cycle #12 B
+  reached `B* = {exp, log_x(y)}` (cardinality 2) via diagonal
+  degeneracy `log_x(x) = 1`.  Structurally distinct from paper's
+  `{eml, 1}` but at the same cardinality.  B did this single-shot
+  (no /refine trace).  Outcome battery Q1 (binary count = 1) and
+  Q4 (total cardinality = 2) both PASS for B — confirms B reached
+  the cardinality lower bound.
+
+- **Framework-disagreement vs content-error in outcome FAILs.**
+  B's 3 FAILs (Q2/Q3/Q7) are framework-disagreement (B's basis
+  has `exp` top-level + 0 explicit constant; paper's basis has 0
+  unary + 1 constant — both internally coherent at cardinality 2).
+  Outcome verifier v1 cannot distinguish framework-disagreement
+  from content-error.  A's 4 FAILs are mixed framework-
+  disagreement + disclosed-gap.
+
+- **Rubric-coverage gap surfaced (C12-CO1).**  R4 axis caps at
+  band 2 when basis is "1 binary + 1 unary" (B's cycle-12 route)
+  even though total cardinality (2) matches the band-3 target.
+  Auditor flagged this as the single CONDITIONAL on B-R4.  Locus
+  is exactly the same as the H0-direction-of-divergence between
+  rubric and outcome — the rubric framework is structurally
+  incapable of distinguishing B's cardinality-2 alternative from
+  the band-3 specified shape.
+
+- **R10 single-shot-quality-leap reward gap (C12-CO3).**  Cycle
+  #11 B got R10=3 via /refine iteration trace + executable oracle.
+  Cycle #12 B reached deeper content (cardinality 4 → 2 leap) but
+  did so single-shot without /refine — earning R10=0 despite the
+  content advance.  Rubric R10 axis measures iteration TRACE on
+  disk, not content quality.
+
+- **Outcome verifier framework-vs-content distinction (C12-CO2).**
+  Bare outcome ratio under-counts framework-coherent-but-different
+  answers as content errors.  v2 candidate.
+
+### Paper-leak audit
+
+Both A and B PASS.  **12th consecutive cycle** with zero paper-
+identifier hits.  Reversed-form block list at
+`projects/{a,b}/.claude/hooks/paper-leak-guard.sh` (sha256
+1e197c27...) symmetric and unchanged this cycle (cycle-12 introduced
+no new identifier surface — outcome-* names are procedural).
+
+### Cleanup-sub.sh forensic (7th consecutive)
+
+Run after JUDGMENT commit.
+
+| Container | Pre-cleanup cred | Pre-cleanup today-logs | Post-cleanup cred | Post-cleanup today-logs |
+|-----------|------------------|------------------------|-------------------|--------------------------|
+| claude-meta-autoagent-a | present | 0 | **absent** | **0** |
+| claude-meta-autoagent-b | present | 0 | **absent** | **0** |
+
+`cleanup-sub.sh` reported `removed: credentials.json` for both A and
+B.  L2 → L3 credential-cleanup boundary intact.  Today's dated launch
+logs (`/tmp/agent-YYYYMMDD-*.log`) were already absent (not produced
+by this delegate path; the `/tmp/agent.log` overwrite-per-launch
+location is structurally different and out of cleanup-sub.sh scope
+by design).
+
+### Carry-overs (NOT defects, observations for future-WIP iteration)
+
+- **C12-CO1: Rubric-coverage gap on cardinality vs structural-shape.**
+  R4 axis cannot distinguish "2-element basis matching band-3 spec"
+  from "2-element basis with alternative composition".
+- **C12-CO2: Outcome-verifier framework-disagreement-vs-content-error
+  distinction.**  v2 candidate.
+- **C12-CO3: R10 single-shot-quality-leap reward gap.**  Single-shot
+  content leap (cardinality 4 → 2) earns R10=0 despite deeper
+  reasoning than an iterated plateau.
+- **(Carried from cycle-11) Q5-M11.1-oracle-pattern-port,
+  falsification-test-v2 candidate, R1/R2 aggressive-cap tightening.**
+  Not exercised in Cycle #12 (single-cycle WIP scope).
+
+### Parent WIP closure
+
+`task-20260427-q5-outcome-grounded` closes on this **H0-favorable
+verdict**.  Empirical evidence: rubric-Δ and outcome-Δ point in
+opposite directions within Cycle #12 (n = 1 cycle, n = 7 outcome
+questions).  Either result was acceptable per the WIP charter; the
+finding is H0.
+
+The carry-overs above are appropriate material for any future WIP
+that builds on this one — particularly any successor that wants to
+either (a) expand the outcome dimension to a v2 verifier with
+framework-vs-content awareness, (b) augment R4/R10 to reward
+cardinality-equivalent and single-shot-leap routes, or (c) extend
+Cycle #12's n=1 to a longitudinal multi-cycle outcome track for
+statistical replication.
+
+**Leak streak 12.** Cycles #1 through #12 all clean.  WIP-level
+streak: 12 / 12.
+
+**A no-op streak 3** (Cycles #10, #11, #12 byte-identical
+A-ARGUMENT.md).
+
+**B's autonomy variation:** Cycle #12 broke B's 4-cycle /refine
+streak (Cycles #8-#11).  B chose direct authorship for cycle-12,
+trading R6+R10 rubric architecture-rewards for a content-quality
+leap (cardinality 4 → 2) that the rubric framework cannot
+distinguish from a band-2 plateau.
+
+**EML-domain absolute Δ swing:** Cycle #11 +2 → Cycle #12 −2
+(4-point swing on 30-point scale).  The swing is attributable to
+B's autonomy choice (no /refine, no oracle this cycle) and
+illustrates how the rubric architecture-reward mechanism dominates
+when content advances are not accompanied by their corresponding
+iteration-trace artefacts.
+
+Cycle #12 closes the parent WIP `task-20260427-q5-outcome-grounded`.
