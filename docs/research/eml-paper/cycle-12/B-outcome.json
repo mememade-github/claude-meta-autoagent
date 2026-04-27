@@ -1,0 +1,48 @@
+{
+  "schema_version": "outcome-v1",
+  "task_id": "cycle-12",
+  "questions": [
+    {
+      "id": "Q1",
+      "answer": "1",
+      "confidence": "high",
+      "reasoning_section": "§4 (one binary, log_x(y), is sufficient and any basis needs ≥1 binary to combine distinct variables — see §4 essentiality)"
+    },
+    {
+      "id": "Q2",
+      "answer": "1",
+      "confidence": "medium",
+      "reasoning_section": "§4 (one unary, exp, is sufficient because log_x(y) internalizes ln and division; ln is recovered as log_e(·) where e=exp(1) and 1=log_x(x))"
+    },
+    {
+      "id": "Q3",
+      "answer": "no",
+      "confidence": "medium",
+      "reasoning_section": "§3 Stage E and §4 (the constant 1 is realized as log_x(x)=1 on the generic domain x∉{0,1}; all other constants (-1, e, i, π, 2) bootstrap from there). §7 records the strict-interpretation caveat."
+    },
+    {
+      "id": "Q4",
+      "answer": "2",
+      "confidence": "medium",
+      "reasoning_section": "§4 (B* = {exp, log_x(y)}, cardinality 2; tightness argued in §4 essentiality and lower bound)"
+    },
+    {
+      "id": "Q5",
+      "answer": "no",
+      "confidence": "high",
+      "reasoning_section": "§3 Stage A vs Stage E (textbook {exp, ln, +} alone cannot express any constant — every composition is non-constant in the input variables — so it fails to reconstruct the primitives π, e, i, -1, 1, 2; furthermore §3 reaches a strictly smaller 2-element basis)"
+    },
+    {
+      "id": "Q6",
+      "answer": "yes",
+      "confidence": "high",
+      "reasoning_section": "§4 (exp is a basis primitive of B*, hence trivially in its closure)"
+    },
+    {
+      "id": "Q7",
+      "answer": "yes",
+      "confidence": "high",
+      "reasoning_section": "§4 (exp is a top-level primitive of B*; ln is derived as log_e(·) and is not top-level)"
+    }
+  ]
+}

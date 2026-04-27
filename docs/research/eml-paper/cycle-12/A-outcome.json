@@ -1,0 +1,48 @@
+{
+  "schema_version": "outcome-v1",
+  "task_id": "cycle-12",
+  "questions": [
+    {
+      "id": "Q1",
+      "answer": "2",
+      "confidence": "high",
+      "reasoning_section": "§3.6 (clauses iii and iv) and §4 — the recommended strict minimum {-1, +, ×, exp, ln} contains the binary operators + and ×; §3.6(iii) shows + cannot be derived from {×, exp, ln, constants} as a total function over ℂ (the 2πi-periodicity of exp causes ln(exp(a)·exp(b)) to equal a+b only mod 2πi), and §3.6(iv) shows × cannot be derived from {+, exp, ln, constants} as a total function (the natural exp/ln substitute is undefined at the coordinate axes)."
+    },
+    {
+      "id": "Q2",
+      "answer": "2",
+      "confidence": "high",
+      "reasoning_section": "§3.6 (clauses i and ii) and §4 — the strict minimum {-1, +, ×, exp, ln} contains the unary operators exp and ln; §3.6(i) shows exp is irreducible over {+, ×, ln, constants} (any such composition is bounded by polynomial-times-log growth, while exp grows superpolynomially), and §3.6(ii) shows ln is irreducible over {+, ×, exp, constants} (those compositions are entire on ℂ, while ln has a branch-point singularity at 0)."
+    },
+    {
+      "id": "Q3",
+      "answer": "yes",
+      "confidence": "high",
+      "reasoning_section": "§3.7 — at least one constant is required because no closed expression built from {exp, ln, +, ×} alone (with no input) produces a non-trivial 0-ary value (the empty term yields nothing); furthermore, a positive-real seed never escapes ℝ_{>0} under {+, ×, exp, ln}, so the seed must lie in ℂ ∖ ℝ_{≥0}; -1 and i are the canonical choices, both yielding the same minimum cardinality."
+    },
+    {
+      "id": "Q4",
+      "answer": "5",
+      "confidence": "high",
+      "reasoning_section": "§4 (and §3.5–§3.7) — the strict-total minimal basis is {-1, +, ×, exp, ln}, which has cardinality 5 (one constant + two binary + two unary). Lower bounds are established in §3.6 (operations) and §3.7 (constant). A relaxed configuration of 4 is acknowledged in §3.8 only if × is permitted to be partial at the coordinate axes; under the strict-totality reading the answer is 5."
+    },
+    {
+      "id": "Q5",
+      "answer": "no",
+      "confidence": "high",
+      "reasoning_section": "§3.6 and §3.7 — the textbook 3-element list {exp, ln, +} is not even a generating basis: (a) §3.7 shows at least one constant is required (the 3-element list has none, so it cannot reproduce 0-ary primitives like π); (b) §3.6(iv) shows that × cannot be obtained from {+, exp, ln, constants} as a total function. The minimum is 5 primitives, not 3."
+    },
+    {
+      "id": "Q6",
+      "answer": "yes",
+      "confidence": "high",
+      "reasoning_section": "§4 — exp is itself a top-level primitive of the minimal basis {-1, +, ×, exp, ln}, so exp(x) is expressed by the trivial composition exp(x) (zero composition steps). It is therefore in the closure of the basis."
+    },
+    {
+      "id": "Q7",
+      "answer": "yes",
+      "confidence": "high",
+      "reasoning_section": "§4 — the minimal basis {-1, +, ×, exp, ln} explicitly lists both exp and ln among its top-level unary primitives; they are counted in Q2 (and §3.6 i and ii prove neither can be removed in favour of being only a derived composition)."
+    }
+  ]
+}

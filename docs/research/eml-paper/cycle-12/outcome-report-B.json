@@ -1,0 +1,67 @@
+{
+  "schema_version": "outcome-report-v1",
+  "task_id": "cycle-12",
+  "total": 7,
+  "pass": 4,
+  "fail": 3,
+  "missing": 0,
+  "ratio": 0.5714285714285714,
+  "questions": [
+    {
+      "id": "Q1",
+      "verdict": "PASS",
+      "agent_answer": "1",
+      "expected": "1",
+      "match_mode": "exact",
+      "reason": "exact: '1' vs '1'"
+    },
+    {
+      "id": "Q2",
+      "verdict": "FAIL",
+      "agent_answer": "1",
+      "expected": "0",
+      "match_mode": "exact",
+      "reason": "exact: '1' vs '0'"
+    },
+    {
+      "id": "Q3",
+      "verdict": "FAIL",
+      "agent_answer": "no",
+      "expected": "yes",
+      "match_mode": "case-insensitive",
+      "reason": "ci: 'no' vs 'yes'"
+    },
+    {
+      "id": "Q4",
+      "verdict": "PASS",
+      "agent_answer": "2",
+      "expected": "2",
+      "match_mode": "exact",
+      "reason": "exact: '2' vs '2'"
+    },
+    {
+      "id": "Q5",
+      "verdict": "PASS",
+      "agent_answer": "no",
+      "expected": "no",
+      "match_mode": "case-insensitive",
+      "reason": "ci: 'no' vs 'no'"
+    },
+    {
+      "id": "Q6",
+      "verdict": "PASS",
+      "agent_answer": "yes",
+      "expected": "yes",
+      "match_mode": "case-insensitive",
+      "reason": "ci: 'yes' vs 'yes'"
+    },
+    {
+      "id": "Q7",
+      "verdict": "FAIL",
+      "agent_answer": "yes",
+      "expected": "no",
+      "match_mode": "case-insensitive",
+      "reason": "ci: 'yes' vs 'no'"
+    }
+  ]
+}
