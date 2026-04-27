@@ -23,6 +23,7 @@ Thumbs.db
 .claude/agent-memory/
 .claude/.refinement-active
 .claude/.refine-output
+.claude/.refine-eval*
 .claude/.last-*
 .claude/.update-check-cache
 .claude/worktrees/
@@ -30,6 +31,7 @@ Thumbs.db
 # Sub-project agent runtime artifacts (same classes, any sub-project)
 **/.claude/.refinement-active
 **/.claude/.refine-output
+**/.claude/.refine-eval*
 **/.claude/.last-*
 **/.claude/.update-check-cache
 **/.claude/worktrees/
