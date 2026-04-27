@@ -1,0 +1,50 @@
+{
+  "schema_version": "ground-truth-v1",
+  "task_id": "cycle-12",
+  "source_authority": "Odrzywolek 2026-03 arXiv:2603.21852",
+  "release_after": "cycle-12-close",
+  "questions": [
+    {
+      "id": "Q1",
+      "expected_answer": "1",
+      "match_mode": "exact",
+      "rationale": "Paper's main claim \u2014 reduction to a single binary operator."
+    },
+    {
+      "id": "Q2",
+      "expected_answer": "0",
+      "match_mode": "exact",
+      "rationale": "Unary operators are not top-level primitives; they appear inside the binary's definition."
+    },
+    {
+      "id": "Q3",
+      "expected_answer": "yes",
+      "match_mode": "case-insensitive",
+      "rationale": "Constant 1 is required as part of the basis."
+    },
+    {
+      "id": "Q4",
+      "expected_answer": "2",
+      "match_mode": "exact",
+      "rationale": "1 binary + 1 constant = 2 distinct primitives. Input variables x, y not counted per task."
+    },
+    {
+      "id": "Q5",
+      "expected_answer": "no",
+      "match_mode": "case-insensitive",
+      "rationale": "Textbook 3-element basis is not minimal; paper reaches cardinality 2."
+    },
+    {
+      "id": "Q6",
+      "expected_answer": "yes",
+      "match_mode": "case-insensitive",
+      "rationale": "exp(x) is in the closure of the minimal basis (necessary condition for the basis to generate the full primitive set)."
+    },
+    {
+      "id": "Q7",
+      "expected_answer": "no",
+      "match_mode": "case-insensitive",
+      "rationale": "exp and ln are not top-level primitives in the minimal basis; they appear only inside the binary's definition."
+    }
+  ]
+}

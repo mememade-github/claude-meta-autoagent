@@ -22,6 +22,19 @@
 Missing criteria score 0. Partial credit within 0–3 ranges is allowed for
 R1–R8 and R10.
 
+### Parallel outcome-verification dimension (Cycle #12 onward)
+
+Cycle #12 introduces an **outcome-correctness measurement** that is reported
+**parallel to** R1–R10 in JUDGMENT §6, not added into the 30-point rubric
+total.  See `docs/research/eml-paper/outcome-verification-axis-v1.md` for the
+axis definition and `docs/research/eml-paper/procedures/outcome-task-template-v1.md`
+for the task structure (ARGUMENT.md + outcome.json sidecar).  The verifier is
+`scripts/meta/oracles/outcome-verifier.py`.  Outcome scoring uses ground truth
+(L2-ROOT-only `cycle-NN/outcome-ground-truth.json`); rubric R1–R10 scoring is
+ground-truth-independent.  Δ(rubric) vs Δ(outcome) sign-and-magnitude
+agreement is a separate H1/H0 reading reported in JUDGMENT §6, not a rubric
+band.
+
 ## Criterion definitions
 
 ### R1 — Motivation (0–3)
