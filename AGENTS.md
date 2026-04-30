@@ -90,6 +90,8 @@ Before ANY `git commit`:
 | wip-manager | 세션 넘는 task |
 | status | Workspace status |
 | verify | Pre-commit verification |
+| wiki | LLM 위키/지식 베이스 빌드 및 유지 |
+| karpathy-guidelines | Karpathy 4-rule reference handle (직접 호출 또는 evaluator에서 참조) |
 
 ## Coding Rules
 
