@@ -11,7 +11,7 @@ set -e
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-STEP_TOTAL=3
+STEP_TOTAL=4
 STEP=0
 step() { STEP=$((STEP + 1)); echo "[${STEP}/${STEP_TOTAL}] $1"; }
 
@@ -81,6 +81,24 @@ else
     else
         echo "      WARN: claude update failed (non-fatal; image version retained: ${before})"
     fi
+fi
+
+# =============================================================================
+# 4. Codex config symlink (project workspace -> ~/.codex/config.toml)
+#    Only acts when the project ships /workspaces/.codex/config.toml.
+#    auth.json is intentionally untouched so credentials persist in $HOME.
+# =============================================================================
+step "Codex config symlink..."
+WS_CODEX_CONFIG="/workspaces/.codex/config.toml"
+HOME_CODEX_DIR="${HOME}/.codex"
+HOME_CODEX_CONFIG="${HOME_CODEX_DIR}/config.toml"
+
+if [ -f "$WS_CODEX_CONFIG" ]; then
+    mkdir -p "$HOME_CODEX_DIR"
+    ln -sfn "$WS_CODEX_CONFIG" "$HOME_CODEX_CONFIG"
+    echo "      Linked: $HOME_CODEX_CONFIG -> $WS_CODEX_CONFIG"
+else
+    echo "      No project .codex/config.toml — skipped"
 fi
 
 # =============================================================================

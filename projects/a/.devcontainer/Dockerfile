@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ripgrep fd-find fzf tree htop vim nano zsh tmux jq unzip zip man-db gh \
     python3 python3-pip python3-venv \
     docker.io \
+    bubblewrap \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     # Node.js LTS
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
@@ -75,6 +76,17 @@ RUN mkdir /tmp/claude-install && cd /tmp/claude-install \
     && rm -rf /tmp/claude-install \
     && cd ~ \
     && claude --version
+
+# =============================================================================
+# Layer 3.5: Codex CLI (npm-global, sibling to Claude Code)
+# Stable bin path /usr/local/bin/codex matches polyagent-devcontainer bb1b33d
+# and mememade-caesar 3954e95 parity recipe.
+# =============================================================================
+USER root
+RUN npm install -g @openai/codex \
+    && ln -sf "$(npm root -g)/@openai/codex/bin/codex.js" /usr/local/bin/codex \
+    && codex --version
+USER ${USERNAME}
 
 # =============================================================================
 # Layer 4: Node.js — Project (optional)
