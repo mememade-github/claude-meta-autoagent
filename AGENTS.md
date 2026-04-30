@@ -111,7 +111,6 @@ Before ANY `git commit`:
 - **Claude Code**: Native binary (~/.local/bin/claude, auto-updated)
 - **Codex CLI**: npm global (~/.npm-global/bin/codex)
 - **Persistent volumes**: `~/.claude` (Claude auth), `~/.codex` (Codex auth)
-- **MCP**: Context7, Serena (DevContainer 수준 관리)
 
 ## Behavioral Rules (Codex 미러)
 

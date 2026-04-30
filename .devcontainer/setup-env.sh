@@ -5,8 +5,6 @@
 # Policies:
 #   - Claude CLI auto-updates here (fail-soft) so containers do not drift
 #     from the image-build-time pin. Set SKIP_CLAUDE_UPDATE=1 to bypass.
-#   - MCP servers (Context7, Serena) are NOT auto-registered. Binaries remain
-#     available in the image; registration is an explicit user opt-in.
 # =============================================================================
 set -e
 
@@ -103,10 +101,6 @@ echo ""
 echo "=============================================="
 echo "  Setup Complete!"
 echo "=============================================="
-echo ""
-echo "MCP servers are NOT auto-registered (opt-in). To enable, run:"
-echo "  Context7:  claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp@latest"
-echo "  Serena:    claude mcp add --scope user serena -- \"\$HOME/.local/bin/uv\" run --directory \"\$HOME/work/serena\" serena-mcp-server --context claude-code --project-from-cwd"
 echo ""
 echo "Skip Claude CLI auto-update on next start:  export SKIP_CLAUDE_UPDATE=1"
 echo ""

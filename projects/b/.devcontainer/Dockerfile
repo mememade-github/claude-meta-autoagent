@@ -5,8 +5,8 @@
 #
 # Runtime isolation (Claude Code infra != project code):
 #   Claude Code — native binary (~/.local/bin/claude, auto-updated)
-#   Node.js     — Context7 MCP only (system package, LTS)
-#   Python      — Serena MCP only (system python3, uv)
+#   Node.js     — system Node 22 LTS (devcontainers/cli, general use)
+#   Python      — system python3 + uv (general-purpose package manager)
 #   Project Node.js can be added via PROJECT_NODE_VERSION build arg
 # =============================================================================
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04
@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 python3-pip python3-venv \
     docker.io \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    # Node.js LTS — Context7 MCP infrastructure
+    # Node.js LTS
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && npm install -g @devcontainers/cli \
@@ -49,9 +49,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && mkdir -p /usr/local/lib/docker/cli-plugins \
     && curl -SL "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-
-# Python LSP (Serena dependency)
-RUN pip install --no-cache-dir jedi
 
 # =============================================================================
 # Layer 2: User setup (root -> vscode)
@@ -93,27 +90,9 @@ RUN if [ -n "${PROJECT_NODE_VERSION}" ]; then \
     fi
 
 # =============================================================================
-# Layer 5: Serena MCP — Code Intelligence
+# Layer 5: uv (Python package manager)
 # =============================================================================
-# uv (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Install Serena
-RUN mkdir -p ${HOME}/work \
-    && cd ${HOME}/work \
-    && git clone https://github.com/oraios/serena.git \
-    && cd serena \
-    && ${HOME}/.local/bin/uv sync
-
-# Configure Serena
-RUN mkdir -p ${HOME}/.serena \
-    && if [ -f "${HOME}/work/serena/src/serena/resources/serena_config.template.yml" ]; then \
-        cp ${HOME}/work/serena/src/serena/resources/serena_config.template.yml ${HOME}/.serena/serena_config.yml; \
-    else \
-        echo -e "web_dashboard: false\nweb_dashboard_open_on_launch: false" > ${HOME}/.serena/serena_config.yml; \
-    fi \
-    && sed -i 's/web_dashboard: [Tt]rue/web_dashboard: false/g' ${HOME}/.serena/serena_config.yml \
-    && sed -i 's/web_dashboard_open_on_launch: [Tt]rue/web_dashboard_open_on_launch: false/g' ${HOME}/.serena/serena_config.yml
 
 # =============================================================================
 # Layer 6: User settings (shell, editor, git)
@@ -164,6 +143,6 @@ USER ${USERNAME}
 WORKDIR /workspaces
 
 # ENTRYPOINT: always runs on container start
-# -> auto-runs setup-env.sh -> MCP always configured
+# -> auto-runs setup-env.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["sleep", "infinity"]
