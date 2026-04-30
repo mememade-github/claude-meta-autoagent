@@ -69,3 +69,8 @@ projects/b/task/
 .codex/state/refinement-active
 .codex/state/refinement/
 .codex/push-remote
+
+# Polyagent delegate runtime (cross-vendor headless invocations)
+.polyagent/worktrees/
+.polyagent/runs/
+.polyagent/.stale-*/
