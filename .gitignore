@@ -59,3 +59,13 @@ projects/*/
 # Permanent snapshots live under docs/research/eml-paper/cycle-NN/.
 projects/a/task/
 projects/b/task/
+
+# -----------------------------------------------------------------------------
+# Codex CLI (runtime markers — no need to commit)
+# -----------------------------------------------------------------------------
+.codex/state/last-verification*
+.codex/state/last-push-url*
+.codex/state/stop-blocked*
+.codex/state/refinement-active
+.codex/state/refinement/
+.codex/push-remote

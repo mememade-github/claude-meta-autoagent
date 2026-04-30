@@ -13,6 +13,7 @@ section declares the rule(s) it operationalizes.
 > Six rules that govern judgment before any specific procedure applies.
 > Load-bearing under Opus 4.7 literalism. Adapted from the Karpathy four-rule
 > behavioral anchor pattern, extended for agent-system operation.
+> Source mirror: [`.claude/rules/behavioral-core.md`](.claude/rules/behavioral-core.md) (4-rule baseline; the six rules below are this project's extension).
 
 ### §1.1 Think Before Executing
 
