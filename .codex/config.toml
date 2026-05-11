@@ -1,4 +1,4 @@
-# Codex CLI configuration — MEMEMADE_ROOT origin
+# Codex CLI configuration
 
 # --- Sandbox / Approval policy ---
 # 일반 운영 환경에 맞춰 workspace-write + on-request 조합 사용.

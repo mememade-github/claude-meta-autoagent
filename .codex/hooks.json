@@ -1,6 +1,6 @@
 {
   "$comment": [
-    "Codex CLI hooks configuration — MEMEMADE_ROOT origin.",
+    "Codex CLI hooks configuration.",
     "Requires [features] codex_hooks = true in .codex/config.toml.",
     "Hook scripts parse multiple common command field shapes (.tool_input.command, .toolInput.command, .command, .input.command).",
     "Project root resolution uses $CODEX_PROJECT_DIR with '.' fallback.",
