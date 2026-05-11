@@ -1,4 +1,4 @@
-# AGENTS.md — MEMEMADE Workspace (Codex CLI)
+# AGENTS.md — Project Workspace (Codex CLI)
 
 > **Codex equivalent of CLAUDE.md.** Codex CLI는 본 `AGENTS.md`, `.codex/`, `.agents/skills/`를
 > 기준으로 동작합니다. Claude Code(`CLAUDE.md`/`.claude/`)와 동일 거버넌스를 형식 변환한 미러.
@@ -14,11 +14,11 @@
 
 ## Identity & Project Structure
 
-- **Workspace**: MEMEMADE_ROOT (`/workspaces/`)
+- **Workspace root**: `/workspaces/`
 - **Environment**: Dev Container (Ubuntu 22.04, WSL2, user=vscode)
 
 ```
-/workspaces/                        # MEMEMADE_ROOT (this repo)
+/workspaces/                        # workspace root (this repo)
 ├── CLAUDE.md                       # Governance — Claude
 ├── AGENTS.md                       # Governance — Codex (this file, mirror)
 ├── PROJECT.md                      # Domain context
@@ -108,8 +108,6 @@ Before ANY `git commit`:
 
 ## Environment
 
-- **Server**: cp001.mememade.com (Docker Swarm, single node)
-- **Domain**: mememade.com (HTTPS via Traefik v3)
 - **Claude Code**: Native binary (~/.local/bin/claude, auto-updated)
 - **Codex CLI**: npm global (~/.npm-global/bin/codex)
 - **Persistent volumes**: `~/.claude` (Claude auth), `~/.codex` (Codex auth)
