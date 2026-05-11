@@ -80,7 +80,7 @@ RUN mkdir /tmp/claude-install && cd /tmp/claude-install \
 # =============================================================================
 # Layer 3.5: Codex CLI (npm-global, sibling to Claude Code)
 # Stable bin path /usr/local/bin/codex matches polyagent-devcontainer bb1b33d
-# and mememade-caesar 3954e95 parity recipe.
+# parity recipe.
 # =============================================================================
 USER root
 RUN npm install -g @openai/codex \
