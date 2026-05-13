@@ -27,9 +27,9 @@ records each component's deviation and its justification, per Karpathy R1.1.
 
 ---
 
-## Components — 13 entities
+## Components — 14 entities
 
-### Agents (2)
+### Agents (3)
 
 #### 1. `agents/evaluator.md`
 - **Role**: Context-isolated evaluation specialist. 1-pass review after code changes; scores against frozen Contract within `/refine`.
@@ -39,7 +39,15 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: invoked by `/refine` skill loop and by ROOT after code edits (CLAUDE.md §5.6). Does not invoke other agents.
 - **Karpathy-baseline delta**: code execution + network present. Justification: must run tests/builds to score; may consult external docs to validate cross-references.
 
-#### 2. `agents/wip-manager.md`
+#### 2. `agents/proof-auditor.md`
+- **Role**: Independent rubric-verdict producer for reasoning deliverables. Adversarial second reader that scores ARGUMENT.md / proof-sketch / analytic-report against a rubric and compares to an incumbent JUDGMENT to make the evaluation layer falsifiable.
+- **Trust scope (read)**: deliverable path, rubric path, optional incumbent JUDGMENT path, optional oracle-catalogue scripts (e.g. `scripts/meta/oracles/*`).
+- **Trust scope (write)**: audit report (JSON) at caller-supplied output path (default sibling to JUDGMENT.md, suffixed `-AUDIT.json`). Does not write to the deliverable or rubric.
+- **Tool scope**: `Read, Bash, Grep, Glob`
+- **Invocation**: ROOT invokes per CLAUDE.md §6.7 step 5c (post-draft audit gate). Does not invoke other agents.
+- **Karpathy-baseline delta**: code execution present (Bash for oracle commands); no Write to deliverable, no Edit/Agent/WebFetch/WebSearch. Justification: machine-checkable axes require running oracle scripts; audit-only role keeps deliverable and rubric immutable from this agent.
+
+#### 3. `agents/wip-manager.md`
 - **Role**: Manage WIP for multi-session tasks. Auto-invoked when tasks span sessions.
 - **Trust scope (read)**: `wip/`, project files referenced by user request.
 - **Trust scope (write)**: `wip/task-*/README.md`, `wip/task-*/`.
@@ -49,7 +57,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 
 ### Hooks (6)
 
-#### 3. `hooks/session-start.sh`
+#### 4. `hooks/session-start.sh`
 - **Role**: SessionStart hook. Injects project context + WIP auto-resume + env check.
 - **Trust scope (read)**: `.git/`, `wip/`, `MEMORY.md`, branch state.
 - **Trust scope (write)**: stdout JSON + stale `.claude/.last-verification.<branch>` cleanup (`rm -f`).
@@ -57,7 +65,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: triggered automatically by Claude Code at session start.
 - **Karpathy-baseline delta**: code execution present. Justification: read-only context aggregation; no decision authority.
 
-#### 4. `hooks/meta-evolution-guard.sh`
+#### 5. `hooks/meta-evolution-guard.sh`
 - **Role**: PreToolUse hook (Bash matcher). Blocks direct `docker exec ... claude ... -p` so all Meta-Evolution delegation goes through `scripts/meta/delegate-goal.sh`.
 - **Trust scope (read)**: hook input JSON.
 - **Trust scope (write)**: stderr only.
@@ -65,7 +73,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: triggered for every Bash tool use.
 - **Karpathy-baseline delta**: code execution present. Justification: enforcement-only, no productive side effects.
 
-#### 5. `hooks/sub-project-edit-guard.sh`
+#### 6. `hooks/sub-project-edit-guard.sh`
 - **Role**: PreToolUse hook (Edit/Write matcher). Blocks Edit/Write inside §6-bearing sub-projects per Role Relativity.
 - **Trust scope (read)**: hook input JSON, target CLAUDE.md.
 - **Trust scope (write)**: stderr only.
@@ -73,7 +81,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: triggered for every Edit/Write tool use.
 - **Karpathy-baseline delta**: same as meta-evolution-guard. Same justification.
 
-#### 6. `hooks/pre-commit-gate.sh`
+#### 7. `hooks/pre-commit-gate.sh`
 - **Role**: PreToolUse hook (Bash matcher, `git commit*`). Blocks commits unless completion-checker recently ran on the branch.
 - **Trust scope (read)**: `.claude/.last-verification.<branch>`, hook input JSON.
 - **Trust scope (write)**: stderr only.
@@ -81,7 +89,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: triggered for `git commit` Bash calls.
 - **Karpathy-baseline delta**: same as meta-evolution-guard. Same justification.
 
-#### 7. `hooks/pre-push-gate.sh`
+#### 8. `hooks/pre-push-gate.sh`
 - **Role**: PreToolUse hook (Bash matcher, `git push*`). 3-layer progressive hardening — Layer 1 blocks PAT residue in remote URL; Layer 2 warns on remote URL drift; Layer 3 (opt-in) blocks `.push-remote` declaration mismatch.
 - **Trust scope (read)**: `git remote -v` output, hook input JSON, optional `.push-remote` file.
 - **Trust scope (write)**: stderr + `.claude/.last-push-url.<remote>` baseline file (Layer 2 drift detection).
@@ -89,7 +97,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: triggered for `git push` Bash calls.
 - **Karpathy-baseline delta**: same as meta-evolution-guard. Same justification. Note: Layer 1 already covers credential-residue at push time — additional runtime credential-mask hook would duplicate this control (Karpathy R1.3 surgical avoidance).
 
-#### 8. `hooks/refinement-gate.sh`
+#### 9. `hooks/refinement-gate.sh`
 - **Role**: Stop hook. Prevents session stop during active `/refine` iteration when score < threshold.
 - **Trust scope (read)**: `.refinement-active` marker, score files.
 - **Trust scope (write)**: stdout JSON decision only.
@@ -99,7 +107,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 
 ### Skills (5)
 
-#### 9. `skills/refine/SKILL.md`
+#### 10. `skills/refine/SKILL.md`
 - **Role**: Autonomous exploratory improvement loop — thin orchestrator with fresh-context agents.
 - **Trust scope (read)**: project source per task scope.
 - **Trust scope (write)**: project source per task scope; `.refinement-active`, `.refine-output`, `attempts/*.jsonl`.
@@ -107,7 +115,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: user-invocable via `/refine`.
 - **Karpathy-baseline delta**: code execution + Agent recursion (highest autonomy). Justification: by-design exploratory loop; recursion is the loop mechanism, not a side channel.
 
-#### 10. `skills/wiki/SKILL.md`
+#### 11. `skills/wiki/SKILL.md`
 - **Role**: LLM Wiki — build and maintain structured knowledge bases with cross-referencing, consolidation, contradiction detection.
 - **Trust scope (read)**: wiki source dirs.
 - **Trust scope (write)**: wiki output dirs.
@@ -115,7 +123,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: user-invocable via `/wiki`.
 - **Karpathy-baseline delta**: same as `/refine`. Justification: ingestion + contradiction detection requires multi-file traversal + sub-agent dispatch.
 
-#### 11. `skills/status/SKILL.md`
+#### 12. `skills/status/SKILL.md`
 - **Role**: Show workspace status — all git repos, services, WIP tasks, environment health.
 - **Trust scope (read)**: workspace, `.git/` dirs, service ports.
 - **Trust scope (write)**: stdout only.
@@ -123,7 +131,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: user-invocable via `/status`.
 - **Karpathy-baseline delta**: code execution present, **no Write/Edit/Agent**. Closest to baseline.
 
-#### 12. `skills/verify/SKILL.md`
+#### 13. `skills/verify/SKILL.md`
 - **Role**: Run pre-commit verification checks on a product.
 - **Trust scope (read)**: target product source.
 - **Trust scope (write)**: marker file `.last-verification.<branch>`.
@@ -131,7 +139,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: user-invocable via `/verify`.
 - **Karpathy-baseline delta**: narrowest of all skills. Code execution present (must run tests). Closest to baseline along with `/status`.
 
-#### 13. `skills/karpathy-guidelines/SKILL.md`
+#### 14. `skills/karpathy-guidelines/SKILL.md`
 - **Role**: Reference handle for the Karpathy 4 rules. Loaded on demand by evaluator agent or explicit invocation; not user-invocable as a `/command`.
 - **Trust scope (read)**: own `SKILL.md` + `EXAMPLES.md` body only.
 - **Trust scope (write)**: none.
@@ -165,11 +173,14 @@ This document is correct iff:
 Check command:
 
 ```bash
-# Component count match (expect: 2 + 6 + 5 = 13)
-expected=$(( $(ls /workspaces/.claude/agents/*.md 2>/dev/null | wc -l) \
-          + $(ls /workspaces/.claude/hooks/*.sh 2>/dev/null | wc -l) \
-          + $(ls -d /workspaces/.claude/skills/*/ 2>/dev/null | wc -l) ))
-documented=$(grep -cE '^#### [0-9]+\.' /workspaces/.claude/security/trust-boundary.md)
+# Auto-detects the current project root; override with PROJECT_ROOT=<path>
+# when running from outside this receiver's tree.
+# Current baseline: 3 agents + 6 hooks + 5 skills = 14.
+PROJECT_ROOT="${PROJECT_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+expected=$(( $(ls "$PROJECT_ROOT"/.claude/agents/*.md 2>/dev/null | wc -l) \
+          + $(ls "$PROJECT_ROOT"/.claude/hooks/*.sh 2>/dev/null | wc -l) \
+          + $(ls -d "$PROJECT_ROOT"/.claude/skills/*/ 2>/dev/null | wc -l) ))
+documented=$(grep -cE '^#### [0-9]+\.' "$PROJECT_ROOT/.claude/security/trust-boundary.md")
 [ "$expected" -eq "$documented" ] && echo "OK ($documented)" || echo "MISMATCH (expected=$expected, documented=$documented)"
 ```
 

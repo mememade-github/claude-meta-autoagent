@@ -20,7 +20,9 @@ shows they are already consistent and minimal-by-purpose:
 No structural drift. No missing fields. No speculative fields. Karpathy
 R1.3 holds: nothing to refactor.
 
-## Skill schema (`.claude/skills/<name>/SKILL.md`)
+## Command skill schema (`.claude/skills/<name>/SKILL.md`)
+
+Applies to user-invocable / `/`-reachable skills (refine, wiki, status, verify).
 
 ```yaml
 ---
@@ -31,6 +33,24 @@ allowed-tools: <comma-separated list>   # required, every tool the skill may inv
 argument-hint: "<usage-string>"         # required iff skill accepts arguments
 ---
 ```
+
+## Reference-handle skill schema (`.claude/skills/<name>/SKILL.md`)
+
+Applies to reference-handle skills loaded passively by other agents (e.g.
+karpathy-guidelines, which mirrors upstream prompt text under MIT and is
+not user-invocable as `/<name>`).  Marker = `license:` key in frontmatter.
+
+```yaml
+---
+name: <slug>                            # required, kebab-case
+description: <single-line>              # required, 1 sentence describing trigger conditions
+license: <SPDX-id>                      # required, upstream license (e.g. MIT)
+---
+```
+
+Reference handles MUST NOT declare `allowed-tools` (they are prompt-text
+only; invoked via `Read` by another agent).  The `license:` key acts as
+the class marker so the verification snippet can branch.
 
 Governance metadata (version / owner / last-reviewed / risk-level) lives in
 `registry.md` (Phase 4), not in the SKILL.md. This separates operational
@@ -69,22 +89,36 @@ Same split as skills — governance metadata is in `registry.md`.
 ## Verification — end-state for Phase 2
 
 ```bash
+# Auto-detects the current project root; override with PROJECT_ROOT=<path>
+# when running from outside this receiver's tree.
+PROJECT_ROOT="${PROJECT_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+
 # All agents share the agent schema field set:
 agent_keys() { awk '/^---$/{c++; next} c==1 && /^[a-z]/{sub(/:.*/,""); print}' "$1" | sort; }
-ref=$(agent_keys /workspaces/.claude/agents/evaluator.md)
+ref=$(agent_keys "$PROJECT_ROOT/.claude/agents/evaluator.md")
 all_agents_match=true
-for f in /workspaces/.claude/agents/*.md; do
+for f in "$PROJECT_ROOT"/.claude/agents/*.md; do
   [ "$(agent_keys "$f")" = "$ref" ] || { all_agents_match=false; echo "DRIFT: $f"; }
 done
 $all_agents_match && echo "agents OK" || echo "agents FAIL"
 
-# All skills share the skill schema's required keys (argument-hint is optional):
-for d in /workspaces/.claude/skills/*/; do
-  for k in allowed-tools description name user-invocable; do
-    grep -q "^${k}:" "${d}SKILL.md" || { echo "MISSING $k in $d"; exit 1; }
-  done
+# Skills branch by class — `license:` key presence marks a reference handle
+# (3-key schema: name, description, license).  Otherwise the skill is a
+# command skill (4-key schema: name, description, user-invocable, allowed-tools).
+skills_ok=true
+for d in "$PROJECT_ROOT"/.claude/skills/*/; do
+  f="${d}SKILL.md"
+  if grep -q '^license:' "$f"; then
+    for k in description license name; do
+      grep -q "^${k}:" "$f" || { echo "MISSING $k in $d"; skills_ok=false; }
+    done
+  else
+    for k in allowed-tools description name user-invocable; do
+      grep -q "^${k}:" "$f" || { echo "MISSING $k in $d"; skills_ok=false; }
+    done
+  fi
 done
-echo "skills OK"
+$skills_ok && echo "skills OK" || echo "skills FAIL"
 ```
 
 ## When to update this schema
