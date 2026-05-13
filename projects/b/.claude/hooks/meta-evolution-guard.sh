@@ -20,10 +20,11 @@ if [ "$FIRST" != "docker" ] && [ "$FIRST" != "podman" ]; then
   exit 0
 fi
 
-# Command starts with docker/podman. Block if it is an exec launching `claude -p`.
-if echo "$COMMAND" | grep -qE '^[[:space:]]*(sudo[[:space:]]+)?(docker|podman)[[:space:]]+exec[[:space:]].*\bclaude\b.*[[:space:]]-p\b'; then
+# Command starts with docker/podman. Block if it is an exec launching `claude -p` or `claude --print`.
+# AUD-2026-023: regex covers both `-p` and `--print` invocation forms.
+if echo "$COMMAND" | grep -qE '^[[:space:]]*(sudo[[:space:]]+)?(docker|podman)[[:space:]]+exec[[:space:]].*\bclaude\b.*([[:space:]]-p\b|[[:space:]]--print\b)'; then
   cat >&2 <<'MSG'
-BLOCKED: direct Meta-Evolution agent launch via `docker exec ... claude -p`.
+BLOCKED: direct Meta-Evolution agent launch via `docker exec ... claude {-p|--print}`.
 
 Role Relativity requires the wrapper:
 
