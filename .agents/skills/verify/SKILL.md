@@ -12,8 +12,8 @@ Target: $ARGUMENTS (default: all)
 
 ## Auto-Detection
 
-1. Read CLAUDE.md §3 (Pre-Commit Gate) for project-specific verification commands
-2. Read REFERENCE.md "Local CI" section for detailed check commands
+
+
 3. Detect project type from files:
    - `pyproject.toml` → Python: `ruff check src/ && mypy src/ --ignore-missing-imports`
    - `package.json` → TypeScript: `pnpm build`
