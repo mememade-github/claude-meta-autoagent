@@ -11,4 +11,4 @@ sandbox_mode = "workspace-write"
 ask_for_approval = "on-request"
 
 [features]
-codex_hooks = true
+hooks = true
