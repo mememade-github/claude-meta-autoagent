@@ -11,7 +11,7 @@ set -e
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-STEP_TOTAL=4
+STEP_TOTAL=5
 STEP=0
 step() { STEP=$((STEP + 1)); echo "[${STEP}/${STEP_TOTAL}] $1"; }
 
@@ -84,21 +84,81 @@ else
 fi
 
 # =============================================================================
-# 4. Codex config symlink (project workspace -> ~/.codex/config.toml)
-#    Only acts when the project ships /workspaces/.codex/config.toml.
-#    auth.json is intentionally untouched so credentials persist in $HOME.
+# 4. Codex CLI — idempotent latest-version sync
 # =============================================================================
-step "Codex config symlink..."
-WS_CODEX_CONFIG="/workspaces/.codex/config.toml"
-HOME_CODEX_DIR="${HOME}/.codex"
-HOME_CODEX_CONFIG="${HOME_CODEX_DIR}/config.toml"
-
-if [ -f "$WS_CODEX_CONFIG" ]; then
-    mkdir -p "$HOME_CODEX_DIR"
-    ln -sfn "$WS_CODEX_CONFIG" "$HOME_CODEX_CONFIG"
-    echo "      Linked: $HOME_CODEX_CONFIG -> $WS_CODEX_CONFIG"
+# Parity with Claude (step 3): keep the Codex CLI current on each container
+# start instead of frozen at the image-build snapshot. Failure is soft (does
+# not block startup). Skip with SKIP_CODEX_UPDATE=1.
+#
+# Do NOT use `codex update`: its built-in updater runs `npm install -g
+# @openai/codex` against the default global prefix, which the unprivileged
+# vscode user cannot write. The Dockerfile installs Codex to ~/.npm-global, so
+# mirror that install command here.
+step "Codex CLI version..."
+CODEX_NPM_PREFIX="${HOME}/.npm-global"
+CODEX_BIN=""
+if [ -x "${CODEX_NPM_PREFIX}/bin/codex" ]; then
+    CODEX_BIN="${CODEX_NPM_PREFIX}/bin/codex"
 else
-    echo "      No project .codex/config.toml — skipped"
+    CODEX_BIN="$(command -v codex 2>/dev/null || true)"
+fi
+
+codex_version() {
+    [ -n "$CODEX_BIN" ] || return 0
+    "$CODEX_BIN" --version 2>/dev/null | awk '{print $2}' || true
+}
+
+if [ -z "$CODEX_BIN" ]; then
+    echo "      WARN: codex CLI not installed — skipping update"
+elif [ "${SKIP_CODEX_UPDATE:-}" = "1" ]; then
+    echo "      Skipped (SKIP_CODEX_UPDATE=1), current: $(codex_version)"
+else
+    BEFORE=$(codex_version)
+    CODEX_UPDATE_LOG=$(mktemp)
+    if npm install -g --prefix "$CODEX_NPM_PREFIX" @openai/codex@latest >"$CODEX_UPDATE_LOG" 2>&1; then
+        [ -x "${CODEX_NPM_PREFIX}/bin/codex" ] && CODEX_BIN="${CODEX_NPM_PREFIX}/bin/codex"
+        AFTER=$(codex_version)
+        if [ "$BEFORE" = "$AFTER" ]; then
+            echo "      $AFTER (already latest)"
+        else
+            echo "      $BEFORE → $AFTER"
+        fi
+    else
+        echo "      WARN: Codex update failed; continuing with ${BEFORE:-unknown}"
+        tail -20 "$CODEX_UPDATE_LOG" | sed 's/^/      npm: /'
+    fi
+    rm -f "$CODEX_UPDATE_LOG"
+fi
+
+# =============================================================================
+# 5. Codex CLI — project-local config validation
+# =============================================================================
+# Current Codex loads a trusted project's .codex/config.toml directly. Never
+# copy project policy into ~/.codex/config.toml: that user file is persistent,
+# higher-scope state and would become stale when the project template changes.
+# Authentication and explicit personal overrides remain in ~/.codex/.
+step "Codex project config..."
+WORKSPACE_CODEX_CONFIG="/workspaces/.codex/config.toml"
+USER_CODEX_CONFIG="${HOME}/.codex/config.toml"
+if [ -f "$WORKSPACE_CODEX_CONFIG" ]; then
+    if grep -q '^ask_for_approval[[:space:]]*=' "$WORKSPACE_CODEX_CONFIG"; then
+        echo "      WARN: project config uses obsolete ask_for_approval; use approval_policy"
+    else
+        echo "      Project config detected — Codex loads it after project trust"
+    fi
+else
+    echo "      WARN: no project-local .codex/config.toml"
+fi
+
+if [ -L "$USER_CODEX_CONFIG" ]; then
+    if [ "$(readlink "$USER_CODEX_CONFIG")" = "$WORKSPACE_CODEX_CONFIG" ]; then
+        rm -f "$USER_CODEX_CONFIG"
+        echo "      Removed legacy ~/.codex/config.toml symlink to project config"
+    else
+        echo "      WARN: ~/.codex/config.toml is a symlink; replace it with explicit user config"
+    fi
+elif [ -f "$USER_CODEX_CONFIG" ] && grep -q '^ask_for_approval[[:space:]]*=' "$USER_CODEX_CONFIG"; then
+    echo "      WARN: existing user config uses obsolete ask_for_approval; use approval_policy"
 fi
 
 # =============================================================================
