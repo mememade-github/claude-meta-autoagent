@@ -22,6 +22,13 @@ services:
     volumes:
       - ${HOST_WORKSPACE_PATH:-..}:/workspaces:cached
       - /var/run/docker.sock:/var/run/docker.sock
+      # Persistence — single source for BOTH entry paths.
+      # devcontainer.json does not re-declare these, so plain `docker compose up`
+      # and VS Code "Reopen in Container" share the same COMPOSE_PROJECT_NAME-scoped
+      # volumes and preserve auth tokens + history identically across rebuild.
+      - claude-config:/home/vscode/.claude
+      - codex-config:/home/vscode/.codex
+      - command-history:/commandhistory
 
     # =========================================================================
     # Ports — HOST:CONTAINER separated mapping
@@ -51,8 +58,16 @@ services:
     tty: true
 
     healthcheck:
-      test: ["CMD-SHELL", "claude --version"]
+      test: ["CMD-SHELL", "claude --version >/dev/null 2>&1 && SKIP_CODEX_UPDATE=1 codex --version >/dev/null 2>&1 && { test -d /workspaces/.git || test -f /workspaces/AGENTS.md || test -f /workspaces/CLAUDE.md || test -f /workspaces/README.md || test -d /workspaces/.devcontainer; }"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
+
+# Named volumes (declared at the project level; created with the
+# COMPOSE_PROJECT_NAME prefix). These are the single persistence source for
+# both entry paths — change COMPOSE_PROJECT_NAME in .env to isolate instances.
+volumes:
+  claude-config:
+  codex-config:
+  command-history:

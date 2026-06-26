@@ -78,6 +78,16 @@ RUN mkdir /tmp/claude-install && cd /tmp/claude-install \
     && claude --version
 
 # =============================================================================
+# Layer 3.5: Codex CLI — npm global install (parity with Claude)
+# OpenAI Codex CLI is an npm global package. Install under ~/.npm-global so the
+# unprivileged vscode user can update it without root.
+# =============================================================================
+RUN mkdir -p ${HOME}/.npm-global \
+    && npm install -g --prefix "${HOME}/.npm-global" @openai/codex \
+    && echo 'export PATH="${HOME}/.npm-global/bin:${PATH}"' >> ${HOME}/.bashrc \
+    && ${HOME}/.npm-global/bin/codex --version
+
+# =============================================================================
 # Layer 3.5: Codex CLI (npm-global, sibling to Claude Code)
 # Stable bin path /usr/local/bin/codex matches polyagent-devcontainer bb1b33d
 # parity recipe.
@@ -147,9 +157,15 @@ RUN git config --global core.quotepath false \
 # Setup scripts + Entrypoint
 # =============================================================================
 USER root
+COPY codex-launcher.sh /usr/local/bin/codex-launcher
 COPY setup-env.sh /usr/local/bin/
 COPY entrypoint.sh /usr/local/bin/
-RUN chmod 755 /usr/local/bin/setup-env.sh /usr/local/bin/entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/codex-launcher /usr/local/bin/setup-env.sh /usr/local/bin/entrypoint.sh \
+    && chmod 755 /usr/local/bin/codex-launcher /usr/local/bin/setup-env.sh /usr/local/bin/entrypoint.sh \
+    && mkdir -p /home/${USERNAME}/.local/bin \
+    && ln -sf /usr/local/bin/codex-launcher /home/${USERNAME}/.local/bin/codex \
+    && ln -sf /usr/local/bin/codex-launcher /usr/local/bin/codex \
+    && chown -h ${USERNAME}:${USERNAME} /home/${USERNAME}/.local/bin/codex
 
 USER ${USERNAME}
 WORKDIR /workspaces
