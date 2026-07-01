@@ -27,7 +27,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 
 ---
 
-## Components — 14 entities
+## Components — 13 entities
 
 ### Agents (3)
 
@@ -105,7 +105,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: triggered at every Stop event.
 - **Karpathy-baseline delta**: same as meta-evolution-guard. Same justification.
 
-### Skills (5)
+### Skills (4)
 
 #### 10. `skills/refine/SKILL.md`
 - **Role**: Autonomous exploratory improvement loop — thin orchestrator with fresh-context agents.
@@ -115,15 +115,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: user-invocable via `/refine`.
 - **Karpathy-baseline delta**: code execution + Agent recursion (highest autonomy). Justification: by-design exploratory loop; recursion is the loop mechanism, not a side channel.
 
-#### 11. `skills/wiki/SKILL.md`
-- **Role**: LLM Wiki — build and maintain structured knowledge bases with cross-referencing, consolidation, contradiction detection.
-- **Trust scope (read)**: wiki source dirs.
-- **Trust scope (write)**: wiki output dirs.
-- **Tool scope**: `Bash, Read, Write, Edit, Grep, Glob, Agent`
-- **Invocation**: user-invocable via `/wiki`.
-- **Karpathy-baseline delta**: same as `/refine`. Justification: ingestion + contradiction detection requires multi-file traversal + sub-agent dispatch.
-
-#### 12. `skills/status/SKILL.md`
+#### 11. `skills/status/SKILL.md`
 - **Role**: Show workspace status — all git repos, services, WIP tasks, environment health.
 - **Trust scope (read)**: workspace, `.git/` dirs, service ports.
 - **Trust scope (write)**: stdout only.
@@ -131,7 +123,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: user-invocable via `/status`.
 - **Karpathy-baseline delta**: code execution present, **no Write/Edit/Agent**. Closest to baseline.
 
-#### 13. `skills/verify/SKILL.md`
+#### 12. `skills/verify/SKILL.md`
 - **Role**: Run pre-commit verification checks on a product.
 - **Trust scope (read)**: target product source.
 - **Trust scope (write)**: marker file `.last-verification.<branch>`.
@@ -139,7 +131,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 - **Invocation**: user-invocable via `/verify`.
 - **Karpathy-baseline delta**: narrowest of all skills. Code execution present (must run tests). Closest to baseline along with `/status`.
 
-#### 14. `skills/karpathy-guidelines/SKILL.md`
+#### 13. `skills/karpathy-guidelines/SKILL.md`
 - **Role**: Reference handle for the Karpathy 4 rules. Loaded on demand by evaluator agent or explicit invocation; not user-invocable as a `/command`.
 - **Trust scope (read)**: own `SKILL.md` + `EXAMPLES.md` body only.
 - **Trust scope (write)**: none.
@@ -175,7 +167,7 @@ Check command:
 ```bash
 # Auto-detects the current project root; override with PROJECT_ROOT=<path>
 # when running from outside this receiver's tree.
-# Current baseline: 3 agents + 6 hooks + 5 skills = 14.
+# Current baseline: 3 agents + 6 hooks + 4 skills = 13.
 PROJECT_ROOT="${PROJECT_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 expected=$(( $(ls "$PROJECT_ROOT"/.claude/agents/*.md 2>/dev/null | wc -l) \
           + $(ls "$PROJECT_ROOT"/.claude/hooks/*.sh 2>/dev/null | wc -l) \

@@ -14,7 +14,7 @@ shows they are already consistent and minimal-by-purpose:
 | Group | Field set | Count |
 |-------|-----------|-------|
 | agents (2) | name, description, tools, model, maxTurns, color | 6 keys, identical across files |
-| skills — command (4) | name, description, user-invocable, allowed-tools, [argument-hint] | 4 keys + 1 conditional |
+| skills — command (3) | name, description, user-invocable, allowed-tools, [argument-hint] | 4 keys + 1 conditional |
 | skills — reference handle (1) | name, description, license | 3 keys (karpathy-guidelines; upstream-aligned, no tools) |
 
 No structural drift. No missing fields. No speculative fields. Karpathy
@@ -22,7 +22,7 @@ R1.3 holds: nothing to refactor.
 
 ## Command skill schema (`.claude/skills/<name>/SKILL.md`)
 
-Applies to user-invocable / `/`-reachable skills (refine, wiki, status, verify).
+Applies to user-invocable / `/`-reachable skills (refine, status, verify).
 
 ```yaml
 ---
