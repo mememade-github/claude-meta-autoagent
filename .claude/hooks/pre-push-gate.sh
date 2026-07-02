@@ -516,7 +516,7 @@ def raw_command_expansion_push():
 def raw_env_split_push():
     return bool(
         re.search(
-            r"(^|[;&|]\s*)(\S*/)?env\b[^;&|]*\s(-S|--split-string)(=|\s+)[^;&|]*\bgit\s+push\b",
+            r"(^|[;&|]\s*)(\S*/)?env\b[^;&|]*\s(-S|--split-string)(=|\s+)[^;&|]*\bgit\b[^;&|]*\bpush\b",
             normalized_command,
         )
     )
@@ -780,7 +780,7 @@ fi
 
 PROJECT_DIR=$(echo "$PUSH_INFO" | jq -r '.workdir')
 if command -v git &>/dev/null; then
-  REPO_ROOT=$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)
+  REPO_ROOT=$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null || echo "$PROJECT_DIR")
 else
   REPO_ROOT="$PROJECT_DIR"
 fi
