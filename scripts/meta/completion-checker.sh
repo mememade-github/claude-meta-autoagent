@@ -23,33 +23,14 @@
 
 set -e
 
-# --- Root detection (worktree-aware) ---
+# --- Root detection (worktree-aware, shared) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-detect_root() {
-    # Priority: CLAUDE_PROJECT_DIR > git common dir (worktree) > git toplevel > script relative
-    if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "$CLAUDE_PROJECT_DIR" ]; then
-        echo "$CLAUDE_PROJECT_DIR"
-        return
-    fi
-    if command -v git &>/dev/null; then
-        local git_common
-        git_common=$(git -C "$SCRIPT_DIR" rev-parse --git-common-dir 2>/dev/null || true)
-        if [ -n "$git_common" ] && [ "$git_common" != ".git" ]; then
-            # Worktree detected — git-common-dir may be relative, resolve to absolute
-            (cd "$SCRIPT_DIR" && cd "$(dirname "$git_common")" && pwd)
-            return
-        fi
-        local toplevel
-        toplevel=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || true)
-        if [ -n "$toplevel" ]; then
-            echo "$toplevel"
-            return
-        fi
-    fi
-    # Fallback: script is at scripts/meta/, root is 2 levels up
-    (cd "$SCRIPT_DIR/../.." && pwd)
-}
+# Shared worktree-aware root detection — single source of truth (see lib/).
+_LIB="$SCRIPT_DIR/lib/detect-root.sh"
+[ -r "$_LIB" ] || { echo "FATAL: missing $_LIB" >&2; exit 3; }
+# shellcheck source=scripts/meta/lib/detect-root.sh
+. "$_LIB"
 
 ROOT_DIR="$(detect_root)"
 LEGACY_PATTERN="${1:-}"
