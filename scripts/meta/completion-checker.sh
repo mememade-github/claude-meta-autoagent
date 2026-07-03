@@ -254,18 +254,16 @@ check_portability() {
 # Verification marker (connects to pre-commit-gate.sh)
 # =============================================================================
 create_verification_marker() {
-    # Resolve actual root for worktree compatibility
-    local marker_root="$ROOT_DIR"
-    if command -v git &>/dev/null; then
-        local git_common
-        git_common=$(git -C "$ROOT_DIR" rev-parse --git-common-dir 2>/dev/null || true)
-        if [ -n "$git_common" ] && [ "$git_common" != ".git" ]; then
-            marker_root=$(dirname "$git_common")
-        fi
-    fi
+    # Marker locus mirrors pre-commit-gate.sh exactly: per-worktree
+    # (show-toplevel of the caller). ROOT_DIR is detect_root()'s result —
+    # already collapsed from a worktree to the real workspace root — so both
+    # the root and the branch must come from the caller dir instead.
+    local caller_dir="${CLAUDE_PROJECT_DIR:-$ROOT_DIR}"
+    local marker_root
+    marker_root=$(git -C "$caller_dir" rev-parse --show-toplevel 2>/dev/null || echo "$caller_dir")
     # Append branch name for per-worktree isolation (matches pre-commit-gate.sh)
     local branch
-    branch=$(git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    branch=$(git -C "$caller_dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
     local branch_safe
     branch_safe=$(echo "$branch" | tr '/' '-')
     local marker="$marker_root/.claude/.last-verification.$branch_safe"
