@@ -9,8 +9,6 @@
 # (bubblewrap 비호환 — 컨테이너 자체가 격리이므로 우회 합리적).
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
-model = "gpt-5.5"
-model_reasoning_effort = "xhigh"
 
 [features]
 hooks = true
