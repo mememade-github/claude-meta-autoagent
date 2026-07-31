@@ -37,5 +37,20 @@ commit body, Codex handoff), an external cross-check is **REQUIRED** — a diffe
 vendor agent, an evaluator in a separate context window, or a static analyzer the
 primary agent did not pick. Internal-only conclusions: recommended, not required.
 
+## 5. Suspect the measurement, not just the result
+
+A verdict is only as good as the command that produced it. **Never read an exit
+code through a pipe** — in `cmd | tail; rc=$?` the `rc` belongs to `tail`, so a
+failing gate reports success (fail-open). Redirect to a file and capture `rc`
+directly; where a pipe is unavoidable, read `${PIPESTATUS[0]}` (bash-only — POSIX
+shells have no equivalent, so the redirect form is the portable one). The same
+applies to counters: under `set -e`, `v=$(grep -c ...)` dies on a legitimate zero,
+and `$(cmd || echo fallback)` appends the fallback to partial output instead of
+replacing it — assign the fallback outside the substitution.
+
+An audit that passed because its measurement was broken is indistinguishable from
+an audit that passed. When output looks strange, doubt the command before
+reporting the finding.
+
 ---
 *External anchor: independent-review / separation-of-duties audit practice.*

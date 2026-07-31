@@ -40,5 +40,15 @@ while you spend time on the rewrite.
 The plan must contain a sentence naming a narrower alternative and why it was
 rejected. No such sentence → the plan is incomplete; do not execute.
 
+## 5. Destructive commands that live in scripts
+
+§1 governs a human decision made once, before running. A forced-destructive
+command written *into* a script (`docker rm -f`, `rm -rf`, `docker volume rm`,
+`--volumes`, `--renew-anon-volumes`, `git reset --hard`) then re-runs forever with
+no decision point — the approval gate never fires again. Such a command carries an
+in-file waiver comment stating why force is required; cleanup wired to `trap …
+EXIT` is exempt, since removing a temp file the script itself created is not a
+destructive choice. No waiver → rewrite it as the non-forced form.
+
 ---
 *External anchor: least-blast-radius / staged rollout — Google SRE.*
