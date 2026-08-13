@@ -133,7 +133,7 @@ records each component's deviation and its justification, per Karpathy R1.1.
 
 #### 13. `skills/karpathy-guidelines/SKILL.md`
 - **Role**: Reference handle for the Karpathy 4 rules. Loaded on demand by evaluator agent or explicit invocation; not user-invocable as a `/command`.
-- **Trust scope (read)**: own `SKILL.md` + `EXAMPLES.md` body only.
+- **Trust scope (read)**: own `SKILL.md` body only.
 - **Trust scope (write)**: none.
 - **Tool scope**: none (prompt-text only; no `allowed-tools` declared in frontmatter).
 - **Invocation**: passive — Read-tool fetched by other agents/skills as a behavioral reference.

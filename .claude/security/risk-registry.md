@@ -45,7 +45,7 @@
 | 10 | skills/refine/SKILL.md | clean | clean | clean | clean | clean | task-scoped + `.refinement-active`, attempts/ | active (Bash, Edit, Write, Read, Grep, Glob, **Agent**) |
 | 11 | skills/status/SKILL.md | clean | clean | clean | clean | clean | read-only (`.git/`, ports) | active (Bash, Read, Grep, Glob) |
 | 12 | skills/verify/SKILL.md | clean | clean | clean | clean | clean | read + `.last-verification` write | active (Bash, Read) |
-| 13 | skills/karpathy-guidelines/SKILL.md | clean | clean | clean | clean | clean | own dir (`SKILL.md` + `EXAMPLES.md`) read-only | clean (no `tools` field — reference handle) |
+| 13 | skills/karpathy-guidelines/SKILL.md | clean | clean | clean | clean | clean | own dir (`SKILL.md`) read-only | clean (no `tools` field — reference handle) |
 
 ## Cell-by-cell justifications (non-`clean` only)
 
@@ -71,7 +71,7 @@
 - Skills/refine: writes own marker (`.refinement-active`), output (`.refine-output`), and per-iteration log (`attempts/*.jsonl`). Otherwise scope is task-bound.
 - Skills/status: read-only (`.git/`, port checks). No write.
 - Skills/verify: read + writes a single marker file `.last-verification.<branch>`.
-- Skills/karpathy-guidelines: read-only of own directory (`SKILL.md` + `EXAMPLES.md`). No writes. Karpathy upstream verbatim.
+- Skills/karpathy-guidelines: read-only of own directory (`SKILL.md`). No writes. Karpathy upstream verbatim.
 - Hooks: each hook's scope is hook-input + the specific marker / git output it consults; none of them write to source.
 
 ### A7 (tool invocations)
