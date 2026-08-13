@@ -24,8 +24,8 @@ honor-system — and the structure differs by host:
 - **Codex CLI**: current releases support subagents and custom
   `.codex/agents/*.toml`, but this evaluator contract deliberately uses a fresh
   `codex exec --ephemeral` subprocess through
-  `scripts/meta/run-isolated-role.sh evaluate`. That path admits only the
-  Contract, diff, prior-score path, `$EVAL_JSON` output path, and
+  `scripts/meta/run-isolated-role.sh evaluate`. That path is given only the
+  Contract, diff, extracted previous-score list, `$EVAL_JSON` output path, and
   already-executed verification evidence on stdin, including in non-interactive
   refine runs. The helper starts Evaluate outside the repository so the child
   cannot auto-load `AGENTS.md` and recursively invoke another evaluator, and
@@ -37,9 +37,9 @@ honor-system — and the structure differs by host:
   this compatibility fallback is not a security boundary. The helper invalidates
   the evaluation if HEAD, the index, or any tracked/untracked project-tree file
   changes, including guarded gitignored files, missing tracked files, file mode,
-  and symlink state. High-churn generated paths such as `.codex/state`,
-  refinement attempts, dependency caches, and build outputs are excluded; the
-  authorized evaluator report path is also excluded.
+  and symlink state. For Evaluate, refine state such as `.codex/state/refinement-active`
+  and refinement attempts remains guarded; only the authorized evaluator report
+  path is excluded. Dependency caches and build outputs remain excluded.
 
 If neither isolation path is available, say so in the report; never self-evaluate
 in-context while claiming isolation.
@@ -72,13 +72,19 @@ You receive:
 1. **Contract** -- immutable JSON with: mode, checks[], verify_cmd, metric, direction
 2. **Git diff** -- changes only
 3. **Calibration anchors** -- (for calibrated mode)
-4. **Attempts file path** -- read for previous scores (never reasoning)
+4. **Previous scores** -- a score list extracted by the orchestrator (never the attempts file or its result one-liners)
 
 Protocol:
 1. **Execute** -- run Contract.checks[] or verify_cmd
 2. **Explore** -- generate additional checks from the diff
 3. **Write** -- full report to the caller-supplied `$EVAL_JSON`
 4. **Return** -- ONLY `{"score": <number>, "suggestion": "<one line>"}` to caller
+
+The returned `score` is the report's `contract_score` (same value, single metric).
+The helper rejects the result unless the final `score` is a number in `[0,1]`,
+the report has numeric `contract_score` equal to that final score, the report has
+`checks_total >= 1`, and at least one `findings[]` or `checks[]` entry carries
+non-empty `tool` and `evidence` strings.
 
 The full report goes to the file; Codex's final score is captured separately and
 emitted to stdout. The helper fails if the full report is absent or empty. This
@@ -135,10 +141,13 @@ answer from the repository.
 {
   "contract_score": 0.0,
   "checks_passed": 0,
-  "checks_total": 0,
+  "checks_total": 1,
   "findings": [
     {"check": "description", "tool": "command", "result": "pass", "evidence": "output excerpt"},
     {"check": "description", "tool": "command", "result": "fail", "evidence": "output excerpt"}
+  ],
+  "checks": [
+    {"check": "description", "tool": "command", "result": "pass", "evidence": "output excerpt"}
   ],
   "generated_checks": [
     {"name": "description", "command": "what was run", "result": "pass|fail"}
@@ -150,12 +159,14 @@ answer from the repository.
 }
 ```
 
-In review mode: `contract_score` = generated checks pass rate. In contract mode: `contract_score` = Contract checks pass rate.
+In review mode: `contract_score` = generated checks pass rate. In contract mode, pass rate applies to objective/tool-augmented checks; in calibrated mode `contract_score` is the weighted anchor score defined by `rubrics/default.yml`.
 
 ## Scoring Rules
 
 - Every score is derived from tool execution results — no free-form judgment. (Choosing which checks to run and matching anchors is still LLM judgment; it is constrained by tool evidence and the fixed anchors, never replaced by opinion of overall quality.)
 - `contract_score` drives keep/discard in /refine (single metric)
+- The final returned `score` must equal `contract_score`
+- `checks_total` must be at least 1, and at least one finding/check must include non-empty `tool` and `evidence`
 - `findings` feed back to generator as improvement guidance
 - Check command fails to execute (timeout, crash) → treat as fail
 - All checks fail → contract_score = 0

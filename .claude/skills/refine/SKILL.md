@@ -67,12 +67,11 @@ Claude and Codex `refinement-gate.sh` markers exactly.
   non-interactive runs.
 - In a DevContainer where bubblewrap is unavailable, the child may use
   `--dangerously-bypass-approvals-and-sandbox`. This is a compatibility fallback,
-  not a security boundary: the helper rejects Audit/Evaluate if HEAD, the index,
-  or any tracked/untracked project-tree file changes, including guarded
-  gitignored files, missing tracked files, file mode, and symlink state.
-  High-churn generated paths such as `.codex/state`, refinement attempts,
-  dependency caches, and build outputs are excluded. The single authorized
-  output file is excluded from that comparison.
+  not a security boundary. What the helper does enforce, fail-closed: Evaluate
+  requires an output file (in-repo outputs must be gitignored); the report must
+  be valid JSON with `checks_total >= 1`; and the evaluator's final message must
+  be valid JSON with a `score` in [0,1]. A missing, stale, or malformed report
+  fails the run.
 
 ## Step 0c: Pre-flight
 
@@ -97,7 +96,7 @@ Rediscover ground truth every run (no cached config). Read the project
 |---|---|---|---|
 | `objective` | tests/build/lint exist | none | verify_cmd → parse → number |
 | `tool-augmented` | checks definable / no infra | evaluator subagent | checks[] + diff explore |
-| `calibrated` | no objective metric (last resort) | evaluator subagent | rubric anchors |
+| `calibrated` | no objective metric (last resort) | evaluator subagent | `rubrics/default.yml` anchors |
 
 Prefer `objective`. If a project-local `.refine/score.sh` exists (JSON out:
 `{"score":0-1,"feedback":"...","metrics":{"<id>":"pass|fail"}}`) it is
@@ -112,6 +111,10 @@ EOF
 ```
 
 ## Step 2: Baseline
+
+For tool-augmented/calibrated contracts with no `verify_cmd`, baseline = evaluator
+run of `Contract.checks[]` against HEAD (no diff); skip the `verify_cmd`
+validation in Step 1.
 
 ```bash
 bash -c "<Contract.verify_cmd>" > "$OUTPUT" 2>&1
@@ -149,8 +152,10 @@ SCORE=<parse .score>; GAPS=<failing IDs>; SUGGESTION=<parse .feedback>
 ```
 
 **tool-augmented / calibrated** — spawn a fresh evaluator role with **ONLY**:
-Contract JSON, `git diff --cached`, calibration anchors (calibrated only), and
-"read `$ATTEMPTS` for previous scores", plus the `$EVAL_JSON` output path. It
+Contract JSON, `git diff --cached`, calibration anchors from
+`rubrics/default.yml` (calibrated only), frozen at Contract time, and
+`previous scores: $(jq -s '[.[].score]' "$ATTEMPTS")`, plus the `$EVAL_JSON`
+output path. It
 writes its full report to `$EVAL_JSON` and returns ONLY
 `{"score":N,"suggestion":"one line"}`. The helper reserves `$EVAL_JSON` for that
 authored report, captures Codex's final message in a separate temporary file,
@@ -180,7 +185,7 @@ PREV_BEST=$(jq -s 'sort_by(.score)|last|.score//0' "$ATTEMPTS" 2>/dev/null || ec
 echo "{\"score\":$SCORE,\"gaps\":$GAPS,\"result\":\"<KEEP|DISCARD>: $SUMMARY\",\"feedback\":\"$SUGGESTION\"}" >> "$ATTEMPTS"
 ITERATION=$(wc -l < "$ATTEMPTS")
 ```
-- `SCORE >= THRESHOLD` → **ACCEPT** · `ITERATION >= MAX_ITER` → **STOP** · else → return to **Step 3**.
+- `SCORE >= THRESHOLD` → **ACCEPT** · `ITERATION > MAX_ITER` → **STOP** · else → return to **Step 3**.
 - **Always `rm -f "$MARKER"` on every exit path** (ACCEPT / STOP / error), then
   report best: `jq -s 'sort_by(.score)|last' "$ATTEMPTS"`. Do not ask permission
   between iterations.
