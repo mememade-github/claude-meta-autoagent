@@ -1,7 +1,7 @@
 #!/bin/bash
 # PreToolUse hook (matcher: Bash): block direct Meta-Evolution agent launches.
 # Any `docker exec ... claude ... -p ...` must go through scripts/meta/delegate-goal.sh.
-# Reference: CLAUDE.md §6 Pre-action gate + Wrapper enforcement;
+# Reference: CLAUDE.md §Meta-Evolution pre-action gate + wrapper enforcement;
 #            ARCHITECTURE.md §Role Relativity.
 
 INPUT=$(cat)
@@ -37,7 +37,7 @@ The wrapper enforces:
   - Launch audit log under .claude/.delegate-log/
 
 If the wrapper lacks a needed project, extend its PROJECTS map — do not bypass.
-Reference: ARCHITECTURE.md §Role Relativity, CLAUDE.md §6.
+Reference: ARCHITECTURE.md §Role Relativity, CLAUDE.md §Meta-Evolution.
 MSG
   exit 2
 fi
